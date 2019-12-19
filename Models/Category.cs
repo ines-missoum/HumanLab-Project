@@ -8,5 +8,9 @@ namespace humanlab.Models
 {
     class Category
     {
+        public int IdCategory { get; set; }
+        public string CategoryName { get; set; }
+
+        public List<Element> Elements { get; set; }
     }
 }

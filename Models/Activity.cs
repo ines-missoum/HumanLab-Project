@@ -12,5 +12,6 @@ namespace humanlab.Models
         public string ActivityName { get; set; }
         public int FixingTime { get; set; }
 
+        public ICollection<Grid> Grids { get; } = new List<Grid>();
     }
 }
