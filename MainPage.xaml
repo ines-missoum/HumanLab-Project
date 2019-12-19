@@ -2,13 +2,43 @@
     x:Class="humanlab.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:humanlab"
+    xmlns:s="using:humanlab.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+
+    <Page.DataContext>
+        <s:NavigationService/>
+    </Page.DataContext>
+    <Grid >
+        <!--PaneDisplayMode="LeftMinimal"-->
+        <NavigationView 
+                        x:Name="nvTopLevelNav"
+                Loaded="nvTopLevelNav_Loaded"
+                SelectionChanged="nvTopLevelNav_SelectionChanged"
+                ItemInvoked="nvTopLevelNav_ItemInvoked"
+                IsTabStop="False"
+                Header="{Binding text, Mode=TwoWay}">
+            <NavigationView.MenuItems>
+                <NavigationViewItemHeader Content="Activité" />
+                <NavigationViewItem Content="Tous" Tag="Nav_Activity_All"/>
+                <NavigationViewItem Content="Nouveau" />
+                <NavigationViewItemSeparator  />
+       
+                <NavigationViewItemHeader Content="Grille" />
+                <NavigationViewItem Content="Tous" />
+                <NavigationViewItem Content="Nouveau" />
+                <NavigationViewItemSeparator  />
+        
+                <NavigationViewItemHeader Content="Element" />
+                <NavigationViewItem Content="Tous" />
+                <NavigationViewItem Content="Nouveau" Tag="Nav_Element_New"/>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" />
+        </NavigationView>
 
     </Grid>
 </Page>
