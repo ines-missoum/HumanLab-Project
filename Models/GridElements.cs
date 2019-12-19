@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace humanlab.Models
 {
-    class GridElements
+    public class GridElements
     {
         public int GridId { get; set; }
         public Grid Grid { get; set; }
@@ -14,5 +14,7 @@ namespace humanlab.Models
         public int ElementId { get; set; }
         public Element Element { get; set; }
 
+        public int Xposition { get; set; }
+        public int Yposition { get; set; }
     }
 }

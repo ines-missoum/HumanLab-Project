@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace humanlab.Models
 {
-    class Category
+    public class Category
     {
-        public int IdCategory { get; set; }
+        
+        public int CategoryId { get; set; }
+        [Required]
+
+        [MaxLength(40)]
         public string CategoryName { get; set; }
 
         public List<Element> Elements { get; set; }
