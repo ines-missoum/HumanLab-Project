@@ -33,7 +33,7 @@ namespace humanlab
             this.Suspending += OnSuspending;
             using (var db = new ApplicationDbContext())
             {
-                db.Database.Migrate();
+                db.Database.Migrate(); 
             }
         }
 
