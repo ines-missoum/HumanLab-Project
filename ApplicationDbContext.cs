@@ -16,6 +16,7 @@ namespace humanlab
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
 
+   
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
