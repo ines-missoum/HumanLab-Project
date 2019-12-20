@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using humanlab.DAL;
+using System.Diagnostics;
 
 namespace humanlab
 {
@@ -37,10 +39,17 @@ namespace humanlab
                 db.Database.Migrate(); 
 
             }
+            Repository.CreateCategories();
+            var categ = Repository.GetCategoryByName("Alimentation");
+            Console.WriteLine("Send to debug output categorie." + categ);
+            
             var el = new Element();
-            el.ElementName = "Anissa";
+            el.ElementName = "Ines";
             el.Image = "nompourl'image";
             Repository.SaveElement(el);
+           // categ.Elements.Add(el);
+
+
         }
 
         /// <summary>

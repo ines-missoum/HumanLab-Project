@@ -47,6 +47,10 @@ namespace humanlab
             modelBuilder.Entity<Category>()
             .Property(c => c.CategoryId)
             .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Element>()
+                .HasOne(p => p.Category)
+                .WithMany(b => b.Elements);
         }
 
     }
