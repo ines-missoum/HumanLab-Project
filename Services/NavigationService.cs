@@ -6,52 +6,64 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using humanlab.Views;
+using System.Diagnostics;
 
 namespace humanlab.Services
 {
     public class NavigationService
     {
         private NavigationView Nav = null;
-        private Frame ContentFrame = null;
-        public String text;
+        public Type ContentFrame { get; set; }  = typeof(AllActivitiesView);
+        public string page { get; set; } = "using";
+        public String Text { get; set; } = "test";
 
-        private void nvTopLevelNav_Loaded(object sender, RoutedEventArgs e)
+        public void nvTopLevelNav_Loaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("load");
             // set the initial SelectedItem
-            foreach (NavigationViewItemBase item in Nav.MenuItems)
-            {
-                if (item is NavigationViewItem && item.Tag.ToString() == "Nav_Activity_All")
-                {
-                    Nav.SelectedItem = item;
-                    break;
-                }
-            }
-            ContentFrame.Navigate(typeof(AllActivitiesView));
+            /* foreach (NavigationViewItemBase item in Nav.MenuItems)
+             {
+                 if (item is NavigationViewItem && item.Tag.ToString() == "Nav_Activity_All")
+                 {
+                     Nav.SelectedItem = item;
+                     break;
+                 }
+             }
+             ContentFrame.Navigate(typeof(AllActivitiesView));*/
         }
 
-        private void nvTopLevelNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        public void nvTopLevelNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
+            Debug.WriteLine("select");
             // we use itemInvoked instead
         }
 
-        private void nvTopLevelNav_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        public void nvTopLevelNav_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
+            Debug.WriteLine("invoked");
             if (args.IsSettingsInvoked)
             {
-                ContentFrame.Navigate(typeof(SettingsView));
+                //ContentFrame.Navigate(typeof(SettingsView));
             }
             else
             {
-                TextBlock ItemContent = args.InvokedItem as TextBlock;
+                Debug.WriteLine(args.InvokedItem.GetType());
+                string ItemContent = args.InvokedItem as string;
+               
                 if (ItemContent != null)
                 {
-                    switch (ItemContent.Tag)
+                    Debug.WriteLine("not null");
+                    switch (ItemContent)
                     {
-                        case "Nav_Element_New":
-                            text = "blabla";
+                        case "Nouvel element":
+                            Debug.WriteLine("testok");
                             //ContentFrame.Navigate(typeof(CreateElementView));
                             break;
                     }
+                }
+                else
+                {
+                    Debug.WriteLine("null");
                 }
             }
         }

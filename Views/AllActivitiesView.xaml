@@ -9,6 +9,8 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
         <TextBlock>Toutes les activités</TextBlock>
+        </StackPanel>
     </Grid>
 </Page>

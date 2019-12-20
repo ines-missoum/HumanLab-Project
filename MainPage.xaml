@@ -10,34 +10,35 @@
 
 
     <Page.DataContext>
-        <s:NavigationService/>
+        <s:NavigationService x:Name="service"/>
     </Page.DataContext>
     <Grid >
         <!--PaneDisplayMode="LeftMinimal"-->
         <NavigationView 
                         x:Name="nvTopLevelNav"
-                Loaded="nvTopLevelNav_Loaded"
-                SelectionChanged="nvTopLevelNav_SelectionChanged"
-                ItemInvoked="nvTopLevelNav_ItemInvoked"
+                Loaded="{x:Bind service.nvTopLevelNav_Loaded}"
+                SelectionChanged="{x:Bind service.nvTopLevelNav_SelectionChanged}"
+                ItemInvoked="{x:Bind service.nvTopLevelNav_ItemInvoked}"
                 IsTabStop="False"
-                Header="{Binding text, Mode=TwoWay}">
+                Header="{x:Bind service.Text, Mode=TwoWay}">
             <NavigationView.MenuItems>
                 <NavigationViewItemHeader Content="Activité" />
-                <NavigationViewItem Content="Tous" Tag="Nav_Activity_All"/>
-                <NavigationViewItem Content="Nouveau" />
+                <NavigationViewItem Content="Toutes les activités" />
+                <NavigationViewItem Content="Nouvelle activité" />
                 <NavigationViewItemSeparator  />
        
                 <NavigationViewItemHeader Content="Grille" />
-                <NavigationViewItem Content="Tous" />
-                <NavigationViewItem Content="Nouveau" />
+                <NavigationViewItem Content="Toutes les grilles" />
+                <NavigationViewItem Content="Nouvelle grille" />
                 <NavigationViewItemSeparator  />
         
                 <NavigationViewItemHeader Content="Element" />
-                <NavigationViewItem Content="Tous" />
-                <NavigationViewItem Content="Nouveau" Tag="Nav_Element_New"/>
+                <NavigationViewItem Content="Tous les éléments" />
+                <NavigationViewItem Content="Nouvel element"/>
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame" />
+            <Frame SourcePageType="{x:Bind service.ContentFrame, Mode=TwoWay}"/>
+        
         </NavigationView>
 
     </Grid>
