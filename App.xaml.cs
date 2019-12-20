@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using humanlab.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +35,12 @@ namespace humanlab
             using (var db = new ApplicationDbContext())
             {
                 db.Database.Migrate(); 
+
             }
+            var el = new Element();
+            el.ElementName = "Anissa";
+            el.Image = "nompourl'image";
+            Repository.SaveElement(el);
         }
 
         /// <summary>

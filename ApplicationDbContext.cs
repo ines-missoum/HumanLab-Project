@@ -28,8 +28,26 @@ namespace humanlab
         {
             modelBuilder.Entity<GridElements>()
                 .HasKey(t => new { t.GridId, t.ElementId });
+
             modelBuilder.Entity<ActivityGrids>()
                 .HasKey(t => new { t.ActivityId, t.GridId });
+
+            modelBuilder.Entity<Element>()
+            .Property(e => e.ElementId)
+            .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Grid>()
+            .Property(g => g.GridId)
+            .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Activity>()
+            .Property(a => a.ActivityId)
+            .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Category>()
+            .Property(c => c.CategoryId)
+            .ValueGeneratedOnAdd();
         }
+
     }
 }
