@@ -39,16 +39,6 @@ namespace humanlab
                 db.Database.Migrate(); 
 
             }
-            Repository.CreateCategories();
-            var categ = Repository.GetCategoryByName("Alimentation");
-            Console.WriteLine("Send to debug output categorie." + categ);
-            
-            var el = new Element();
-            el.ElementName = "Ines";
-            el.Image = "nompourl'image";
-            Repository.SaveElement(el);
-           // categ.Elements.Add(el);
-
 
         }
 
