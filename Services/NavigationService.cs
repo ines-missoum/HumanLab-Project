@@ -13,10 +13,17 @@ namespace humanlab.Services
     public class NavigationService
     {
         private NavigationView Nav = null;
-        public Type ContentFrame { get; set; }  = typeof(AllActivitiesView);
-        public string page { get; set; } = "using";
-        public String Text { get; set; } = "test";
 
+        public NavigationService()
+        {
+            ContentFrame = typeof(CreateElementView);
+        }
+
+        public Type ContentFrame { get; set; }
+        public string page { get; set; } = "using";
+        public String Title { get; set; } = typeof(CreateElementView).ToString();
+
+        
         public void nvTopLevelNav_Loaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("load");
@@ -57,6 +64,9 @@ namespace humanlab.Services
                     {
                         case "Nouvel element":
                             Debug.WriteLine("testok");
+                            Debug.WriteLine(ContentFrame);
+                            Debug.WriteLine(ContentFrame);
+                            ((Frame)Window.Current.Content).Navigate(typeof(CreateElementView));
                             //ContentFrame.Navigate(typeof(CreateElementView));
                             break;
                     }

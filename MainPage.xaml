@@ -13,6 +13,7 @@
         <s:NavigationService x:Name="service"/>
     </Page.DataContext>
     <Grid >
+        
         <!--PaneDisplayMode="LeftMinimal"-->
         <NavigationView 
                         x:Name="nvTopLevelNav"
@@ -20,7 +21,7 @@
                 SelectionChanged="{x:Bind service.nvTopLevelNav_SelectionChanged}"
                 ItemInvoked="{x:Bind service.nvTopLevelNav_ItemInvoked}"
                 IsTabStop="False"
-                Header="{x:Bind service.Text, Mode=TwoWay}">
+                Header="{x:Bind service.Title, Mode=TwoWay}" >
             <NavigationView.MenuItems>
                 <NavigationViewItemHeader Content="Activité" />
                 <NavigationViewItem Content="Toutes les activités" />
@@ -37,8 +38,8 @@
                 <NavigationViewItem Content="Nouvel element"/>
             </NavigationView.MenuItems>
 
-            <Frame SourcePageType="{x:Bind service.ContentFrame, Mode=TwoWay}"/>
-        
+            <Frame  SourcePageType="{x:Bind service.ContentFrame, Mode=TwoWay}"/>
+           
         </NavigationView>
 
     </Grid>
