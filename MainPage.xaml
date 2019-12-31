@@ -14,9 +14,10 @@
     </Page.DataContext>
     <Grid >
 
-        <!--PaneDisplayMode="LeftMinimal"-->
         <NavigationView 
-                        x:Name="nvTopLevelNav"
+                x:Name="nvTopLevelNav"
+                CompactModeThresholdWidth="1007" 
+                ExpandedModeThresholdWidth="1007"
                 Loaded="{x:Bind navigation.nvTopLevelNav_Loaded}"
                 SelectionChanged="{x:Bind navigation.nvTopLevelNav_SelectionChanged}"
                 ItemInvoked="{x:Bind navigation.nvTopLevelNav_ItemInvoked}"
