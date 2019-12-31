@@ -11,8 +11,10 @@ namespace humanlab.ViewModels
         {
             contentFrame = typeof(AllActivitiesView);
             title = "Accueil";
+            ColorNav = Application.Current.Resources["SystemAccentColor"].ToString();
         }
 
+        public String ColorNav { get; set; }
         public Type contentFrame;
         public String title;
 
@@ -82,6 +84,7 @@ namespace humanlab.ViewModels
                         case "Tous les éléments":
                             break;
                         case "Nouvel élément":
+                            this.ContentFrame = typeof(CreateElementView);
                             break;
                     }
                 }
