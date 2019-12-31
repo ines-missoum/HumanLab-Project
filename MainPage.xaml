@@ -16,12 +16,12 @@
 
         <NavigationView 
                 x:Name="nvTopLevelNav"
-                CompactModeThresholdWidth="1007" 
-                ExpandedModeThresholdWidth="1007"
+                PaneDisplayMode="LeftMinimal"
                 Loaded="{x:Bind navigation.nvTopLevelNav_Loaded}"
                 SelectionChanged="{x:Bind navigation.nvTopLevelNav_SelectionChanged}"
                 ItemInvoked="{x:Bind navigation.nvTopLevelNav_ItemInvoked}"
                 IsTabStop="False"
+                IsBackButtonVisible="Collapsed"
                 Foreground="{x:Bind navigation.ColorNav, Mode=TwoWay}"
                 Header="{x:Bind navigation.Title, Mode=TwoWay}" >
             <NavigationView.MenuItems >
