@@ -2,7 +2,7 @@
     x:Class="humanlab.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:s="using:humanlab.Services"
+    xmlns:vm="using:humanlab.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -10,18 +10,18 @@
 
 
     <Page.DataContext>
-        <s:NavigationService x:Name="service"/>
+        <vm:NavigationViewModel x:Name="navigation"/>
     </Page.DataContext>
     <Grid >
         
         <!--PaneDisplayMode="LeftMinimal"-->
         <NavigationView 
                         x:Name="nvTopLevelNav"
-                Loaded="{x:Bind service.nvTopLevelNav_Loaded}"
-                SelectionChanged="{x:Bind service.nvTopLevelNav_SelectionChanged}"
-                ItemInvoked="{x:Bind service.nvTopLevelNav_ItemInvoked}"
+                Loaded="{x:Bind navigation.nvTopLevelNav_Loaded}"
+                SelectionChanged="{x:Bind navigation.nvTopLevelNav_SelectionChanged}"
+                ItemInvoked="{x:Bind navigation.nvTopLevelNav_ItemInvoked}"
                 IsTabStop="False"
-                Header="{x:Bind service.Title, Mode=TwoWay}" >
+                Header="{x:Bind navigation.Title, Mode=TwoWay}" >
             <NavigationView.MenuItems>
                 <NavigationViewItemHeader Content="Activité" />
                 <NavigationViewItem Content="Toutes les activités" />
@@ -35,10 +35,10 @@
         
                 <NavigationViewItemHeader Content="Element" />
                 <NavigationViewItem Content="Tous les éléments" />
-                <NavigationViewItem Content="Nouvel element"/>
+                <NavigationViewItem Content="Nouvel élément"/>
             </NavigationView.MenuItems>
 
-            <Frame  SourcePageType="{x:Bind service.ContentFrame, Mode=TwoWay}"/>
+            <Frame  SourcePageType="{x:Bind navigation.ContentFrame, Mode=TwoWay}"/>
            
         </NavigationView>
 
