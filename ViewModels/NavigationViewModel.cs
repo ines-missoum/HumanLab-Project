@@ -60,13 +60,11 @@ namespace humanlab.ViewModels
 
             if (args.IsSettingsInvoked)
             {
-                Debug.Write("settings");
                 this.Title = "Paramètres";
                 this.ContentFrame = typeof(SettingsView);
             }
             else
             {
-                Debug.Write("menu");
                 string ItemContent = args.InvokedItem as string;
 
                 if (ItemContent != null)
