@@ -2,35 +2,35 @@
     x:Class="humanlab.Views.SettingsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:humanlab.Views"
+    xmlns:vm="using:humanlab.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.DataContext>
+        <vm:SettingsViewModel x:Name="settings"/>
+    </Page.DataContext>
+    
     <Grid >
+        
         <StackPanel Margin="12">
-            <TextBlock>
-                Défilement des grilles
-            </TextBlock>
             
-            <RadioButton>
-                Manuel
-            </RadioButton>
-            <RadioButton>
-                Automatique
-            </RadioButton>
-            <StackPanel Margin="70,0,0,0">
-                <Slider x:Name="timeSlider"  Header="Temps d'une grille (ms) : " Width="200" HorizontalAlignment="Left"/>
+            <TextBlock> Défilement des grilles</TextBlock>
+            <RadioButton Content="Manuel" IsChecked="{Binding IsManualChecked, Mode=TwoWay}" />
+            <RadioButton Content="Automatique" IsChecked="{Binding IsAutoChecked, Mode=TwoWay}" />
 
+            <StackPanel Margin="70,0,0,0" >
+                <Slider x:Name="timeSlider"  Header="Temps d'une grille (ms) : " Width="200" HorizontalAlignment="Left"/>
                 <ComboBox Header="Mode : " Width="200">
                     <ComboBoxItem IsSelected="True" Content="Ordonné"/>
                     <ComboBoxItem Content="Boucle"/>
                     <ComboBoxItem Content="Aléatoire"/>
                 </ComboBox>
-
             </StackPanel>
-            <Button Margin="0,50,0,0" HorizontalAlignment="Center" >Sauvegarder</Button>
+            
+            <Button Margin="0,50,0,0" >Sauvegarder</Button>
+        
         </StackPanel>
 
     </Grid>
