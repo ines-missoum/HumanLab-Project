@@ -101,7 +101,9 @@ namespace humanlab.ViewModels
                 if (value != gridTime)
                 {
                     gridTime = value;
+                    isSomethingChanged = true;
                     OnPropertyChanged("GridTime");
+                    SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -114,7 +116,9 @@ namespace humanlab.ViewModels
                 if (value != selectedMode)
                 {
                     selectedMode = value;
+                    isSomethingChanged = true;
                     OnPropertyChanged("SelectedMode");
+                    SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
             }
         }
