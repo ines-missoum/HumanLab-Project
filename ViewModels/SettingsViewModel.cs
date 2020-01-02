@@ -38,6 +38,7 @@ namespace humanlab.ViewModels
                 if (value != isManualChecked)
                 {
                     isManualChecked = value;
+                    OnPropertyChanged("IsManualChecked");
                     SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
             }
@@ -51,6 +52,7 @@ namespace humanlab.ViewModels
                 if (value != isAutoChecked)
                 {
                     isAutoChecked = value;
+                    OnPropertyChanged("IsAutoChecked");
                     SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
             }

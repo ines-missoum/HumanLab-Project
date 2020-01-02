@@ -17,10 +17,11 @@
         <StackPanel Margin="12">
             
             <TextBlock> Défilement des grilles</TextBlock>
-            <RadioButton Content="Manuel" IsChecked="{Binding IsManualChecked, Mode=TwoWay}" />
-            <RadioButton Content="Automatique" IsChecked="{Binding IsAutoChecked, Mode=TwoWay}" />
+            <RadioButton Content="Manuel" IsChecked="{x:Bind settings.IsManualChecked, Mode=TwoWay}" />
+            <RadioButton Content="Automatique" IsChecked="{x:Bind settings.IsAutoChecked, Mode=TwoWay}" />
 
-            <StackPanel Margin="70,0,0,0" >
+            <StackPanel Margin="70,0,0,0" 
+                        Visibility="{x:Bind settings.IsAutoChecked, Mode=OneWay}">
                 <Slider x:Name="timeSlider"  Header="Temps d'une grille (ms) : " Width="200" HorizontalAlignment="Left"/>
                 <ComboBox Header="Mode : " Width="200">
                     <ComboBoxItem IsSelected="True" Content="Ordonné"/>
