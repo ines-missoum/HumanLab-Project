@@ -10,11 +10,13 @@ namespace humanlab.ViewModels
     {
         private bool isManualChecked = false;
         private bool isAutoChecked = false;
+        public String ColorButton { get; set; }
 
         public SettingsViewModel()
         {
             this.isManualChecked = false;
             this.isAutoChecked = false;
+            ColorButton = ColorTheme;
         }
 
         public bool IsManualChecked

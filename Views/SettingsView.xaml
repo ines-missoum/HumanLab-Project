@@ -28,8 +28,8 @@
                     <ComboBoxItem Content="Aléatoire"/>
                 </ComboBox>
             </StackPanel>
-            
-            <Button Margin="0,50,0,0" >Sauvegarder</Button>
+
+            <Button Margin="0,50,0,0" Background="{Binding ColorButton}">Sauvegarder</Button>
         
         </StackPanel>
 

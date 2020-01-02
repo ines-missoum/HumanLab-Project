@@ -12,7 +12,7 @@ namespace humanlab.ViewModels
         {
             contentFrame = typeof(AllActivitiesView);
             title = "Accueil";
-            ColorNav = Application.Current.Resources["SystemAccentColor"].ToString();
+            ColorNav = ColorTheme;
         }
 
         public String ColorNav { get; set; }
