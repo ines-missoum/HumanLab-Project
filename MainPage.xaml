@@ -14,7 +14,7 @@
     </Page.DataContext>
     <Grid >
 
-        <NavigationView 
+            <NavigationView 
                 x:Name="nvTopLevelNav"
                 PaneDisplayMode="LeftMinimal"
                 Loaded="{x:Bind navigation.nvTopLevelNav_Loaded}"
@@ -24,25 +24,25 @@
                 IsBackButtonVisible="Collapsed"
                 Foreground="{x:Bind navigation.ColorNav, Mode=TwoWay}"
                 Header="{x:Bind navigation.Title, Mode=TwoWay}" >
-            <NavigationView.MenuItems >
-                <NavigationViewItemHeader Content="Activité" />
-                <NavigationViewItem Content="Toutes les activités" />
-                <NavigationViewItem Content="Nouvelle activité" />
-                <NavigationViewItemSeparator  />
+                <NavigationView.MenuItems >
+                    <NavigationViewItemHeader Content="Activité" />
+                    <NavigationViewItem Content="Toutes les activités" />
+                    <NavigationViewItem Content="Nouvelle activité" />
+                    <NavigationViewItemSeparator  />
 
-                <NavigationViewItemHeader Content="Grille" />
-                <NavigationViewItem Content="Toutes les grilles" />
-                <NavigationViewItem Content="Nouvelle grille" />
-                <NavigationViewItemSeparator  />
+                    <NavigationViewItemHeader Content="Grille" />
+                    <NavigationViewItem Content="Toutes les grilles" />
+                    <NavigationViewItem Content="Nouvelle grille" />
+                    <NavigationViewItemSeparator  />
 
-                <NavigationViewItemHeader Content="Element" />
-                <NavigationViewItem Content="Tous les éléments" />
-                <NavigationViewItem Content="Nouvel élément"/>
-            </NavigationView.MenuItems>
+                    <NavigationViewItemHeader Content="Element" />
+                    <NavigationViewItem Content="Tous les éléments" />
+                    <NavigationViewItem Content="Nouvel élément"/>
+                </NavigationView.MenuItems>
 
-            <Frame  SourcePageType="{x:Bind navigation.ContentFrame, Mode=TwoWay}"/>
+                <Frame  SourcePageType="{x:Bind navigation.ContentFrame, Mode=TwoWay}"/>
 
-        </NavigationView>
+            </NavigationView>
 
-    </Grid>
+        </Grid>
 </Page>
