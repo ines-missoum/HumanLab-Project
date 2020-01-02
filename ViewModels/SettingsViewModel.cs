@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prism.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,14 +12,24 @@ namespace humanlab.ViewModels
         private bool isManualChecked = false;
         private bool isAutoChecked = false;
         public String ColorButton { get; set; }
+        public DelegateCommand SaveSettingsCommand { get; set; }
 
         public SettingsViewModel()
         {
             this.isManualChecked = false;
             this.isAutoChecked = false;
             ColorButton = ColorTheme;
+            SaveSettingsCommand = new DelegateCommand(SaveSettings, CanSaveSettings);
+        }
+        private void SaveSettings()
+        {
+
         }
 
+        bool CanSaveSettings()
+        {
+            return IsAutoChecked || IsManualChecked;
+        }
         public bool IsManualChecked
         {
             get => isManualChecked;
@@ -27,7 +38,7 @@ namespace humanlab.ViewModels
                 if (value != isManualChecked)
                 {
                     isManualChecked = value;
-                    OnPropertyChanged("IsManualChecked");
+                    SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -40,7 +51,7 @@ namespace humanlab.ViewModels
                 if (value != isAutoChecked)
                 {
                     isAutoChecked = value;
-                    OnPropertyChanged("IsAutoChecked");
+                    SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
             }
         }
