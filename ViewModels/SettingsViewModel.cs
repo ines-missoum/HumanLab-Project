@@ -1,6 +1,7 @@
-﻿using Prism.Commands;
+﻿using humanlab.Services;
+using Prism.Commands;
 using System;
-using System.Diagnostics;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 
@@ -16,11 +17,11 @@ namespace humanlab.ViewModels
 
         public SettingsViewModel()
         {
-            this.isAutoChecked = false;
-            this.gridTime = 3000;
-            this.selectedMode = "Boucle";
+            this.isAutoChecked = ParametersService.IsAutomatic();
+            this.gridTime = ParametersService.GetGridTime();
+            this.selectedMode = ParametersService.GetMode();
             ColorButton = ColorTheme;
-            SaveSettingsCommand = new DelegateCommand(SaveSettings, CanSaveSettings);
+            SaveSettingsCommand = new DelegateCommand(SaveSettingsAsync, CanSaveSettings);
         }
 
         public void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -41,8 +42,29 @@ namespace humanlab.ViewModels
                 SelectedMode = selected;
             }
         }
-        private void SaveSettings()
+        private async void SaveSettingsAsync()
         {
+            MessageDialog messageDialog;
+            try
+            {
+                if (IsAutoChecked)
+                {
+                    ParametersService.SaveAutomatic(GridTime, SelectedMode);
+                }
+                else
+                {
+                    ParametersService.SaveManual();
+                }
+                // Create the message dialog and set its content
+                messageDialog = new MessageDialog("Vos modifications ont été sauvegardées avec succès.");
+
+            }
+            catch
+            {
+                messageDialog = new MessageDialog("Une erreur s'est produite lors de la sauvegarde. Veuillez réessayer.");
+            }
+            // Show the message dialog
+            await messageDialog.ShowAsync();
 
         }
 
