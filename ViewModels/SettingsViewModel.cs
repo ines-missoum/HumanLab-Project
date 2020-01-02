@@ -1,16 +1,17 @@
 ﻿using Prism.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace humanlab.ViewModels
 {
     class SettingsViewModel : BaseViewModel
     {
-        private bool isManualChecked = false;
-        private bool isAutoChecked = false;
+        private bool isManualChecked;
+        private bool isAutoChecked;
+        private double gridTime;
+        private string selectedMode;
         public String ColorButton { get; set; }
         public DelegateCommand SaveSettingsCommand { get; set; }
 
@@ -18,8 +19,29 @@ namespace humanlab.ViewModels
         {
             this.isManualChecked = false;
             this.isAutoChecked = false;
+            this.gridTime = 3000;
+            this.selectedMode = "Boucle";
             ColorButton = ColorTheme;
             SaveSettingsCommand = new DelegateCommand(SaveSettings, CanSaveSettings);
+        }
+
+        public void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            Slider slider = sender as Slider;
+            if (slider != null)
+            {
+                GridTime = slider.Value;
+            }
+        }
+
+        public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            string selected = comboBox.SelectedItem.ToString();
+            if (selected != null)
+            {
+                SelectedMode = selected;
+            }
         }
         private void SaveSettings()
         {
@@ -54,6 +76,32 @@ namespace humanlab.ViewModels
                     isAutoChecked = value;
                     OnPropertyChanged("IsAutoChecked");
                     SaveSettingsCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public double GridTime
+        {
+            get => gridTime;
+            set
+            {
+                if (value != gridTime)
+                {
+                    gridTime = value;
+                    OnPropertyChanged("GridTime");
+                }
+            }
+        }
+
+        public string SelectedMode
+        {
+            get => selectedMode;
+            set
+            {
+                if (value != selectedMode)
+                {
+                    selectedMode = value;
+                    OnPropertyChanged("SelectedMode");
                 }
             }
         }

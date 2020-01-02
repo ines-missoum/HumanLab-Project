@@ -22,11 +22,23 @@
 
             <StackPanel Margin="70,0,0,0" 
                         Visibility="{x:Bind settings.IsAutoChecked, Mode=OneWay}">
-                <Slider x:Name="timeSlider"  Header="Temps d'une grille (ms) : " Width="200" HorizontalAlignment="Left"/>
-                <ComboBox Header="Mode : " Width="200">
-                    <ComboBoxItem IsSelected="True" Content="Ordonné"/>
-                    <ComboBoxItem Content="Boucle"/>
-                    <ComboBoxItem Content="Aléatoire"/>
+                <!-- 3 sec à 5 min -->
+                <Slider x:Name="timeSlider" 
+                        ValueChanged="{x:Bind settings.Slider_ValueChanged}"
+                        Maximum="18000" 
+                        Header="Temps d'une grille (sec) : " 
+                        Width="300" 
+                        TickPlacement="TopLeft"
+                        TickFrequency="3600"
+                        Value="{Binding GridTime}"
+                        HorizontalAlignment="Left"/>
+                <ComboBox Header="Mode : " 
+                          Width="300"
+                          SelectedItem="{Binding SelectedMode}"
+                          SelectionChanged="{x:Bind settings.ComboBox_SelectionChanged}">
+                    <x:String>Ordonné</x:String>
+                    <x:String>Boucle</x:String>
+                    <x:String>Aléatoire</x:String>
                 </ComboBox>
             </StackPanel>
 
