@@ -8,7 +8,6 @@ namespace humanlab.ViewModels
 {
     class SettingsViewModel : BaseViewModel
     {
-        private bool isManualChecked;
         private bool isAutoChecked;
         private double gridTime;
         private string selectedMode;
@@ -17,7 +16,6 @@ namespace humanlab.ViewModels
 
         public SettingsViewModel()
         {
-            this.isManualChecked = false;
             this.isAutoChecked = false;
             this.gridTime = 3000;
             this.selectedMode = "Boucle";
@@ -50,20 +48,7 @@ namespace humanlab.ViewModels
 
         bool CanSaveSettings()
         {
-            return IsAutoChecked || IsManualChecked;
-        }
-        public bool IsManualChecked
-        {
-            get => isManualChecked;
-            set
-            {
-                if (value != isManualChecked)
-                {
-                    isManualChecked = value;
-                    OnPropertyChanged("IsManualChecked");
-                    SaveSettingsCommand.RaiseCanExecuteChanged();
-                }
-            }
+            return true;
         }
 
         public bool IsAutoChecked

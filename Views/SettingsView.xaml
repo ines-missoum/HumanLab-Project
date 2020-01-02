@@ -17,10 +17,13 @@
         <StackPanel Margin="12">
             
             <TextBlock> Défilement des grilles</TextBlock>
-            <RadioButton Content="Manuel" IsChecked="{x:Bind settings.IsManualChecked, Mode=TwoWay}" />
-            <RadioButton Content="Automatique" IsChecked="{x:Bind settings.IsAutoChecked, Mode=TwoWay}" />
-
-            <StackPanel Margin="70,0,0,0" 
+            <ToggleSwitch x:Name="ToggleSwitch1" 
+                          Margin="0,20,0,0"
+                          IsOn="{x:Bind settings.IsAutoChecked, Mode=TwoWay}"
+                          OffContent="Manuel" 
+                          OnContent="Automatique"/>
+            
+            <StackPanel Margin="70,20,0,0" 
                         Visibility="{x:Bind settings.IsAutoChecked, Mode=OneWay}">
                 <!-- 3 sec à 5 min -->
                 <Slider x:Name="timeSlider" 
