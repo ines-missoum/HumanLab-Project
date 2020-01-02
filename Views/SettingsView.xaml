@@ -10,30 +10,25 @@
 
     <Grid >
         <StackPanel Margin="12">
-            <TextBlock HorizontalAlignment="Center">
+            <TextBlock>
                 Défilement des grilles
             </TextBlock>
+            
             <RadioButton>
                 Manuel
             </RadioButton>
             <RadioButton>
                 Automatique
             </RadioButton>
-            <StackPanel 
-                Margin="70,0,0,0"
-                Orientation="Horizontal">
-                <TextBlock >
-                Temps d'une grille : 
-                </TextBlock>
-                
-            </StackPanel>
-            <StackPanel
-                Margin="70,0,0,0"
-                Orientation="Horizontal">
-                <TextBlock >
-                Mode : 
-                </TextBlock>
-                
+            <StackPanel Margin="70,0,0,0">
+                <Slider x:Name="timeSlider"  Header="Temps d'une grille (ms) : " Width="200" HorizontalAlignment="Left"/>
+
+                <ComboBox Header="Mode : " Width="200">
+                    <ComboBoxItem IsSelected="True" Content="Ordonné"/>
+                    <ComboBoxItem Content="Boucle"/>
+                    <ComboBoxItem Content="Aléatoire"/>
+                </ComboBox>
+
             </StackPanel>
             <Button Margin="0,50,0,0" HorizontalAlignment="Center" >Sauvegarder</Button>
         </StackPanel>
