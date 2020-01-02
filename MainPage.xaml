@@ -2,14 +2,47 @@
     x:Class="humanlab.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:humanlab"
+    xmlns:vm="using:humanlab.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
-    <Grid>
+    <Page.DataContext>
+        <vm:NavigationViewModel x:Name="navigation"/>
+    </Page.DataContext>
+    <Grid >
 
-    </Grid>
+            <NavigationView 
+                x:Name="nvTopLevelNav"
+                PaneDisplayMode="LeftMinimal"
+                Loaded="{x:Bind navigation.nvTopLevelNav_Loaded}"
+                SelectionChanged="{x:Bind navigation.nvTopLevelNav_SelectionChanged}"
+                ItemInvoked="{x:Bind navigation.nvTopLevelNav_ItemInvoked}"
+                IsTabStop="False"
+                IsBackButtonVisible="Collapsed"
+                Foreground="{x:Bind navigation.ColorNav, Mode=TwoWay}"
+                Header="{x:Bind navigation.Title, Mode=TwoWay}" >
+                <NavigationView.MenuItems >
+                    <NavigationViewItemHeader Content="Activité" />
+                    <NavigationViewItem Content="Toutes les activités" />
+                    <NavigationViewItem Content="Nouvelle activité" />
+                    <NavigationViewItemSeparator  />
+
+                    <NavigationViewItemHeader Content="Grille" />
+                    <NavigationViewItem Content="Toutes les grilles" />
+                    <NavigationViewItem Content="Nouvelle grille" />
+                    <NavigationViewItemSeparator  />
+
+                    <NavigationViewItemHeader Content="Element" />
+                    <NavigationViewItem Content="Tous les éléments" />
+                    <NavigationViewItem Content="Nouvel élément"/>
+                </NavigationView.MenuItems>
+
+                <Frame  SourcePageType="{x:Bind navigation.ContentFrame, Mode=TwoWay}"/>
+
+            </NavigationView>
+
+        </Grid>
 </Page>
