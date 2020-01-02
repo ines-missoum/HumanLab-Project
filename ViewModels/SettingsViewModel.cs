@@ -12,6 +12,7 @@ namespace humanlab.ViewModels
         private bool isAutoChecked;
         private double gridTime;
         private string selectedMode;
+        private bool isSomethingChanged;
         public String ColorButton { get; set; }
         public DelegateCommand SaveSettingsCommand { get; set; }
 
@@ -20,6 +21,7 @@ namespace humanlab.ViewModels
             this.isAutoChecked = ParametersService.IsAutomatic();
             this.gridTime = ParametersService.GetGridTime();
             this.selectedMode = ParametersService.GetMode();
+            this.isSomethingChanged = false;
             ColorButton = ColorTheme;
             SaveSettingsCommand = new DelegateCommand(SaveSettingsAsync, CanSaveSettings);
         }
@@ -27,9 +29,11 @@ namespace humanlab.ViewModels
         public void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             Slider slider = sender as Slider;
-            if (slider != null)
+            if (slider != null && GridTime != slider.Value)
             {
+                isSomethingChanged = true;
                 GridTime = slider.Value;
+
             }
         }
 
@@ -37,8 +41,9 @@ namespace humanlab.ViewModels
         {
             ComboBox comboBox = sender as ComboBox;
             string selected = comboBox.SelectedItem.ToString();
-            if (selected != null)
+            if (selected != null && SelectedMode != selected)
             {
+                isSomethingChanged = true;
                 SelectedMode = selected;
             }
         }
@@ -70,7 +75,7 @@ namespace humanlab.ViewModels
 
         bool CanSaveSettings()
         {
-            return true;
+            return isSomethingChanged;
         }
 
         public bool IsAutoChecked
@@ -81,6 +86,7 @@ namespace humanlab.ViewModels
                 if (value != isAutoChecked)
                 {
                     isAutoChecked = value;
+                    isSomethingChanged = true;
                     OnPropertyChanged("IsAutoChecked");
                     SaveSettingsCommand.RaiseCanExecuteChanged();
                 }
