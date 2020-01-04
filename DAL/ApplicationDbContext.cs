@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace humanlab
 {
-   public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext : DbContext
     {
 
         public virtual DbSet<Element> Elements { get; set; }
@@ -16,7 +16,7 @@ namespace humanlab
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
 
-   
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
