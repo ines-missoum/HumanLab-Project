@@ -1,4 +1,6 @@
-﻿using System;
+﻿using humanlab.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +16,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using humanlab.DAL;
+using System.Diagnostics;
 
 namespace humanlab
 {
@@ -30,6 +34,12 @@ namespace humanlab
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            using (var db = new ApplicationDbContext())
+            {
+                db.Database.Migrate(); 
+
+            }
+
         }
 
         /// <summary>
