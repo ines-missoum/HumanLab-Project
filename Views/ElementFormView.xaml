@@ -32,7 +32,8 @@
                              Margin="0,24,0,20" 
                              MaxLength="32" 
                              Width="400" 
-                             HorizontalAlignment="Left" />
+                             HorizontalAlignment="Left"
+                             Text="{x:Bind elementform.ElementName, Mode=OneWay}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"  >
@@ -48,7 +49,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="130,5,0,30" HorizontalAlignment="Left">
                     <Border Height="100" Width="100" Background="Gray">
-                        <Image Stretch="Fill" />
+                        <Image Stretch="Fill" Source="{x:Bind elementform.ImageSource}"/>
                     </Border>
                     
                     <TextBlock Text="{x:Bind elementform.SelectedPictureName, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}"  />
@@ -68,16 +69,26 @@
                                 Height="180" 
                                 Margin="10,0,0,0"
                                 Visibility="{x:Bind elementform.IsToggleNotChecked, Mode=OneWay}" >
+
                         <TextBox Margin="10" Header="Texte à prononcer" PlaceholderText="J'ai soif" Tag="Name of customer" Background="White" />
                     </StackPanel>
+                    
                     <StackPanel Background="LightCyan" 
                                 Width="450" 
                                 Height="180"  
                                 Visibility="{x:Bind elementform.IsToggleChecked, Mode=OneWay}">
+                        
                         <StackPanel Orientation="Horizontal" >
                             <TextBlock Text="Fichier son associé" Margin="10" Style="{StaticResource BaseTextBlockStyle}" Height="28" />
-                            <Button Height="auto" Width="100"  Margin="10,10,0,15" Background="DeepSkyBlue" Content="Choisir"  Foreground="White"/>
+                            <Button Height="auto" 
+                                    Width="100"  
+                                    Margin="10,10,0,15" 
+                                    Background="DeepSkyBlue" 
+                                    Content="Choisir"  
+                                    Foreground="White"
+                                    Click="{x:Bind elementform.ChooseAudio}"/>
                         </StackPanel>
+                        
                         <MediaTransportControls />
                     </StackPanel>
 
@@ -85,7 +96,12 @@
 
 
             </StackPanel>
-            <Button Background="MediumSpringGreen" Content="Enregistrer" Foreground="White" FontSize="23" HorizontalAlignment="Right" Margin="0,24,40,40"/>
+            <Button Background="MediumSpringGreen" 
+                    Content="Enregistrer" 
+                    Foreground="White" 
+                    FontSize="23" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,24,40,40"/>
         </StackPanel>
     </Grid>
 </Page>

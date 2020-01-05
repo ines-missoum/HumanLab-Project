@@ -8,6 +8,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using Windows.Storage.Pickers;
 using Windows.Storage;
+using Windows.UI.Xaml.Media.Imaging;
+using System.IO;
+using Windows.Storage.Streams;
 
 namespace humanlab.ViewModels
 {
@@ -15,17 +18,50 @@ namespace humanlab.ViewModels
 
     class ElementFormViewModel : BaseViewModel
     {
+        private string elementName;
         private bool isToggleChecked;
         private StorageFile selectedPicture;
-        public string selectedPictureName;
-        private string[] authorizedFileType1 = { "jpeg", "png", "jpg" };
-        private string[] authorizedFileType2 = { "mp4", "mp3" };
+        private StorageFile selectedAudio;
+        private string selectedPictureName;
+        private BitmapImage imageSource = new BitmapImage();
+        private string[] authorizedPictureType = { "jpeg", "png", "jpg" };
+        private string[] authorizedAudioType = { "mp4", "mp3" };
         public ElementFormViewModel()
         {
+            this.elementName = "";
             this.isToggleChecked = false;
             this.selectedPictureName= "example.png";
 
         }
+
+        public string ElementName
+        {
+            get => elementName;
+            set
+            {
+                if (value != elementName)
+                {
+                    elementName = value;
+                    OnPropertyChanged("ElementName");
+
+                }
+            }
+        }
+
+        public BitmapImage ImageSource
+        {
+            get => imageSource;
+            set
+            {
+                if (value != imageSource)
+                {
+                    imageSource = value;
+                    OnPropertyChanged("ImageSource");
+
+                }
+            }
+        }
+
 
         public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
@@ -54,14 +90,14 @@ namespace humanlab.ViewModels
             }
         }
 
-        public bool IsToggleNotChecked => IsToggleChecked;
+        public bool IsToggleNotChecked => !IsToggleChecked;
 
         public async void ChoosePicture(object sender, RoutedEventArgs e)
         {
             FileOpenPicker openPicker = new FileOpenPicker();
             openPicker.ViewMode = PickerViewMode.Thumbnail;
             openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            foreach (string type in authorizedFileType1)
+            foreach (string type in authorizedPictureType)
             {
                 string typeFile = "." + type;
                 openPicker.FileTypeFilter.Add(typeFile);
@@ -71,9 +107,30 @@ namespace humanlab.ViewModels
             if (file != null)
             {
                 SelectedPicture= file;
-                SelectedPictureName= "d";
-                System.Diagnostics.Debug.WriteLine("aaaaaaaaaaaaoo" + file.Name);
+                SelectedPictureName= file.Name;
+                IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
 
+                await ImageSource.SetSourceAsync(stream);
+
+            }
+
+        }
+
+        public async void ChooseAudio(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker openPicker = new FileOpenPicker();
+            openPicker.ViewMode = PickerViewMode.Thumbnail;
+            openPicker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
+            foreach (string type in authorizedAudioType)
+            {
+                string typeFile = "." + type;
+                openPicker.FileTypeFilter.Add(typeFile);
+            }
+            StorageFile file = await openPicker.PickSingleFileAsync();
+
+            if (file != null)
+            {
+                SelectedAudio = file;
             }
 
         }
@@ -86,7 +143,21 @@ namespace humanlab.ViewModels
                 if (value != selectedPicture)
                 {
                     selectedPicture= value;
-                    OnPropertyChanged("SelectedPictureChanged");
+                    OnPropertyChanged("SelectedPicture");
+
+                }
+            }
+        }
+
+        public StorageFile SelectedAudio
+        {
+            get => selectedAudio;
+            set
+            {
+                if (value != selectedAudio)
+                {
+                    selectedAudio = value;
+                    OnPropertyChanged("SelectedAudio");
 
                 }
             }
@@ -101,7 +172,7 @@ namespace humanlab.ViewModels
                 {
                     selectedPictureName= value;
                     System.Diagnostics.Debug.WriteLine("value" + this.selectedPictureName);
-                    OnPropertyChanged("SelectedPictureNameChanged");
+                    OnPropertyChanged("SelectedPictureName");
 
                 }
             }
