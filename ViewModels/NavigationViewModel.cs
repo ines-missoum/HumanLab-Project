@@ -85,7 +85,7 @@ namespace humanlab.ViewModels
                         case "Tous les éléments":
                             break;
                         case "Nouvel élément":
-                            this.ContentFrame = typeof(CreateElementView);
+                            this.ContentFrame = typeof(ElementFormView);
                             break;
                     }
                 }
