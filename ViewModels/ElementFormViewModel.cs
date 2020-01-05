@@ -19,16 +19,19 @@ namespace humanlab.ViewModels
     class ElementFormViewModel : BaseViewModel
     {
         private string elementName;
+        private string elementText;
         private bool isToggleChecked;
         private StorageFile selectedPicture;
         private StorageFile selectedAudio;
         private string selectedPictureName;
-        private BitmapImage imageSource = new BitmapImage();
+        private BitmapImage image = new BitmapImage();
+        private MediaElement mediaPlayer = new MediaElement();
         private string[] authorizedPictureType = { "jpeg", "png", "jpg" };
         private string[] authorizedAudioType = { "mp4", "mp3" };
         public ElementFormViewModel()
         {
             this.elementName = "";
+            this.elementText = "";
             this.isToggleChecked = false;
             this.selectedPictureName= "example.png";
 
@@ -48,19 +51,51 @@ namespace humanlab.ViewModels
             }
         }
 
-        public BitmapImage ImageSource
+        public BitmapImage Image
         {
-            get => imageSource;
+            get => image;
             set
             {
-                if (value != imageSource)
+                if (value != image)
                 {
-                    imageSource = value;
+                    image = value;
                     OnPropertyChanged("ImageSource");
 
                 }
             }
         }
+
+        public string ElementText
+        {
+            get => elementText;
+            set
+            {
+                if (value != elementText)
+                {
+                    elementText = value;
+                    OnPropertyChanged("ElementText");
+
+                }
+            }
+        }
+
+
+
+        public MediaElement MediaPlayer
+        {
+            get => mediaPlayer;
+            set
+            {
+                if (value != mediaPlayer)
+                {
+                    mediaPlayer = mediaPlayer;
+                    OnPropertyChanged("MediaPlayer");
+
+                }
+            }
+        }
+
+
 
 
         public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
@@ -110,7 +145,7 @@ namespace humanlab.ViewModels
                 SelectedPictureName= file.Name;
                 IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
 
-                await ImageSource.SetSourceAsync(stream);
+                await Image.SetSourceAsync(stream);
 
             }
 
@@ -131,6 +166,8 @@ namespace humanlab.ViewModels
             if (file != null)
             {
                 SelectedAudio = file;
+                IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
+                MediaPlayer.SetSource(stream, file.ContentType);
             }
 
         }
@@ -178,18 +215,21 @@ namespace humanlab.ViewModels
             }
         }
 
-        
-/*
-        public string GetPictureName()
+        private async void SaveElementAsync()
         {
 
-            if (this.selectedPicture != null)
-            {
-                return this.selectedPicture.Name;
-            }
-            else return "example.png";
         }
-        */
+        /*
+                public string GetPictureName()
+                {
+
+                    if (this.selectedPicture != null)
+                    {
+                        return this.selectedPicture.Name;
+                    }
+                    else return "example.png";
+                }
+                */
     }
     
 }

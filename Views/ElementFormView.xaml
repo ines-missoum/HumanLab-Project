@@ -49,7 +49,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="130,5,0,30" HorizontalAlignment="Left">
                     <Border Height="100" Width="100" Background="Gray">
-                        <Image Stretch="Fill" Source="{x:Bind elementform.ImageSource}"/>
+                        <Image Stretch="Fill" Source="{x:Bind elementform.Image}"/>
                     </Border>
                     
                     <TextBlock Text="{x:Bind elementform.SelectedPictureName, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}"  />
@@ -70,7 +70,10 @@
                                 Margin="10,0,0,0"
                                 Visibility="{x:Bind elementform.IsToggleNotChecked, Mode=OneWay}" >
 
-                        <TextBox Margin="10" Header="Texte à prononcer" PlaceholderText="J'ai soif" Tag="Name of customer" Background="White" />
+                        <TextBox Margin="10" Header="Texte à prononcer" 
+                                 PlaceholderText="J'ai soif" 
+                                 Background="White" 
+                                 Text="{x:Bind elementform.ElementText, Mode=OneWay}"/>
                     </StackPanel>
                     
                     <StackPanel Background="LightCyan" 
@@ -88,8 +91,10 @@
                                     Foreground="White"
                                     Click="{x:Bind elementform.ChooseAudio}"/>
                         </StackPanel>
-                        
-                        <MediaTransportControls />
+
+
+                        <MediaTransportControls/>
+
                     </StackPanel>
 
                 </StackPanel>
