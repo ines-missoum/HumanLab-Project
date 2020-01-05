@@ -85,7 +85,7 @@ namespace humanlab.ViewModels
             {
                 if (value != isAutoChecked)
                 {
-                    isAutoChecked = value;
+                     isAutoChecked = value;
                     isSomethingChanged = true;
                     OnPropertyChanged("IsAutoChecked");
                     SaveSettingsCommand.RaiseCanExecuteChanged();
