@@ -103,8 +103,8 @@ namespace humanlab.ViewModels
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
             if (toggleSwitch != null)
             {
-                System.Diagnostics.Debug.WriteLine("toooo" + toggleSwitch.IsOn);
                 IsToggleChecked = toggleSwitch.IsOn;
+
 
             }
         }
@@ -118,8 +118,8 @@ namespace humanlab.ViewModels
                 {
                     isToggleChecked = value;
                     
-                    System.Diagnostics.Debug.WriteLine("dedans o" + value);
                     OnPropertyChanged("IsToggleChecked");
+                    OnPropertyChanged("IsToggleNotChecked");
 
                 }
             }
@@ -170,6 +170,13 @@ namespace humanlab.ViewModels
                 MediaPlayer.SetSource(stream, file.ContentType);
             }
 
+        }
+
+        public async void LoadMediaPlayer(object sender, RoutedEventArgs e)
+        {
+            MediaElement mediaPlayer = sender as MediaElement;
+            IRandomAccessStream stream = await SelectedAudio.OpenAsync(FileAccessMode.Read);
+            mediaPlayer.SetSource(stream, SelectedAudio.ContentType);
         }
 
         public StorageFile SelectedPicture

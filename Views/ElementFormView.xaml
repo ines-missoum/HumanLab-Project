@@ -91,9 +91,12 @@
                                     Foreground="White"
                                     Click="{x:Bind elementform.ChooseAudio}"/>
                         </StackPanel>
+                        <MediaElement x:Name="mediaPlayer" 
+                                      Source="{Binding elementform.LoadMediaPlayer}" 
+                                      Width="400" 
+                                      AutoPlay="False"
+                                      AreTransportControlsEnabled="True" />
 
-
-                        <MediaTransportControls/>
 
                     </StackPanel>
 
