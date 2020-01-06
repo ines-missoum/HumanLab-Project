@@ -10,7 +10,7 @@ namespace humanlab.ViewModels
     {
         public NavigationViewModel()
         {
-            contentFrame = typeof(AllActivitiesView);
+            contentFrame = typeof(TobiitTestView);
             title = "Accueil";
             ColorNav = ColorTheme;
         }

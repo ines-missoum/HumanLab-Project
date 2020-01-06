@@ -1,0 +1,27 @@
+﻿<Page
+    x:Class="humanlab.Views.TobiitTestView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:humanlab.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <vm:TobiiTestViewModel x:Name="tobii"/>
+    </Page.DataContext>
+    
+    <Grid>
+        <TextBlock Text="{Binding FocusTime}"/>
+        <Image HorizontalAlignment="Center"
+               Height="325" 
+               Margin="0,300,0,0" 
+               VerticalAlignment="Top" 
+               Width="430"
+               PointerPressed="PointerPressed"
+               x:Name="TestImage" 
+               Source="/../UserAssets/fleur.jpg"/>
+
+    </Grid>
+</Page>
