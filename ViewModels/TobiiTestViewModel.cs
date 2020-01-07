@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Input;
 using Prism.Commands;
+using humanlab.Services;
 
 namespace humanlab.ViewModels
 {
@@ -19,8 +20,8 @@ namespace humanlab.ViewModels
 
         public TobiiTestViewModel()
         {
-            StartGazeDeviceWatcher();
-
+            TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
+            TobiiSetUpService.StartGazeDeviceWatcher();
             FocusTime = 0;
             ClickImage = new DelegateCommand(ClickOnImage, CanClickOnImage);
             System.Diagnostics.Debug.WriteLine("started");
@@ -31,6 +32,7 @@ namespace humanlab.ViewModels
         private string myColor;
         private Transform transform;
         public DelegateCommand ClickImage { get; set; }
+        public TobiiSetUpService TobiiSetUpService { get; set; }
 
         public String MyColor
         {
@@ -57,170 +59,12 @@ namespace humanlab.ViewModels
                 }
             }
         }
-        /// <summary>
-        /// Reference to the user's eyes and head as detected
-        /// by the eye-tracking device.
-        /// </summary>
-        private GazeInputSourcePreview gazeInputSource;
-
-        /// <summary>
-        /// Dynamic store of eye-tracking devices.
-        /// </summary>
-        /// <remarks>
-        /// Receives event notifications when a device is added, removed, 
-        /// or updated after the initial enumeration.
-        /// </remarks>
-        private GazeDeviceWatcherPreview gazeDeviceWatcher;
-
-        /// <summary>
-        /// Eye-tracking device counter.
-        /// </summary>
-        private int deviceCounter = 0;
-
-        /// <summary>
-        /// Timer for gaze focus on RadialProgressBar.
-        /// </summary>
-        DispatcherTimer timerGaze = new DispatcherTimer();
-
-        /// <summary>
-        /// Tracker used to prevent gaze timer restarts.
-        /// </summary>
-        bool timerStarted = false;
-
-        /// <summary>
-        /// Start gaze watcher and declare watcher event handlers.
-        /// </summary>
-        private void StartGazeDeviceWatcher()
-        {
-            if (gazeDeviceWatcher == null)
-            {
-                gazeDeviceWatcher = GazeInputSourcePreview.CreateWatcher();
-                gazeDeviceWatcher.Added += this.DeviceAdded;
-                gazeDeviceWatcher.Updated += this.DeviceUpdated;
-                gazeDeviceWatcher.Removed += this.DeviceRemoved;
-                gazeDeviceWatcher.Start();
-                System.Diagnostics.Debug.WriteLine("StartGazeDeviceWatcher");
-            }
-        }
 
 
-        /// <summary>
-        /// Eye-tracking device connected (added, or available when watcher is initialized).
-        /// </summary>
-        /// <param name="sender">Source of the device added event</param>
-        /// <param name="e">Event args for the device added event</param>
-        private void DeviceAdded(GazeDeviceWatcherPreview source,
-            GazeDeviceWatcherAddedPreviewEventArgs args)
-        {
-            System.Diagnostics.Debug.WriteLine("DeviceAdded");
-            if (IsSupportedDevice(args.Device))
-            {
-                deviceCounter++;
-            }
-            // Set up gaze tracking.
-            TryEnableGazeTrackingAsync(args.Device);
-        }
 
-        /// <summary>
-        /// Initial device state might be uncalibrated, 
-        /// but device was subsequently calibrated.
-        /// </summary>
-        /// <param name="sender">Source of the device updated event</param>
-        /// <param name="e">Event args for the device updated event</param>
-        private void DeviceUpdated(GazeDeviceWatcherPreview source,
-            GazeDeviceWatcherUpdatedPreviewEventArgs args)
-        {
-            System.Diagnostics.Debug.WriteLine("DeviceUpdated");
-            // Set up gaze tracking.
-            TryEnableGazeTrackingAsync(args.Device);
-        }
 
-        /// <summary>
-        /// Handles disconnection of eye-tracking devices.
-        /// </summary>
-        /// <param name="sender">Source of the device removed event</param>
-        /// <param name="e">Event args for the device removed event</param>
-        private void DeviceRemoved(GazeDeviceWatcherPreview source,
-            GazeDeviceWatcherRemovedPreviewEventArgs args)
-        {
-            System.Diagnostics.Debug.WriteLine("DeviceRemoved");
-            // Decrement gaze device counter and remove event handlers.
-            if (IsSupportedDevice(args.Device))
-            {
-                deviceCounter--;
 
-                if (deviceCounter == 0)
-                {
-                    gazeInputSource.GazeEntered -= this.GazeEntered;
-                    gazeInputSource.GazeMoved -= this.GazeMoved;
-                    gazeInputSource.GazeExited -= this.GazeExited;
-                }
-            }
-        }
 
-        /// <summary>
-        /// Initialize gaze tracking.
-        /// </summary>
-        /// <param name="gazeDevice"></param>
-        private async void TryEnableGazeTrackingAsync(GazeDevicePreview gazeDevice)
-        {
-            System.Diagnostics.Debug.WriteLine("TryEnableGazeTrackingAsync");
-            // If eye-tracking device is ready, declare event handlers and start tracking.
-            if (IsSupportedDevice(gazeDevice))
-            {
-                timerGaze.Interval = new TimeSpan(0, 0, 0, 0, 20);
-                timerGaze.Tick += TimerGaze_Tick;
-
-                // This must be called from the UI thread.
-                gazeInputSource = GazeInputSourcePreview.GetForCurrentView();
-
-                gazeInputSource.GazeEntered += GazeEntered;
-                gazeInputSource.GazeMoved += GazeMoved;
-                gazeInputSource.GazeExited += GazeExited;
-            }
-            // Notify if device calibration required.
-            else if (gazeDevice.ConfigurationState ==
-                        GazeDeviceConfigurationStatePreview.UserCalibrationNeeded ||
-                        gazeDevice.ConfigurationState ==
-                        GazeDeviceConfigurationStatePreview.ScreenSetupNeeded)
-            {
-                // Device isn't calibrated, so invoke the calibration handler.
-                System.Diagnostics.Debug.WriteLine(
-                    "Votre appareil est en cours de calibrage. Veuillez patientez s'il-vous-plait.");
-                await gazeDevice.RequestCalibrationAsync();
-            }
-            // Notify if device calibration underway.
-            else if (gazeDevice.ConfigurationState ==
-                GazeDeviceConfigurationStatePreview.Configuring)
-            {
-                // Device is currently undergoing calibration.  
-                // A device update is sent when calibration complete.
-                System.Diagnostics.Debug.WriteLine(
-                    "Votre appareil est en cours de configuration. Veuillez patientez s'il-vous-plait.");
-            }
-            // Device is not viable.
-            else if (gazeDevice.ConfigurationState == GazeDeviceConfigurationStatePreview.Unknown)
-            {
-                // Notify if device is in unknown state.  
-                // Reconfigure/recalbirate the device.  
-                System.Diagnostics.Debug.WriteLine(
-                    "Votre appareil n'est pas prêt. S'il-vous-plait installez votre appareil et reconfigurez le.");
-            }
-        }
-
-        /// <summary>
-        /// Check if eye-tracking device is viable.
-        /// </summary>
-        /// <param name="gazeDevice">Reference to eye-tracking device.</param>
-        /// <returns>True, if device is viable; otherwise, false.</returns>
-        private bool IsSupportedDevice(GazeDevicePreview gazeDevice)
-        {
-            System.Diagnostics.Debug.WriteLine("IsSupportedDevice");
-            //TrackerState.Text = gazeDevice.ConfigurationState.ToString();
-            return (gazeDevice.CanTrackEyes &&
-                        gazeDevice.ConfigurationState ==
-                        GazeDeviceConfigurationStatePreview.Ready);
-        }
 
         /// <summary>
         /// GazeEntered handler.
@@ -273,32 +117,30 @@ namespace humanlab.ViewModels
                 System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.Y);
 
                 //20 = width height !!!! to change corresponding to xaml
-                 double ellipseLeft =
-                   gazePointX -
-                   (20 / 2.0f);
-               double ellipseTop =
-                   gazePointY -
-                   (20 / 2.0f) 
-                   /*- (int)Header.ActualHeight*/;
+                double ellipseLeft =
+                  gazePointX -
+                  (20 / 2.0f);
+                double ellipseTop =
+                    gazePointY -
+                    (20 / 2.0f)
+                    /*- (int)Header.ActualHeight*/;
 
-               // Translate transform for moving gaze ellipse.
-               TranslateTransform translateEllipse = new TranslateTransform
-               {
-                   X = ellipseLeft,
-                   Y = ellipseTop
-               };
+                // Translate transform for moving gaze ellipse.
+                TranslateTransform translateEllipse = new TranslateTransform
+                {
+                    X = ellipseLeft,
+                    Y = ellipseTop
+                };
 
-               Transform = translateEllipse;
+                Transform = translateEllipse;
 
 
                 // The gaze point screen location.
                 Point gazePoint = new Point(gazePointX, gazePointY);
 
-                Image img = new Image();
-                img.Name = "TestImage";
                 // Basic hit test to determine if gaze point is on progress bar.
                 bool hitRadialProgressBar =
-                    DoesElementContainPoint(
+                    TobiiSetUpService.DoesElementContainPoint(
                         gazePoint,
                         "TestImage",
                         null);
@@ -318,43 +160,7 @@ namespace humanlab.ViewModels
             }
         }
 
-        /// <summary>
-        /// Return whether the gaze point is over the progress bar.
-        /// </summary>
-        /// <param name="gazePoint">The gaze point screen location</param>
-        /// <param name="elementName">The progress bar name</param>
-        /// <param name="uiElement">The progress bar UI element</param>
-        /// <returns></returns>
-        private bool DoesElementContainPoint(
-            Point gazePoint, string elementName, UIElement uiElement)
-        {
-            System.Diagnostics.Debug.WriteLine("DoesElementContainPoint");
-            // Use entire visual tree of progress bar.
-            IEnumerable<UIElement> elementStack =
-                VisualTreeHelper.FindElementsInHostCoordinates(gazePoint, uiElement, true);
-            foreach (UIElement item in elementStack)
-            {
-                //Cast to FrameworkElement and get element name.
-                if (item is FrameworkElement feItem)
-                {
-                    if (feItem.Name.Equals(elementName))
-                    {
-                        if (!timerStarted)
-                        {
-                            // Start gaze timer if gaze over element.
-                            timerGaze.Start();
-                            timerStarted = true;
-                        }
-                        return true;
-                    }
-                }
-            }
 
-            // Stop gaze timer and reset progress bar if gaze leaves element.
-            timerGaze.Stop();
-            timerStarted = false;
-            return false;
-        }
 
         /// <summary>
         /// Tick handler for gaze focus timer.
@@ -371,8 +177,7 @@ namespace humanlab.ViewModels
             if (FocusTime == 100)
             {
                 // Ensure the gaze timer restarts on new progress bar location.
-                timerGaze.Stop();
-                timerStarted = false;
+                TobiiSetUpService.StopTimer();
                 FocusTime = 0;
                 MyColor = "Red";
             }
@@ -381,7 +186,7 @@ namespace humanlab.ViewModels
         ///MOUSE
         private void ClickOnImage()
         {
-            if (MyColor!=null && MyColor.Equals("Red"))
+            if (MyColor != null && MyColor.Equals("Red"))
                 MyColor = "Blue";
             else
                 MyColor = "Red";
