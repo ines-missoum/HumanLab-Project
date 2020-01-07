@@ -24,8 +24,6 @@ namespace humanlab.ViewModels
             TobiiSetUpService.StartGazeDeviceWatcher();
             FocusTime = 0;
             ClickImage = new DelegateCommand(ClickOnImage, CanClickOnImage);
-            System.Diagnostics.Debug.WriteLine("started");
-
         }
 
         public double FocusTime { get; set; }
@@ -60,25 +58,13 @@ namespace humanlab.ViewModels
             }
         }
 
-
-
-
-
-
-
         /// <summary>
         /// GazeEntered handler.
         /// </summary>
         /// <param name="sender">Source of the gaze entered event</param>
         /// <param name="e">Event args for the gaze entered event</param>
-        private void GazeEntered(
-            GazeInputSourcePreview sender,
-            GazeEnteredPreviewEventArgs args)
+        private void GazeEntered(GazeInputSourcePreview sender, GazeEnteredPreviewEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("GazeEntered");
-            ///TO DO 
-
-            // Mark the event handled.
             args.Handled = true;
         }
 
@@ -89,14 +75,8 @@ namespace humanlab.ViewModels
         /// </summary>
         /// <param name="sender">Source of the gaze exited event</param>
         /// <param name="e">Event args for the gaze exited event</param>
-        private void GazeExited(
-            GazeInputSourcePreview sender,
-            GazeExitedPreviewEventArgs args)
+        private void GazeExited(GazeInputSourcePreview sender, GazeExitedPreviewEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("GazeExited");
-            ///TO DO 
-
-            // Mark the event handled.
             args.Handled = true;
         }
 
@@ -107,23 +87,15 @@ namespace humanlab.ViewModels
         /// <param name="e">Event args for the gaze moved event</param>
         private void GazeMoved(GazeInputSourcePreview sender, GazeMovedPreviewEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("GazeMoved");
             // Update the position of the ellipse corresponding to gaze point.
             if (args.CurrentPoint.EyeGazePosition != null)
             {
                 double gazePointX = args.CurrentPoint.EyeGazePosition.Value.X;
                 double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
-                System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.X);
-                System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.Y);
 
                 //20 = width height !!!! to change corresponding to xaml
-                double ellipseLeft =
-                  gazePointX -
-                  (20 / 2.0f);
-                double ellipseTop =
-                    gazePointY -
-                    (20 / 2.0f)
-                    /*- (int)Header.ActualHeight*/;
+                double ellipseLeft = gazePointX - (20 / 2.0f);
+                double ellipseTop = gazePointY - (20 / 2.0f);
 
                 // Translate transform for moving gaze ellipse.
                 TranslateTransform translateEllipse = new TranslateTransform
@@ -134,26 +106,11 @@ namespace humanlab.ViewModels
 
                 Transform = translateEllipse;
 
-
                 // The gaze point screen location.
                 Point gazePoint = new Point(gazePointX, gazePointY);
 
                 // Basic hit test to determine if gaze point is on progress bar.
-                bool hitRadialProgressBar =
-                    TobiiSetUpService.DoesElementContainPoint(
-                        gazePoint,
-                        "TestImage",
-                        null);
-
-                // Use progress bar thickness for visual feedback.
-                if (hitRadialProgressBar)
-                {
-                    ///TO DO 
-                }
-                else
-                {
-                    ///TO DO 
-                }
+                bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint,"TestImage",null);
 
                 // Mark the event handled.
                 args.Handled = true;
@@ -169,7 +126,6 @@ namespace humanlab.ViewModels
         /// <param name="e">Event args for the gaze entered event</param>
         private void TimerGaze_Tick(object sender, object e)
         {
-            System.Diagnostics.Debug.WriteLine("TimerGaze_Tick");
             // Increment progress bar.
             FocusTime += 1;
 
@@ -190,8 +146,6 @@ namespace humanlab.ViewModels
                 MyColor = "Blue";
             else
                 MyColor = "Red";
-
-            System.Diagnostics.Debug.WriteLine("MouseClick");
         }
         private bool CanClickOnImage()
         {

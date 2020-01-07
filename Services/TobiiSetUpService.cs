@@ -4,9 +4,6 @@ using Windows.Devices.Input.Preview;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Core;
-using Windows.UI.Xaml.Input;
 
 namespace humanlab.Services
 {
@@ -73,7 +70,6 @@ namespace humanlab.Services
                 gazeDeviceWatcher.Updated += this.DeviceUpdated;
                 gazeDeviceWatcher.Removed += this.DeviceRemoved;
                 gazeDeviceWatcher.Start();
-                System.Diagnostics.Debug.WriteLine("StartGazeDeviceWatcher");
             }
         }
 
@@ -85,7 +81,6 @@ namespace humanlab.Services
         private void DeviceAdded(GazeDeviceWatcherPreview source,
             GazeDeviceWatcherAddedPreviewEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("DeviceAdded");
             if (IsSupportedDevice(args.Device))
             {
                 deviceCounter++;
@@ -103,7 +98,6 @@ namespace humanlab.Services
         private void DeviceUpdated(GazeDeviceWatcherPreview source,
             GazeDeviceWatcherUpdatedPreviewEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("DeviceUpdated");
             // Set up gaze tracking.
             TryEnableGazeTrackingAsync(args.Device);
         }
@@ -116,7 +110,6 @@ namespace humanlab.Services
         private void DeviceRemoved(GazeDeviceWatcherPreview source,
             GazeDeviceWatcherRemovedPreviewEventArgs args)
         {
-            System.Diagnostics.Debug.WriteLine("DeviceRemoved");
             // Decrement gaze device counter and remove event handlers.
             if (IsSupportedDevice(args.Device))
             {
@@ -137,7 +130,6 @@ namespace humanlab.Services
         /// <param name="gazeDevice"></param>
         private async void TryEnableGazeTrackingAsync(GazeDevicePreview gazeDevice)
         {
-            System.Diagnostics.Debug.WriteLine("TryEnableGazeTrackingAsync");
             // If eye-tracking device is ready, declare event handlers and start tracking.
             if (IsSupportedDevice(gazeDevice))
             {
@@ -188,11 +180,7 @@ namespace humanlab.Services
         /// <returns>True, if device is viable; otherwise, false.</returns>
         private bool IsSupportedDevice(GazeDevicePreview gazeDevice)
         {
-            System.Diagnostics.Debug.WriteLine("IsSupportedDevice");
-            //TrackerState.Text = gazeDevice.ConfigurationState.ToString();
-            return (gazeDevice.CanTrackEyes &&
-                        gazeDevice.ConfigurationState ==
-                        GazeDeviceConfigurationStatePreview.Ready);
+            return (gazeDevice.CanTrackEyes && gazeDevice.ConfigurationState == GazeDeviceConfigurationStatePreview.Ready);
         }
 
         /// <summary>
@@ -202,13 +190,10 @@ namespace humanlab.Services
         /// <param name="elementName">The progress bar name</param>
         /// <param name="uiElement">The progress bar UI element</param>
         /// <returns></returns>
-        public bool DoesElementContainPoint(
-            Point gazePoint, string elementName, UIElement uiElement)
+        public bool DoesElementContainPoint(Point gazePoint, string elementName, UIElement uiElement)
         {
-            System.Diagnostics.Debug.WriteLine("DoesElementContainPoint");
             // Use entire visual tree of progress bar.
-            IEnumerable<UIElement> elementStack =
-                VisualTreeHelper.FindElementsInHostCoordinates(gazePoint, uiElement, true);
+            IEnumerable<UIElement> elementStack = VisualTreeHelper.FindElementsInHostCoordinates(gazePoint, uiElement, true);
             foreach (UIElement item in elementStack)
             {
                 //Cast to FrameworkElement and get element name.
