@@ -23,6 +23,11 @@ namespace humanlab.ViewModels
     {
         private string elementName;
         private string elementText;
+        private bool isEmptyNameField;
+        private string nameFieldBorderBrush;
+        private string selectionBorderBrush;
+        private string imageBorderBrush;
+        private string audioBorderBrush;
         List<string> categories;
         List<string> elements;
         private string selectedCategorie;
@@ -39,11 +44,15 @@ namespace humanlab.ViewModels
 
             this.elementName = "";
             this.elementText = "";
+            this.nameFieldBorderBrush = "Gray";
+            this.selectionBorderBrush = "Gray";
+            this.imageBorderBrush = "Gray";
+            this.audioBorderBrush = "Gray";
             this.selectedCategorie = null;
             this.isToggleChecked = false;
             Repository.CreateCategories();
             GetCategoriesAsync();
-            GetElementsAsync()
+            GetElementsAsync();
 
         }
 
@@ -98,12 +107,36 @@ namespace humanlab.ViewModels
                 if (value != elementName)
                 {
                     elementName = value;
+                    if (value.Equals(""))
+                    {
+                        IsEmptyNameField = true;
+                        NameFieldBorderBrush = "Red";
+                        
+                    }
+                    else
+                    {
+                        IsEmptyNameField = false;
+                        NameFieldBorderBrush = "Gray";
+                    }
                     OnPropertyChanged("ElementName");
+                    OnPropertyChanged("NameFieldBorderBrush");
 
                 }
             }
         }
 
+        public bool IsEmptyNameField
+        {
+            get => isEmptyNameField;
+            set
+            {
+                if (value != isEmptyNameField)
+                {
+                    isEmptyNameField = value;
+                    OnPropertyChanged("IsEmptyNameField");
+                }
+            }
+        }
         public BitmapImage Image
         {
             get => image;
@@ -132,6 +165,18 @@ namespace humanlab.ViewModels
             }
         }
 
+        public string NameFieldBorderBrush
+        {
+            get => nameFieldBorderBrush;
+            set
+            {
+                if (value != nameFieldBorderBrush)
+                {
+                    nameFieldBorderBrush = value;
+                    OnPropertyChanged("NameFieldBorderBrush");
+                }
+            }
+        }
 
         public string ElementText
         {
@@ -149,14 +194,55 @@ namespace humanlab.ViewModels
 
 
 
+        public string SelectionBorderBrush
+        {
+            get => selectionBorderBrush;
+            set
+            {
+                if (value != selectionBorderBrush)
+                {
+                    selectionBorderBrush = value;
+                    OnPropertyChanged("SelectionBorderBrush");
+
+                }
+            }
+        }
+
+
+        public string ImageBorderBrush
+        {
+            get => imageBorderBrush;
+            set
+            {
+                if (value != imageBorderBrush)
+                {
+                    imageBorderBrush = value;
+                    OnPropertyChanged("ImageBorderBrush");
+
+                }
+            }
+        }
+
+        public string AudioBorderBrush
+        {
+            get => audioBorderBrush;
+            set
+            {
+                if (value != audioBorderBrush)
+                {
+                    audioBorderBrush = value;
+                    OnPropertyChanged("ImageBorderBrush");
+
+                }
+            }
+        }
+
         public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
             if (toggleSwitch != null)
             {
                 IsToggleChecked = toggleSwitch.IsOn;
-
-
             }
         }
 
@@ -240,6 +326,46 @@ namespace humanlab.ViewModels
                 }
             }
         }
+
+        public void ComboBox_ChangeBorder()
+        {
+            if (ComboBox_SelectionEmpty())
+            {
+                SelectionBorderBrush = "Red";
+            }
+        }
+
+        public void Image_ChangeBorder()
+        {
+            if (Image_FileEmpty())
+            {
+                ImageBorderBrush = "Red";
+            }
+        }
+
+        public void Audio_ChangeBorder()
+        {
+            if (Audio_FileEmpty())
+            {
+                AudioBorderBrush = "Red";
+            }
+        }
+
+        public bool ComboBox_SelectionEmpty()
+        {
+             return selectedCategorie != null ? false : true;
+        }
+
+        public bool Image_FileEmpty()
+        {
+            return selectedPicture != null ? false : true;
+        }
+
+        public bool Audio_FileEmpty()
+        {
+            return selectedAudio != null ? false : true;
+        }
+
         public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;

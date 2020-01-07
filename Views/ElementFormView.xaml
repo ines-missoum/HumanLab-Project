@@ -35,10 +35,11 @@
                              MaxLength="32" 
                              Width="400" 
                              HorizontalAlignment="Left"
-                             Text="{x:Bind elementform.ElementName, Mode=OneWay}"/>
+                             BorderBrush="{x:Bind elementform.NameFieldBorderBrush, Mode=OneWay }"
+                             Text="{x:Bind elementform.ElementName, Mode=TwoWay}"/>
 
                         <TextBlock x:Name="ElementNameErrorMessage"
-                               Text="Nom d'élement déja existant" 
+                               Text="" 
                                Style="{StaticResource BaseTextBlockStyle}" 
                                Foreground="Red"
                                HorizontalAlignment="Left"/>
@@ -54,7 +55,7 @@
                               Width="150" Margin="10,24,0,20"
                               SelectedItem="{Binding SelectedCategorie}"
                               SelectionChanged="{x:Bind elementform.ComboBox_SelectionChanged}"
-                              BorderBrush="Gray" ></ComboBox
+                              BorderBrush="{x:Bind elementform.SelectionBorderBrush}" ></ComboBox
                               >
 
                 </StackPanel>
@@ -72,7 +73,7 @@
 
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="130,5,0,30" HorizontalAlignment="Left">
-                    <Border BorderBrush="Gray" BorderThickness="2" Height="100" Width="100" >
+                    <Border BorderBrush="{x:Bind elementform.ImageBorderBrush}" BorderThickness="2" Height="100" Width="100" >
                         <Image Stretch="Fill" Source="{x:Bind elementform.Image}" />
                     </Border>
                     
