@@ -11,6 +11,9 @@ using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
 using System.IO;
 using Windows.Storage.Streams;
+using humanlab.DAL;
+using humanlab.Models;
+using Windows.Media.Core;
 
 namespace humanlab.ViewModels
 {
@@ -20,21 +23,50 @@ namespace humanlab.ViewModels
     {
         private string elementName;
         private string elementText;
+        List<string> categories;
+        private string selectedCategorie;
         private bool isToggleChecked;
         private StorageFile selectedPicture;
         private StorageFile selectedAudio;
+        private MediaSource audioSource;
         private string selectedPictureName;
         private BitmapImage image = new BitmapImage();
-        private MediaElement mediaPlayer = new MediaElement();
         private string[] authorizedPictureType = { "jpeg", "png", "jpg" };
         private string[] authorizedAudioType = { "mp4", "mp3" };
+
         public ElementFormViewModel()
         {
+
             this.elementName = "";
             this.elementText = "";
+            this.selectedCategorie = null;
             this.isToggleChecked = false;
             this.selectedPictureName= "example.png";
+            Repository.CreateCategories();
+            GetCategoriesAsyncc();
 
+        }
+
+        private async void GetCategoriesAsyncc()
+        {
+            Categories = await Repository.GetCategoriesAsync();
+            System.Diagnostics.Debug.WriteLine("categories", Categories);
+
+        }
+
+        public List<string> Categories
+
+        {
+            get => categories;
+            set
+            {
+                if (value != categories)
+                {
+                    categories = value;
+                    OnPropertyChanged("Categories");
+
+                }
+            }
         }
 
         public string ElementName
@@ -65,6 +97,21 @@ namespace humanlab.ViewModels
             }
         }
 
+        public MediaSource AudioSource
+        {
+            get => audioSource;
+            set
+            {
+                if (value != audioSource)
+                {
+                    audioSource = value;
+                    OnPropertyChanged("AudioSource");
+
+                }
+            }
+        }
+
+
         public string ElementText
         {
             get => elementText;
@@ -78,23 +125,6 @@ namespace humanlab.ViewModels
                 }
             }
         }
-
-
-
-        public MediaElement MediaPlayer
-        {
-            get => mediaPlayer;
-            set
-            {
-                if (value != mediaPlayer)
-                {
-                    mediaPlayer = mediaPlayer;
-                    OnPropertyChanged("MediaPlayer");
-
-                }
-            }
-        }
-
 
 
 
@@ -166,17 +196,45 @@ namespace humanlab.ViewModels
             if (file != null)
             {
                 SelectedAudio = file;
-                IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
-                MediaPlayer.SetSource(stream, file.ContentType);
+                LoadMediaPlayer();    
+
             }
 
         }
 
-        public async void LoadMediaPlayer(object sender, RoutedEventArgs e)
+        public async void LoadMediaPlayer()
         {
-            MediaElement mediaPlayer = sender as MediaElement;
-            IRandomAccessStream stream = await SelectedAudio.OpenAsync(FileAccessMode.Read);
-            mediaPlayer.SetSource(stream, SelectedAudio.ContentType);
+            MediaElement mediaElement = new MediaElement();
+   
+
+                IRandomAccessStream stream = await SelectedAudio.OpenAsync(FileAccessMode.Read);
+                mediaElement.SetSource(stream, SelectedAudio.ContentType);
+                AudioSource = MediaSource.CreateFromStream(stream, SelectedAudio.ContentType);
+                
+                
+        }
+
+        public string SelectedCategorie
+        {
+            get => selectedCategorie;
+            set
+            {
+                if (value != selectedCategorie)
+                {
+                    selectedCategorie = value;
+                    OnPropertyChanged("SelectedPicture");
+
+                }
+            }
+        }
+        public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            string selected = comboBox.SelectedItem.ToString();
+            if (selected != null && SelectedCategorie != selected)
+            {
+                SelectedCategorie = selected;
+            }
         }
 
         public StorageFile SelectedPicture

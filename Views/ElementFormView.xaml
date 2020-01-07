@@ -6,6 +6,7 @@
     xmlns:controls="using:Windows.UI.Xaml.Controls.Maps"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Windows10version1803="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 6)"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -34,6 +35,17 @@
                              Width="400" 
                              HorizontalAlignment="Left"
                              Text="{x:Bind elementform.ElementName, Mode=OneWay}"/>
+                    
+                    <TextBlock Text="Catégorie" 
+                               Style="{StaticResource BaseTextBlockStyle}" 
+                               HorizontalAlignment="Left"
+                               Margin="100,28,10,25"/>
+                    
+                    <ComboBox Name="ComboxBox1" 
+                              ItemsSource="{x:Bind elementform.Categories}"
+                              Width="150" Margin="10,24,0,20"
+                              SelectedItem="{Binding SelectedCategorie}"
+                              SelectionChanged="{x:Bind elementform.ComboBox_SelectionChanged}"></ComboBox>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"  >
@@ -91,11 +103,11 @@
                                     Foreground="White"
                                     Click="{x:Bind elementform.ChooseAudio}"/>
                         </StackPanel>
-                        <MediaElement x:Name="mediaPlayer" 
-                                      Source="{Binding elementform.LoadMediaPlayer}" 
+                        <MediaPlayerElement x:Name="mediaPlayer" 
+                                      Source="{x:Bind elementform.AudioSource}" 
                                       Width="400" 
-                                      AutoPlay="False"
-                                      AreTransportControlsEnabled="True" />
+                                      AutoPlay="True"
+                                      AreTransportControlsEnabled="True"/>
 
 
                     </StackPanel>

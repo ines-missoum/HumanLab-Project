@@ -1,4 +1,5 @@
 ﻿using humanlab.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,21 @@ namespace humanlab.DAL
             }
         }
 
+        public async static Task<List<string>> GetCategoriesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Categories.Select(c => c.CategoryName.ToString()).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
         internal static Category GetCategoryByName(string name)
         {
             using (var db = new ApplicationDbContext())
@@ -54,5 +70,7 @@ namespace humanlab.DAL
                         select p).FirstOrDefault();
             }
         }
+
+
     }
 }
