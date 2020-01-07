@@ -29,7 +29,6 @@ namespace humanlab.ViewModels
         private StorageFile selectedPicture;
         private StorageFile selectedAudio;
         private MediaSource audioSource;
-        private string selectedPictureName;
         private BitmapImage image = new BitmapImage();
         private string[] authorizedPictureType = { "jpeg", "png", "jpg" };
         private string[] authorizedAudioType = { "mp4", "mp3" };
@@ -41,7 +40,6 @@ namespace humanlab.ViewModels
             this.elementText = "";
             this.selectedCategorie = null;
             this.isToggleChecked = false;
-            this.selectedPictureName= "example.png";
             Repository.CreateCategories();
             GetCategoriesAsyncc();
 
@@ -172,7 +170,6 @@ namespace humanlab.ViewModels
             if (file != null)
             {
                 SelectedPicture= file;
-                SelectedPictureName= file.Name;
                 IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
 
                 await Image.SetSourceAsync(stream);
@@ -260,21 +257,6 @@ namespace humanlab.ViewModels
                 {
                     selectedAudio = value;
                     OnPropertyChanged("SelectedAudio");
-
-                }
-            }
-        }
-
-        public string SelectedPictureName
-        {
-            get => selectedPictureName;
-            set
-            {
-                if (value != selectedPictureName)
-                {
-                    selectedPictureName= value;
-                    System.Diagnostics.Debug.WriteLine("value" + this.selectedPictureName);
-                    OnPropertyChanged("SelectedPictureName");
 
                 }
             }
