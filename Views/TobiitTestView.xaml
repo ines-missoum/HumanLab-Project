@@ -25,5 +25,16 @@
                x:Name="TestImage" 
                Source="/../UserAssets/fleur.jpg"/>
         </Button>
+        <Canvas x:Name="gazePositionCanvas">
+            <Ellipse 
+                    x:Name="eyeGazePositionEllipse"
+                    Width="20" Height="20"
+                    Fill="Black" 
+                    Opacity="0.5" 
+                    Visibility="Visible"
+                RenderTransform="{Binding Transform}"
+                >
+            </Ellipse>
+        </Canvas>
     </Grid>
 </Page>

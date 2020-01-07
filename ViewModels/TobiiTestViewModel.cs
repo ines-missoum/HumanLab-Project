@@ -29,6 +29,7 @@ namespace humanlab.ViewModels
 
         public double FocusTime { get; set; }
         private string myColor;
+        private Transform transform;
         public DelegateCommand ClickImage { get; set; }
 
         public String MyColor
@@ -40,6 +41,19 @@ namespace humanlab.ViewModels
                 {
                     myColor = value;
                     OnPropertyChanged("MyColor");
+                }
+            }
+        }
+
+        public Transform Transform
+        {
+            get => transform;
+            set
+            {
+                if (value != transform)
+                {
+                    transform = value;
+                    OnPropertyChanged("Transform");
                 }
             }
         }
@@ -257,6 +271,25 @@ namespace humanlab.ViewModels
                 double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
                 System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.X);
                 System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.Y);
+
+                //20 = width height !!!! to change corresponding to xaml
+                 double ellipseLeft =
+                   gazePointX -
+                   (20 / 2.0f);
+               double ellipseTop =
+                   gazePointY -
+                   (20 / 2.0f) 
+                   /*- (int)Header.ActualHeight*/;
+
+               // Translate transform for moving gaze ellipse.
+               TranslateTransform translateEllipse = new TranslateTransform
+               {
+                   X = ellipseLeft,
+                   Y = ellipseTop
+               };
+
+               Transform = translateEllipse;
+
 
                 // The gaze point screen location.
                 Point gazePoint = new Point(gazePointX, gazePointY);
