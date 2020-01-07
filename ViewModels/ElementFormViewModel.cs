@@ -24,6 +24,7 @@ namespace humanlab.ViewModels
         private string elementName;
         private string elementText;
         List<string> categories;
+        List<string> elements;
         private string selectedCategorie;
         private bool isToggleChecked;
         private StorageFile selectedPicture;
@@ -41,15 +42,20 @@ namespace humanlab.ViewModels
             this.selectedCategorie = null;
             this.isToggleChecked = false;
             Repository.CreateCategories();
-            GetCategoriesAsyncc();
+            GetCategoriesAsync();
+            GetElementsAsync()
 
         }
 
-        private async void GetCategoriesAsyncc()
+        private async void GetCategoriesAsync()
         {
-            Categories = await Repository.GetCategoriesAsync();
-            System.Diagnostics.Debug.WriteLine("categories", Categories);
+            Categories = await Repository.GetCategoriesNamesAsync();
 
+        }
+
+        private async void GetElementsAsync()
+        {
+            Elements = await Repository.GetElementsNamesAsync();
         }
 
         public List<string> Categories
@@ -66,6 +72,23 @@ namespace humanlab.ViewModels
                 }
             }
         }
+
+
+        public List<string> Elements
+
+        {
+            get => elements;
+            set
+            {
+                if (value != elements)
+                {
+                    elements = value;
+                    OnPropertyChanged("Elements");
+
+                }
+            }
+        }
+
 
         public string ElementName
         {
@@ -194,21 +217,14 @@ namespace humanlab.ViewModels
             {
                 SelectedAudio = file;
                 LoadMediaPlayer();    
-
             }
 
         }
 
         public async void LoadMediaPlayer()
         {
-            MediaElement mediaElement = new MediaElement();
-   
-
                 IRandomAccessStream stream = await SelectedAudio.OpenAsync(FileAccessMode.Read);
-                mediaElement.SetSource(stream, SelectedAudio.ContentType);
-                AudioSource = MediaSource.CreateFromStream(stream, SelectedAudio.ContentType);
-                
-                
+                AudioSource = MediaSource.CreateFromStream(stream, SelectedAudio.ContentType);  
         }
 
         public string SelectedCategorie

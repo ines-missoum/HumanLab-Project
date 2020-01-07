@@ -46,7 +46,7 @@ namespace humanlab.DAL
             }
         }
 
-        public async static Task<List<string>> GetCategoriesAsync()
+        public async static Task<List<string>> GetCategoriesNamesAsync()
         {
             using (var db = new ApplicationDbContext())
             {
@@ -60,6 +60,22 @@ namespace humanlab.DAL
                 }
             }
         }
+
+        public async static Task<List<string>> GetElementsNamesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Elements.Select(e => e.ElementName.ToString()).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
 
         internal static Category GetCategoryByName(string name)
         {
