@@ -255,6 +255,8 @@ namespace humanlab.ViewModels
             {
                 double gazePointX = args.CurrentPoint.EyeGazePosition.Value.X;
                 double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
+                System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.X);
+                System.Diagnostics.Debug.WriteLine(args.CurrentPoint.EyeGazePosition.Value.Y);
 
                 // The gaze point screen location.
                 Point gazePoint = new Point(gazePointX, gazePointY);
@@ -266,7 +268,7 @@ namespace humanlab.ViewModels
                     DoesElementContainPoint(
                         gazePoint,
                         "TestImage",
-                        img);
+                        null);
 
                 // Use progress bar thickness for visual feedback.
                 if (hitRadialProgressBar)
