@@ -12,16 +12,18 @@
         <vm:TobiiTestViewModel x:Name="tobii"/>
     </Page.DataContext>
     
-    <Grid>
-        <TextBlock Text="{Binding FocusTime}"/>
-        <Image HorizontalAlignment="Center"
+    <Grid Background="{Binding MyColor}">
+        <TextBlock Text="{Binding FocusTime}" HorizontalAlignment="Center"/>
+        <Button Command="{Binding ClickImage}"
+                HorizontalAlignment="Center"
                Height="325" 
                Margin="0,300,0,0" 
                VerticalAlignment="Top" 
                Width="430"
-               PointerPressed="PointerPressed"
+                >
+            <Image 
                x:Name="TestImage" 
                Source="/../UserAssets/fleur.jpg"/>
-
+        </Button>
     </Grid>
 </Page>

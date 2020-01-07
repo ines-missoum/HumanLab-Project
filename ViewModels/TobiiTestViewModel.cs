@@ -8,6 +8,9 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Core;
+using Windows.UI.Xaml.Input;
+using Prism.Commands;
 
 namespace humanlab.ViewModels
 {
@@ -19,12 +22,15 @@ namespace humanlab.ViewModels
             StartGazeDeviceWatcher();
 
             FocusTime = 0;
+            ClickImage = new DelegateCommand(ClickOnImage, CanClickOnImage);
             System.Diagnostics.Debug.WriteLine("started");
 
         }
 
         public double FocusTime { get; set; }
         private string myColor;
+        public DelegateCommand ClickImage { get; set; }
+
         public String MyColor
         {
             get => myColor;
@@ -337,5 +343,19 @@ namespace humanlab.ViewModels
             }
         }
 
+        ///MOUSE
+        private void ClickOnImage()
+        {
+            if (MyColor!=null && MyColor.Equals("Red"))
+                MyColor = "Blue";
+            else
+                MyColor = "Red";
+
+            System.Diagnostics.Debug.WriteLine("MouseClick");
+        }
+        private bool CanClickOnImage()
+        {
+            return true;
+        }
     }
 }
