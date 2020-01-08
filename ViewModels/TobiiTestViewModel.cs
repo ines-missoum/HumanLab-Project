@@ -59,7 +59,7 @@ namespace humanlab.ViewModels
                 }
             }
         }
-       
+
         public double FocusTime
         {
             get => focusTime;

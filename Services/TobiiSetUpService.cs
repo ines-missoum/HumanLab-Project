@@ -52,7 +52,7 @@ namespace humanlab.Services
         /// <summary>
         /// Timer for gaze focus on RadialProgressBar.
         /// </summary>
-        DispatcherTimer TimerGaze { get; } = new DispatcherTimer(); 
+        DispatcherTimer TimerGaze { get; } = new DispatcherTimer();
 
         /// <summary>
         /// Tracker used to prevent gaze timer restarts.

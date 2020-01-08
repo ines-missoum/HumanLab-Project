@@ -11,31 +11,31 @@
     <Page.DataContext>
         <vm:TobiiTestViewModel x:Name="tobii"/>
     </Page.DataContext>
-    
+
     <Grid Background="{Binding MyColor}">
         <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center">
-        <ProgressBar x:Name="progressBar1" 
+            <ProgressBar x:Name="progressBar1" 
                      Value="{Binding FocusTime}" 
                      Maximum="{Binding MaxFocusTime}" 
                      Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
                      Margin="0,12" 
                      Height="20"/>
-        <Button Command="{Binding ClickImage}"
-                CommandParameter="{x:Bind clickButton.Content}"
-                x:Name="clickButton"
-               Height="325" 
-               VerticalAlignment="Top" 
-               Width="430"
+            <Button Command="{Binding ClickImage}"
+                     CommandParameter="{x:Bind clickButton.Content}"
+                     x:Name="clickButton"
+                     Height="325" 
+                     VerticalAlignment="Top" 
+                     Width="430"                    
                 >
                 <Button.Content>
-                <Image x:Name="TestImage" Stretch="Fill">
-                 <Image.Source>
-                    <BitmapImage 
+                    <Image x:Name="TestImage" Stretch="Fill">
+                        <Image.Source>
+                            <BitmapImage 
                         UriSource="/../UserAssets/ballon.gif"
                         AutoPlay="False" 
                         />
-                    </Image.Source>
-                </Image>
+                        </Image.Source>
+                    </Image>
                 </Button.Content>
             </Button>
         </StackPanel>
