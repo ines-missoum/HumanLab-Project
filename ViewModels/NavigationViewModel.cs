@@ -81,11 +81,12 @@ namespace humanlab.ViewModels
                         case "Toutes les grilles":
                             break;
                         case "Nouvelle grille":
+                            this.ContentFrame = typeof(GridFormView);
                             break;
                         case "Tous les éléments":
                             break;
                         case "Nouvel élément":
-                            this.ContentFrame = typeof(CreateElementView);
+                            this.ContentFrame = typeof(ElementFormView);
                             break;
                     }
                 }
