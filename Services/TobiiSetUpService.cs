@@ -133,7 +133,7 @@ namespace humanlab.Services
             // If eye-tracking device is ready, declare event handlers and start tracking.
             if (IsSupportedDevice(gazeDevice))
             {
-                TimerGaze.Interval = new TimeSpan(0, 0, 0, 0, 20);
+                TimerGaze.Interval = new TimeSpan(0, 0, 0, 0, 20); //20ms
                 TimerGaze.Tick += this.TickHandler;
 
                 // This must be called from the UI thread.

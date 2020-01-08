@@ -23,15 +23,28 @@ namespace humanlab.ViewModels
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
             TobiiSetUpService.StartGazeDeviceWatcher();
             FocusTime = 0;
+            MaxFocusTime = 5; //en sec
             ClickImage = new DelegateCommand(ClickOnImage, CanClickOnImage);
         }
 
-        public double focusTime;
+        private double maxFocusTime;
+        private double focusTime;
         private string myColor;
         private Transform transform;
         public DelegateCommand ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
 
+        public double MaxFocusTime
+        {
+            get => maxFocusTime;
+            set
+            {
+                if (value != maxFocusTime)
+                {
+                    maxFocusTime = value;
+                }
+            }
+        }
         public double FocusTime
         {
             get => focusTime;
@@ -106,8 +119,9 @@ namespace humanlab.ViewModels
                 double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
 
                 //20 = width height !!!! to change corresponding to xaml
+                //32 = taille de la progress bar (margin comprises)
                 double ellipseLeft = gazePointX - (20 / 2.0f);
-                double ellipseTop = gazePointY - (20 / 2.0f);
+                double ellipseTop = gazePointY - (20 / 2.0f) - 32; 
 
                 // Translate transform for moving gaze ellipse.
                 TranslateTransform translateEllipse = new TranslateTransform
@@ -123,6 +137,8 @@ namespace humanlab.ViewModels
 
                 // Basic hit test to determine if gaze point is on progress bar.
                 bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint,"TestImage",null);
+                if (!hitRadialProgressBar)
+                    this.FocusTime = 0;
 
                 // Mark the event handled.
                 args.Handled = true;
@@ -139,10 +155,10 @@ namespace humanlab.ViewModels
         private void TimerGaze_Tick(object sender, object e)
         {
             // Increment progress bar.
-            FocusTime += 1;
+            FocusTime += 0.02; //because the method is called each 20ms
 
             // If progress bar reaches maximum value, reset and relocate.
-            if (FocusTime == 100)
+            if (FocusTime >= MaxFocusTime)//nb de sec
             {
                 // Ensure the gaze timer restarts on new progress bar location.
                 TobiiSetUpService.StopTimer();

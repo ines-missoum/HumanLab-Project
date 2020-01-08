@@ -14,7 +14,11 @@
     
     <Grid Background="{Binding MyColor}">
         <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center">
-        <ProgressBar x:Name="progressBar1" Value="{Binding FocusTime}" Maximum="100" Margin="0,12" Height="20"/>
+        <ProgressBar x:Name="progressBar1" 
+                     Value="{Binding FocusTime}" 
+                     Maximum="{Binding MaxFocusTime}" 
+                     Margin="0,12" 
+                     Height="20"/>
         <Button Command="{Binding ClickImage}"
                Height="325" 
                VerticalAlignment="Top" 
