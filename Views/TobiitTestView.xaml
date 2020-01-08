@@ -13,11 +13,10 @@
     </Page.DataContext>
     
     <Grid Background="{Binding MyColor}">
-        <TextBlock Text="{Binding FocusTime}" HorizontalAlignment="Center"/>
+        <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center">
+        <ProgressBar x:Name="progressBar1" Value="{Binding FocusTime}" Maximum="100" Margin="0,12" Height="20"/>
         <Button Command="{Binding ClickImage}"
-                HorizontalAlignment="Center"
                Height="325" 
-               Margin="0,300,0,0" 
                VerticalAlignment="Top" 
                Width="430"
                 >
@@ -25,6 +24,7 @@
                x:Name="TestImage" 
                Source="/../UserAssets/fleur.jpg"/>
         </Button>
+        </StackPanel>
         <Canvas x:Name="gazePositionCanvas">
             <Ellipse 
                     x:Name="eyeGazePositionEllipse"

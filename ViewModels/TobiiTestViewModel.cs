@@ -26,12 +26,24 @@ namespace humanlab.ViewModels
             ClickImage = new DelegateCommand(ClickOnImage, CanClickOnImage);
         }
 
-        public double FocusTime { get; set; }
+        public double focusTime;
         private string myColor;
         private Transform transform;
         public DelegateCommand ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
 
+        public double FocusTime
+        {
+            get => focusTime;
+            set
+            {
+                if (value != focusTime)
+                {
+                    focusTime = value;
+                    OnPropertyChanged("FocusTime");
+                }
+            }
+        }
         public String MyColor
         {
             get => myColor;
