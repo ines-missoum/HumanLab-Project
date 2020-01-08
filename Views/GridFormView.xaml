@@ -9,6 +9,61 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <TextBlock  Grid.Row="0" Grid.Column="0"
+                    Text="Nom de la grille" 
+                    Style="{StaticResource BaseTextBlockStyle}" 
+                    HorizontalAlignment="Left"
+                    Margin="24,28,10,25"/>
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Margin="20,24,0,20" 
+                 MaxLength="32" 
+                 Width="400" 
+                 HorizontalAlignment="Left" />
+        <TextBlock  Grid.Row="1" Grid.Column="0"
+                    Text="Ajouter des éléments" 
+                    Style="{StaticResource BaseTextBlockStyle}" 
+                    HorizontalAlignment="Left"
+                    Margin="24,28,10,25"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="1"
+            Orientation="Horizontal" >
+            <Button Margin="20,24,0,20" Content="Nouveaux" Width="190"/>
+            <Button Margin="20,24,0,20" Content="Existants" Width="190"/>
+        </StackPanel>
+
+        <TextBlock  Grid.Row="2" Grid.Column="0"
+                    Text="Elements sélectionnés" 
+                    Style="{StaticResource BaseTextBlockStyle}" 
+                    HorizontalAlignment="Left"
+                    Margin="24,28,10,25"/>
+        <StackPanel Grid.Row="2" Grid.Column="1" Margin="20,24,0,20" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+        <ComboBox Header="Taille d'affichage des éléménts  " 
+                          Width="300">
+            <x:String>Grande</x:String>
+            <x:String>Moyenne</x:String>
+            <x:String>Petite</x:String>
+        </ComboBox>
+            <Button Margin="20,24,0,20" 
+                    Background="Transparent">
+                <Image Source="../Assets/info.png" Stretch="Fill"/>
+            </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button  Content="Organiser la grille" Width="190"/>
+                <Button Margin="20,24,0,20" Content="Valider" Width="190"/>
+            </StackPanel>
+        </StackPanel>
+        
     </Grid>
 </Page>
