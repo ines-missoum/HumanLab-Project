@@ -19,6 +19,7 @@ namespace humanlab.Services
             GazeExitedHandler = GazeExited;
             GazeEnteredHandler = GazeEntered;
             TickHandler = tick;
+            CurrentFocusImage = null;
         }
 
         //public delegate void TickDelegate(object sender, object args);
@@ -27,7 +28,7 @@ namespace humanlab.Services
         private TypedEventHandler<GazeInputSourcePreview, GazeEnteredPreviewEventArgs> GazeEnteredHandler { get; }
         private EventHandler<object> TickHandler { get; }
 
-
+        public UIElement CurrentFocusImage { get; set; }
         /// <summary>
         /// Reference to the user's eyes and head as detected
         /// by the eye-tracking device.
@@ -206,6 +207,7 @@ namespace humanlab.Services
                             // Start gaze timer if gaze over element.
                             StartTimer();
                         }
+                        CurrentFocusImage = feItem;
                         return true;
                     }
                 }
@@ -213,6 +215,7 @@ namespace humanlab.Services
 
             // Stop gaze timer and reset progress bar if gaze leaves element.
             StopTimer();
+            CurrentFocusImage = null;
             return false;
         }
         public void StopTimer()

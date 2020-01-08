@@ -12,6 +12,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Input;
 using Prism.Commands;
 using humanlab.Services;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace humanlab.ViewModels
 {
@@ -24,16 +25,29 @@ namespace humanlab.ViewModels
             TobiiSetUpService.StartGazeDeviceWatcher();
             FocusTime = 0;
             MaxFocusTime = 5; //en sec
-            ClickImage = new DelegateCommand(ClickOnImage, CanClickOnImage);
+            IsNotAnimated = true;
+            ClickImage = new DelegateCommand<object>(ClickOnImage, CanClickOnImage);
         }
 
         private double maxFocusTime;
         private double focusTime;
-        private string myColor;
+        private bool isNotAnimated;
         private Transform transform;
-        public DelegateCommand ClickImage { get; set; }
+        public DelegateCommand<object> ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
 
+        public bool IsNotAnimated
+        {
+            get => isNotAnimated;
+            set
+            {
+                if (value != isNotAnimated)
+                {
+                    isNotAnimated = value;
+                    OnPropertyChanged("IsNotAnimated");
+                }
+            }
+        }
         public double MaxFocusTime
         {
             get => maxFocusTime;
@@ -45,6 +59,7 @@ namespace humanlab.ViewModels
                 }
             }
         }
+       
         public double FocusTime
         {
             get => focusTime;
@@ -54,18 +69,6 @@ namespace humanlab.ViewModels
                 {
                     focusTime = value;
                     OnPropertyChanged("FocusTime");
-                }
-            }
-        }
-        public String MyColor
-        {
-            get => myColor;
-            set
-            {
-                if (value != myColor)
-                {
-                    myColor = value;
-                    OnPropertyChanged("MyColor");
                 }
             }
         }
@@ -121,7 +124,7 @@ namespace humanlab.ViewModels
                 //20 = width height !!!! to change corresponding to xaml
                 //32 = taille de la progress bar (margin comprises)
                 double ellipseLeft = gazePointX - (20 / 2.0f);
-                double ellipseTop = gazePointY - (20 / 2.0f) - 32; 
+                double ellipseTop = gazePointY - (20 / 2.0f) - 32;
 
                 // Translate transform for moving gaze ellipse.
                 TranslateTransform translateEllipse = new TranslateTransform
@@ -136,7 +139,7 @@ namespace humanlab.ViewModels
                 Point gazePoint = new Point(gazePointX, gazePointY);
 
                 // Basic hit test to determine if gaze point is on progress bar.
-                bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint,"TestImage",null);
+                bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, "TestImage", null);
                 if (!hitRadialProgressBar)
                     this.FocusTime = 0;
 
@@ -163,19 +166,38 @@ namespace humanlab.ViewModels
                 // Ensure the gaze timer restarts on new progress bar location.
                 TobiiSetUpService.StopTimer();
                 FocusTime = 0;
-                MyColor = "Red";
+                try
+                {
+                    Image img = TobiiSetUpService.CurrentFocusImage as Image;
+                    BitmapImage source = img.Source as BitmapImage;
+                    source.Play();
+                    IsNotAnimated = false;
+                }
+                catch { }
+
+
             }
         }
 
         ///MOUSE
-        private void ClickOnImage()
+        private void ClickOnImage(object args)
         {
-            if (MyColor != null && MyColor.Equals("Red"))
-                MyColor = "Blue";
+            Image img = args as Image;
+            BitmapImage source = img.Source as BitmapImage;
+
+            if (source.IsPlaying)
+            {
+                source.Stop();
+                IsNotAnimated = true;
+            }
             else
-                MyColor = "Red";
+            {
+                source.Play();
+                IsNotAnimated = false;
+            }
+
         }
-        private bool CanClickOnImage()
+        private bool CanClickOnImage(object args)
         {
             return true;
         }

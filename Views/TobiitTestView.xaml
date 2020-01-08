@@ -17,17 +17,27 @@
         <ProgressBar x:Name="progressBar1" 
                      Value="{Binding FocusTime}" 
                      Maximum="{Binding MaxFocusTime}" 
+                     Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
                      Margin="0,12" 
                      Height="20"/>
         <Button Command="{Binding ClickImage}"
+                CommandParameter="{x:Bind clickButton.Content}"
+                x:Name="clickButton"
                Height="325" 
                VerticalAlignment="Top" 
                Width="430"
                 >
-            <Image 
-               x:Name="TestImage" 
-               Source="/../UserAssets/fleur.jpg"/>
-        </Button>
+                <Button.Content>
+                <Image x:Name="TestImage" Stretch="Fill">
+                 <Image.Source>
+                    <BitmapImage 
+                        UriSource="/../UserAssets/ballon.gif"
+                        AutoPlay="False" 
+                        />
+                    </Image.Source>
+                </Image>
+                </Button.Content>
+            </Button>
         </StackPanel>
         <Canvas x:Name="gazePositionCanvas">
             <Ellipse 
