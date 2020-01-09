@@ -51,6 +51,10 @@ namespace humanlab
             modelBuilder.Entity<Element>()
                 .HasOne(p => p.Category)
                 .WithMany(b => b.Elements);
+           
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Elements)
+                .WithOne(e => e.Category);
         }
 
     }

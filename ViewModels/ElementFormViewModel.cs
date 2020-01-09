@@ -14,6 +14,8 @@ using Windows.Storage.Streams;
 using humanlab.DAL;
 using humanlab.Models;
 using Windows.Media.Core;
+using Windows.UI.Popups;
+using Windows.ApplicationModel;
 
 namespace humanlab.ViewModels
 {
@@ -21,51 +23,67 @@ namespace humanlab.ViewModels
 
     class ElementFormViewModel : BaseViewModel
     {
+
+        //*** Main Attributes ***//
         private string elementName;
-        private string elementText;
-        private bool isEmptyNameField;
-        private string nameFieldBorderBrush;
-        private string selectionBorderBrush;
-        private string imageBorderBrush;
-        private string audioBorderBrush;
-        List<string> categories;
-        List<string> elements;
-        private string selectedCategorie;
-        private bool isToggleChecked;
+        private string elementSpeach;
+        private string selectedCategory;
         private StorageFile selectedPicture;
         private StorageFile selectedAudio;
+        private bool isToggleChecked;
+
+
+        //*** Data ***//
+        List<string> categories;
+        List<string> elements;
+        Repository repository;
+
+        //*** Media ***//
         private MediaSource audioSource;
         private BitmapImage image = new BitmapImage();
         private string[] authorizedPictureType = { "jpeg", "png", "jpg" };
         private string[] authorizedAudioType = { "mp4", "mp3" };
 
+        //*** Form Validation Controls ***//
+        Dictionary<string, string> elementsBorderBrush;
+        private bool isNotAvailableName;
+
+
+        public DelegateCommand SaveElementCommand { get; set; }
         public ElementFormViewModel()
         {
-
             this.elementName = "";
-            this.elementText = "";
-            this.nameFieldBorderBrush = "Gray";
-            this.selectionBorderBrush = "Gray";
-            this.imageBorderBrush = "Gray";
-            this.audioBorderBrush = "Gray";
-            this.selectedCategorie = null;
+            this.elementSpeach = "";
+            this.selectedCategory = null;
             this.isToggleChecked = false;
-            Repository.CreateCategories();
+            this.isNotAvailableName = false;
+            ElementsBorderBrush = InitializeColorDictionnary();
+            SaveElementCommand = new DelegateCommand(SaveElementAsync, CanSaveElement);
+            this.repository = new Repository();
+
+            repository.CreateCategories();
             GetCategoriesAsync();
             GetElementsAsync();
 
         }
 
-        private async void GetCategoriesAsync()
-        {
-            Categories = await Repository.GetCategoriesNamesAsync();
+        private bool CanSaveElement() => true;
 
+
+        public Dictionary<string, string> InitializeColorDictionnary()
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            string[] xamlElements = { "ElementName", "ElementSpeach", "SelectedCategory", "SelectedPicture", "SelectedAudio" };
+            foreach (string element in xamlElements)
+            {
+                result.Add(element, "default");
+            }
+            return result;
         }
 
-        private async void GetElementsAsync()
-        {
-            Elements = await Repository.GetElementsNamesAsync();
-        }
+        private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
+        private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
+
 
         public List<string> Categories
 
@@ -109,31 +127,123 @@ namespace humanlab.ViewModels
                     elementName = value;
                     if (value.Equals(""))
                     {
-                        IsEmptyNameField = true;
-                        NameFieldBorderBrush = "Red";
-                        
+                        Dictionary_SetValue("ElementName", null);
                     }
                     else
                     {
-                        IsEmptyNameField = false;
-                        NameFieldBorderBrush = "Gray";
+                        IsNotAvailableName = CheckAvailability(value);
+                        Dictionary_SetValue("ElementName", value);
                     }
                     OnPropertyChanged("ElementName");
-                    OnPropertyChanged("NameFieldBorderBrush");
+                    OnPropertyChanged("ElementNameBorder");
+                    OnPropertyChanged("IsNotAvailableName");
 
                 }
             }
         }
 
-        public bool IsEmptyNameField
+        public string ElementSpeach
         {
-            get => isEmptyNameField;
+            get => elementSpeach;
             set
             {
-                if (value != isEmptyNameField)
+                if (value != elementSpeach)
                 {
-                    isEmptyNameField = value;
-                    OnPropertyChanged("IsEmptyNameField");
+                    elementSpeach = value;
+
+                    if (value.Equals(""))
+                    {
+                        Dictionary_SetValue("ElementSpeach", null);
+                    }
+                    else
+                    {
+                        Dictionary_SetValue("ElementSpeach", value);
+                    }
+
+                    OnPropertyChanged("ElementSpeach");
+                    OnPropertyChanged("ElementsBorderBrush");
+                    OnPropertyChanged("ElementSpeachBorder");
+                }
+            }
+        }
+
+        public string GetBorderColor(string uiName)
+        {
+            if (ElementsBorderBrush != null) {
+                if (ElementsBorderBrush[uiName] != null)
+                {
+                    OnPropertyChanged(uiName);
+                    return "Gray";
+
+                }
+                else {
+                    OnPropertyChanged(uiName);
+                    return "Red"; }
+
+            }
+            else return "Gray";
+        }
+
+        public string ElementNameBorder
+        {
+            get => GetBorderColor("ElementName");
+        }
+
+        public string ElementSpeachBorder
+        {
+            get => GetBorderColor("ElementSpeach");
+        }
+
+        public string SelectedCategoryBorder
+        {
+            get => GetBorderColor("SelectedCategory");
+        }
+
+        public string SelectedPictureBorder
+        {
+            get => GetBorderColor("SelectedPicture");
+        }
+
+        public string SelectedAudioBorder
+        {
+            get => GetBorderColor("SelectedAudio");
+        }
+
+        public Dictionary<string, string> ElementsBorderBrush { get; set; }
+
+        public void Dictionary_SetValue(string key, string value) {
+            ElementsBorderBrush[key] = value;
+            OnPropertyChanged("ElementsBorderBrush"); }
+
+        public void Dictionary_SetValuesToNull(List<string> keys)
+        {
+
+            if (keys.Capacity != 0) {
+                System.Diagnostics.Debug.WriteLine("capacity not nul");
+                foreach (string key in keys) {
+                    ElementsBorderBrush[key] = null;
+                    OnPropertyChanged(key + "Border");
+                }
+                OnPropertyChanged("ElementsBorderBrush");
+
+            }
+        }
+
+        public bool CheckAvailability(string name)
+        {
+            return Elements.Contains(name);
+
+        }
+
+        public bool IsNotAvailableName
+        {
+            get => isNotAvailableName;
+            set
+            {
+                if (value != isNotAvailableName)
+                {
+                    isNotAvailableName = value;
+                    OnPropertyChanged("IsNotAvailableName");
                 }
             }
         }
@@ -165,77 +275,8 @@ namespace humanlab.ViewModels
             }
         }
 
-        public string NameFieldBorderBrush
-        {
-            get => nameFieldBorderBrush;
-            set
-            {
-                if (value != nameFieldBorderBrush)
-                {
-                    nameFieldBorderBrush = value;
-                    OnPropertyChanged("NameFieldBorderBrush");
-                }
-            }
-        }
-
-        public string ElementText
-        {
-            get => elementText;
-            set
-            {
-                if (value != elementText)
-                {
-                    elementText = value;
-                    OnPropertyChanged("ElementText");
-
-                }
-            }
-        }
 
 
-
-        public string SelectionBorderBrush
-        {
-            get => selectionBorderBrush;
-            set
-            {
-                if (value != selectionBorderBrush)
-                {
-                    selectionBorderBrush = value;
-                    OnPropertyChanged("SelectionBorderBrush");
-
-                }
-            }
-        }
-
-
-        public string ImageBorderBrush
-        {
-            get => imageBorderBrush;
-            set
-            {
-                if (value != imageBorderBrush)
-                {
-                    imageBorderBrush = value;
-                    OnPropertyChanged("ImageBorderBrush");
-
-                }
-            }
-        }
-
-        public string AudioBorderBrush
-        {
-            get => audioBorderBrush;
-            set
-            {
-                if (value != audioBorderBrush)
-                {
-                    audioBorderBrush = value;
-                    OnPropertyChanged("ImageBorderBrush");
-
-                }
-            }
-        }
 
         public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
@@ -254,7 +295,7 @@ namespace humanlab.ViewModels
                 if (value != isToggleChecked)
                 {
                     isToggleChecked = value;
-                    
+
                     OnPropertyChanged("IsToggleChecked");
                     OnPropertyChanged("IsToggleNotChecked");
 
@@ -278,11 +319,17 @@ namespace humanlab.ViewModels
 
             if (file != null)
             {
-                SelectedPicture= file;
+                SelectedPicture = file;
                 IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
 
                 await Image.SetSourceAsync(stream);
+                Dictionary_SetValue("SelectedPicture", file.Name);
+                OnPropertyChanged("SelectedPictureBorder");
 
+            }
+            else {
+                Dictionary_SetValue("SelectedPicture", null);
+                OnPropertyChanged("SelectedPictureBorder");
             }
 
         }
@@ -302,58 +349,43 @@ namespace humanlab.ViewModels
             if (file != null)
             {
                 SelectedAudio = file;
-                LoadMediaPlayer();    
+                LoadMediaPlayer();
+                Dictionary_SetValue("SelectedAudio", file.Name);
+                OnPropertyChanged("SelectedAudioBorder");
             }
+
+            else {
+                System.Diagnostics.Debug.WriteLine("Je suis passé dans le else file null ");
+                Dictionary_SetValue("SelectedAudio", null); ; OnPropertyChanged("SelectedAudioBorder"); }
 
         }
 
         public async void LoadMediaPlayer()
         {
-                IRandomAccessStream stream = await SelectedAudio.OpenAsync(FileAccessMode.Read);
-                AudioSource = MediaSource.CreateFromStream(stream, SelectedAudio.ContentType);  
+            IRandomAccessStream stream = await SelectedAudio.OpenAsync(FileAccessMode.Read);
+            AudioSource = MediaSource.CreateFromStream(stream, SelectedAudio.ContentType);
         }
 
-        public string SelectedCategorie
+        public string SelectedCategory
         {
-            get => selectedCategorie;
+            get => selectedCategory;
             set
             {
-                if (value != selectedCategorie)
+                if (value != selectedCategory)
                 {
-                    selectedCategorie = value;
-                    OnPropertyChanged("SelectedPicture");
+                    selectedCategory = value;
+                    Dictionary_SetValue("SelectedCategory", value);
+                    OnPropertyChanged("SelectedCategory");
+                    OnPropertyChanged("SelectedCategoryBorder");
+
 
                 }
             }
         }
 
-        public void ComboBox_ChangeBorder()
-        {
-            if (ComboBox_SelectionEmpty())
-            {
-                SelectionBorderBrush = "Red";
-            }
-        }
-
-        public void Image_ChangeBorder()
-        {
-            if (Image_FileEmpty())
-            {
-                ImageBorderBrush = "Red";
-            }
-        }
-
-        public void Audio_ChangeBorder()
-        {
-            if (Audio_FileEmpty())
-            {
-                AudioBorderBrush = "Red";
-            }
-        }
-
         public bool ComboBox_SelectionEmpty()
         {
-             return selectedCategorie != null ? false : true;
+            return selectedCategory != null ? false : true;
         }
 
         public bool Image_FileEmpty()
@@ -370,9 +402,9 @@ namespace humanlab.ViewModels
         {
             ComboBox comboBox = sender as ComboBox;
             string selected = comboBox.SelectedItem.ToString();
-            if (selected != null && SelectedCategorie != selected)
+            if (selected != null && SelectedCategory != selected)
             {
-                SelectedCategorie = selected;
+                SelectedCategory = selected;
             }
         }
 
@@ -383,7 +415,7 @@ namespace humanlab.ViewModels
             {
                 if (value != selectedPicture)
                 {
-                    selectedPicture= value;
+                    selectedPicture = value;
                     OnPropertyChanged("SelectedPicture");
 
                 }
@@ -404,21 +436,97 @@ namespace humanlab.ViewModels
             }
         }
 
-        private async void SaveElementAsync()
+        public bool Check_FormValidation()
         {
+            string notMandatoryElement = "";
+            bool validation = true;
+            List<string> valuesToChange = new List<string>();
+
+            if (IsToggleChecked) { notMandatoryElement = "ElementSpeach"; }
+            else { notMandatoryElement = "SelectedAudio"; }
+
+            foreach (KeyValuePair<string, string> pair in ElementsBorderBrush)
+            {
+
+                if (!pair.Key.Equals(notMandatoryElement))
+                {
+                    if (pair.Value == null)
+                    {
+                        validation = false;
+                        OnPropertyChanged("ElementsBorderBrush");
+                    }
+                    else if (pair.Value.Equals("default")) {
+                        valuesToChange.Add(pair.Key);
+                        validation = false; }
+                    OnPropertyChanged("ElementsBorderBrush");
+                }
+            }
+
+            Dictionary_SetValuesToNull(valuesToChange);
+            return validation;
 
         }
-        /*
-                public string GetPictureName()
-                {
 
-                    if (this.selectedPicture != null)
-                    {
-                        return this.selectedPicture.Name;
-                    }
-                    else return "example.png";
-                }
-                */
+        public async void SaveFileInFolder(StorageFile file)
+        {
+            StorageFolder assets = await Package.Current.InstalledLocation.GetFolderAsync("Assets");
+            await file.CopyAsync(assets);
+        }
+
+        public Element GenerateModel()
+        {
+            string audioFileName = "";
+            string speachText = "";
+            
+            if (IsToggleChecked) {
+                audioFileName = SelectedAudio.Name;
+                SaveFileInFolder(SelectedAudio);
+            }
+            else {
+                speachText = ElementSpeach;
+                SaveFileInFolder(SelectedPicture);
+            }
+            Category category = repository.GetCategoryByName(SelectedCategory);
+
+            Element model = new Element
+            {
+                ElementName = ElementName,
+                SpeachText = speachText,
+                Image = SelectedPicture.Name,
+                Audio = audioFileName,
+                Category = category
+
+            };
+
+            return model;
+        }
+
+
+
+
+        private async void SaveElementAsync()
+        {
+            MessageDialog messageDialog;
+            if (Check_FormValidation())
+            {
+                //J'enregistre l'élément
+                Category category = repository.GetCategoryByName(SelectedCategory);
+                System.Diagnostics.Debug.WriteLine(" *****Categorie retournée plus bas " + category + category.CategoryName + category.CategoryId);
+                Element model = GenerateModel();
+                repository.SaveElementAsync(model, category);
+                messageDialog = new MessageDialog("Votre element " + ElementName +" a été sauvegardé avec succès.");
+
+                System.Diagnostics.Debug.WriteLine("check true");
+
+                // Je met un succes
+            }
+            else { // Je met une alert
+                System.Diagnostics.Debug.WriteLine("check false");
+
+                messageDialog = new MessageDialog("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
+            }
+            await messageDialog.ShowAsync();
+        }
     }
-    
 }
+ 

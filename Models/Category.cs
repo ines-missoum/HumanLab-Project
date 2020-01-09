@@ -16,6 +16,6 @@ namespace humanlab.Models
         [MaxLength(40)]
         public string CategoryName { get; set; }
 
-        public List<Element> Elements { get; set; }
+        public ICollection<Element> Elements { get; set; }
     }
 }

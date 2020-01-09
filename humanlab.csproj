@@ -128,6 +128,10 @@
     <Compile Include="Migrations\20191219145634_dbHumanlab.designer.cs">
       <DependentUpon>20191219145634_dbHumanlab.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20200108235527_Migr.cs" />
+    <Compile Include="Migrations\20200108235527_Migr.designer.cs">
+      <DependentUpon>20200108235527_Migr.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\ApplicationDbContextModelSnapshot.cs" />
     <Compile Include="Models\Activity.cs" />
     <Compile Include="Models\ActivityGrids.cs" />

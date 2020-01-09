@@ -11,7 +11,7 @@ namespace humanlab.DAL
     class Repository
     {
         //Add Initial Categories 
-        internal async static Task CreateCategories()
+        public async Task CreateCategories()
         {
             var categorie1 = new Category();
             categorie1.CategoryName = "Alimentation";
@@ -28,7 +28,7 @@ namespace humanlab.DAL
             }
 
             }
-        internal static void SaveElement(Element model)
+        public async void SaveElementAsync(Element model, Category category)
         {
             using (var db = new ApplicationDbContext())
             {
@@ -40,13 +40,24 @@ namespace humanlab.DAL
                 else
                 {
                     db.Add(model);
+                    db.SaveChanges();
+                    category.Elements.Add(model);
+                    System.Diagnostics.Debug.WriteLine("Elements");
+                    System.Diagnostics.Debug.WriteLine(category.Elements.First().ElementName);
+                    System.Diagnostics.Debug.WriteLine("Length");
+                    System.Diagnostics.Debug.WriteLine(category.Elements.Count());
+                    db.SaveChanges();
+
+
+
+
                 }
 
                 db.SaveChanges();
             }
         }
 
-        public async static Task<List<string>> GetCategoriesNamesAsync()
+        public async Task<List<string>> GetCategoriesNamesAsync()
         {
             using (var db = new ApplicationDbContext())
             {
@@ -61,7 +72,7 @@ namespace humanlab.DAL
             }
         }
 
-        public async static Task<List<string>> GetElementsNamesAsync()
+        public async Task<List<string>> GetElementsNamesAsync()
         {
             using (var db = new ApplicationDbContext())
             {
@@ -77,7 +88,7 @@ namespace humanlab.DAL
         }
 
 
-        internal static Category GetCategoryByName(string name)
+        public Category GetCategoryByName(string name)
         {
             using (var db = new ApplicationDbContext())
             {
