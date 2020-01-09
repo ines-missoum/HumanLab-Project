@@ -28,7 +28,7 @@ namespace humanlab.DAL
             }
 
             }
-        public async void SaveElementAsync(Element model, Category category)
+        public async void SaveElementAsync(Element model, string categoryName)
         {
             using (var db = new ApplicationDbContext())
             {
@@ -39,18 +39,8 @@ namespace humanlab.DAL
                 }
                 else
                 {
-                    db.Add(model);
-                    db.SaveChanges();
-                    category.Elements.Add(model);
-                    System.Diagnostics.Debug.WriteLine("Elements");
-                    System.Diagnostics.Debug.WriteLine(category.Elements.First().ElementName);
-                    System.Diagnostics.Debug.WriteLine("Length");
-                    System.Diagnostics.Debug.WriteLine(category.Elements.Count());
-                    db.SaveChanges();
-
-
-
-
+                    Category selectedCategory = GetCategoryByName(categoryName, db);
+                    selectedCategory.Elements.Add(model);
                 }
 
                 db.SaveChanges();
@@ -88,14 +78,13 @@ namespace humanlab.DAL
         }
 
 
-        public Category GetCategoryByName(string name)
+        public Category GetCategoryByName(string name, ApplicationDbContext db)
         {
-            using (var db = new ApplicationDbContext())
-            {
-                return (from p in db.Categories
-                        where p.CategoryName.Equals(name)
-                        select p).FirstOrDefault();
-            }
+
+                return db.Categories.Include(c => c.Elements)
+                                    .Where(c => c.CategoryName.Equals(name))
+                                    .First();
+    
         }
 
 

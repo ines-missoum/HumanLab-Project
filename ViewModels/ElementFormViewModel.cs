@@ -480,13 +480,12 @@ namespace humanlab.ViewModels
             
             if (IsToggleChecked) {
                 audioFileName = SelectedAudio.Name;
-                SaveFileInFolder(SelectedAudio);
+               //SaveFileInFolder(SelectedAudio);
             }
             else {
                 speachText = ElementSpeach;
-                SaveFileInFolder(SelectedPicture);
+              //  SaveFileInFolder(SelectedPicture);
             }
-            Category category = repository.GetCategoryByName(SelectedCategory);
 
             Element model = new Element
             {
@@ -494,8 +493,6 @@ namespace humanlab.ViewModels
                 SpeachText = speachText,
                 Image = SelectedPicture.Name,
                 Audio = audioFileName,
-                Category = category
-
             };
 
             return model;
@@ -510,15 +507,12 @@ namespace humanlab.ViewModels
             if (Check_FormValidation())
             {
                 //J'enregistre l'élément
-                Category category = repository.GetCategoryByName(SelectedCategory);
-                System.Diagnostics.Debug.WriteLine(" *****Categorie retournée plus bas " + category + category.CategoryName + category.CategoryId);
                 Element model = GenerateModel();
-                repository.SaveElementAsync(model, category);
-                messageDialog = new MessageDialog("Votre element " + ElementName +" a été sauvegardé avec succès.");
-
-                System.Diagnostics.Debug.WriteLine("check true");
+                repository.SaveElementAsync(model, SelectedCategory);
 
                 // Je met un succes
+                messageDialog = new MessageDialog("Votre element " + ElementName + " a été sauvegardé avec succès.");
+
             }
             else { // Je met une alert
                 System.Diagnostics.Debug.WriteLine("check false");
