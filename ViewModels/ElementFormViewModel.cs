@@ -98,7 +98,6 @@ namespace humanlab.ViewModels
             }
         }
 
-
         public List<string> Elements
 
         {
@@ -217,7 +216,6 @@ namespace humanlab.ViewModels
         {
 
             if (keys.Capacity != 0) {
-                System.Diagnostics.Debug.WriteLine("capacity not nul");
                 foreach (string key in keys) {
                     ElementsBorderBrush[key] = null;
                     OnPropertyChanged(key + "Border");
@@ -392,8 +390,8 @@ namespace humanlab.ViewModels
             }
 
             else {
-                System.Diagnostics.Debug.WriteLine("Je suis passé dans le else file null ");
-                Dictionary_SetValue("SelectedAudio", null); ; OnPropertyChanged("SelectedAudioBorder"); }
+                Dictionary_SetValue("SelectedAudio", null); ; 
+                OnPropertyChanged("SelectedAudioBorder"); }
 
         }
 
@@ -452,7 +450,7 @@ namespace humanlab.ViewModels
             {
                 await file.CopyAsync(assets);
             }
-            catch { Debug.WriteLine("File already exits"); }
+            catch { Debug.WriteLine("File already saved in Assets folder"); }
             
         }
 
