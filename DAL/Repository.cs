@@ -47,6 +47,21 @@ namespace humanlab.DAL
             }
         }
 
+        public async Task<List<Element>> GetElementsAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Elements.ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
         public async Task<List<string>> GetCategoriesNamesAsync()
         {
             using (var db = new ApplicationDbContext())
@@ -76,6 +91,8 @@ namespace humanlab.DAL
                 }
             }
         }
+
+
 
 
         public Category GetCategoryByName(string name, ApplicationDbContext db)
