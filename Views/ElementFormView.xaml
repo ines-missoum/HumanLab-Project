@@ -20,7 +20,8 @@
             <TextBlock Text="Formulaire de création" 
                        Style="{StaticResource TitleTextBlockStyle}" 
                        Width="1422" 
-                       Margin = "10"/>
+                       Margin = "10"
+                       Foreground="Gray"/>
 
             <StackPanel  Margin="10,15,30,0" >
                 
@@ -67,7 +68,7 @@
                     <Button Height="auto"
                             Width="100" 
                             Margin="20,24,0,15" 
-                            Background="DeepSkyBlue"
+                            Background="{x:Bind elementform.DefaultColor}"
                             Content="Parcourir" 
                             Foreground="White"
                             Click="{x:Bind elementform.ChoosePicture}"/>
@@ -90,7 +91,7 @@
                           OnContent="Fichier son" 
                           Toggled="{x:Bind elementform.ToggleSwitch_Toggled}"/>
                     </StackPanel>
-                    <StackPanel Background="LightCyan" 
+                    <StackPanel Background="LightGray" 
                                 Width="450" 
                                 Height="180" 
                                 Margin="10,0,0,0"
@@ -102,18 +103,18 @@
                                  BorderBrush="{x:Bind elementform.ElementSpeachBorder,Mode=OneWay}"
                                  Text="{x:Bind elementform.ElementSpeach, Mode=TwoWay}"/>
                     </StackPanel>
-                    
-                    <StackPanel Background="LightCyan" 
+
+                    <StackPanel Background="LightGray" 
                                 Width="450" 
                                 Height="180"  
                                 Visibility="{x:Bind elementform.IsToggleChecked, Mode=OneWay}">
                         
                         <StackPanel Orientation="Horizontal" >
-                            <TextBlock Text="Fichier son associé" Margin="10" Style="{StaticResource BaseTextBlockStyle}" Height="28" />
+                            <TextBlock Text="Fichier son associé" Margin="10" Style="{StaticResource BaseTextBlockStyle}" Height="28" Foreground="Black" />
                             <Button Height="auto" 
                                     Width="100"  
                                     Margin="10,10,0,15" 
-                                    Background="DeepSkyBlue" 
+                                    Background="{x:Bind elementform.DefaultColor}"
                                     Content="Choisir"  
                                     Foreground="White"
                                     Click="{x:Bind elementform.ChooseAudio}"/>

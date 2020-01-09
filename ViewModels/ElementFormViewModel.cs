@@ -48,7 +48,7 @@ namespace humanlab.ViewModels
         //*** Form Validation Controls ***//
         private bool isNotAvailableName;
         public DelegateCommand SaveElementCommand { get; set; }
-
+        public string DefaultColor { get; set; }
 
         public ElementFormViewModel()
         {
@@ -59,6 +59,7 @@ namespace humanlab.ViewModels
             this.isNotAvailableName = false;
             ElementsBorderBrush = InitializeColorDictionnary();
             SaveElementCommand = new DelegateCommand(SaveElementAsync);
+            DefaultColor = ColorTheme;
             this.repository = new Repository();
 
             // Retrieve data from db
@@ -67,8 +68,6 @@ namespace humanlab.ViewModels
             GetElementsAsync();
 
         }
-
-
 
         private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
         private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
@@ -95,7 +94,6 @@ namespace humanlab.ViewModels
                 {
                     categories = value;
                     OnPropertyChanged("Categories");
-
                 }
             }
         }
@@ -111,7 +109,6 @@ namespace humanlab.ViewModels
                 {
                     elements = value;
                     OnPropertyChanged("Elements");
-
                 }
             }
         }
@@ -173,7 +170,8 @@ namespace humanlab.ViewModels
                 if (ElementsBorderBrush[uiName] != null)
                 {
                     OnPropertyChanged(uiName);
-                    return "Gray";
+                    if (uiName.Equals("SelectedAudio")) { return "LightGray"; }
+                    else return "Gray";
 
                 }
                 else {
@@ -275,18 +273,50 @@ namespace humanlab.ViewModels
             }
         }
 
-
-
-
-        public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        public StorageFile SelectedPicture
         {
-            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
-            if (toggleSwitch != null)
+            get => selectedPicture;
+            set
             {
-                IsToggleChecked = toggleSwitch.IsOn;
+                if (value != selectedPicture)
+                {
+                    selectedPicture = value;
+                    OnPropertyChanged("SelectedPicture");
+
+                }
             }
         }
 
+        public StorageFile SelectedAudio
+        {
+            get => selectedAudio;
+            set
+            {
+                if (value != selectedAudio)
+                {
+                    selectedAudio = value;
+                    OnPropertyChanged("SelectedAudio");
+
+                }
+            }
+        }
+
+        public string SelectedCategory
+        {
+            get => selectedCategory;
+            set
+            {
+                if (value != selectedCategory)
+                {
+                    selectedCategory = value;
+                    Dictionary_SetValue("SelectedCategory", value);
+                    OnPropertyChanged("SelectedCategory");
+                    OnPropertyChanged("SelectedCategoryBorder");
+
+
+                }
+            }
+        }
         public bool IsToggleChecked
         {
             get => isToggleChecked;
@@ -302,7 +332,14 @@ namespace humanlab.ViewModels
                 }
             }
         }
-
+        public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
+            if (toggleSwitch != null)
+            {
+                IsToggleChecked = toggleSwitch.IsOn;
+            }
+        }
         public bool IsToggleNotChecked => !IsToggleChecked;
 
         public async void ChoosePicture(object sender, RoutedEventArgs e)
@@ -366,37 +403,6 @@ namespace humanlab.ViewModels
             AudioSource = MediaSource.CreateFromStream(stream, SelectedAudio.ContentType);
         }
 
-        public string SelectedCategory
-        {
-            get => selectedCategory;
-            set
-            {
-                if (value != selectedCategory)
-                {
-                    selectedCategory = value;
-                    Dictionary_SetValue("SelectedCategory", value);
-                    OnPropertyChanged("SelectedCategory");
-                    OnPropertyChanged("SelectedCategoryBorder");
-
-
-                }
-            }
-        }
-
-        public bool ComboBox_SelectionEmpty()
-        {
-            return selectedCategory != null ? false : true;
-        }
-
-        public bool Image_FileEmpty()
-        {
-            return selectedPicture != null ? false : true;
-        }
-
-        public bool Audio_FileEmpty()
-        {
-            return selectedAudio != null ? false : true;
-        }
 
         public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -405,34 +411,6 @@ namespace humanlab.ViewModels
             if (selected != null && SelectedCategory != selected)
             {
                 SelectedCategory = selected;
-            }
-        }
-
-        public StorageFile SelectedPicture
-        {
-            get => selectedPicture;
-            set
-            {
-                if (value != selectedPicture)
-                {
-                    selectedPicture = value;
-                    OnPropertyChanged("SelectedPicture");
-
-                }
-            }
-        }
-
-        public StorageFile SelectedAudio
-        {
-            get => selectedAudio;
-            set
-            {
-                if (value != selectedAudio)
-                {
-                    selectedAudio = value;
-                    OnPropertyChanged("SelectedAudio");
-
-                }
             }
         }
 
@@ -474,7 +452,7 @@ namespace humanlab.ViewModels
             {
                 await file.CopyAsync(assets);
             }
-            catch { Debug.WriteLine("File does not exits"); }
+            catch { Debug.WriteLine("File already exits"); }
             
         }
 
@@ -503,25 +481,20 @@ namespace humanlab.ViewModels
             return model;
         }
 
-
-
-
         private async void SaveElementAsync()
         {
             MessageDialog messageDialog;
             if (Check_FormValidation())
             {
-                //J'enregistre l'élément
+                //Saving element in db
                 Element model = GenerateModel();
                 repository.SaveElementAsync(model, SelectedCategory);
 
-                // Je met un succes
+                // Success popup
                 messageDialog = new MessageDialog("Votre element " + ElementName + " a été sauvegardé avec succès.");
 
             }
             else { // Je met une alert
-                System.Diagnostics.Debug.WriteLine("check false");
-
                 messageDialog = new MessageDialog("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
             }
             await messageDialog.ShowAsync();
