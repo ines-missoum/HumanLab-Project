@@ -16,6 +16,7 @@ using humanlab.Models;
 using Windows.Media.Core;
 using Windows.UI.Popups;
 using Windows.ApplicationModel;
+using System.Diagnostics;
 
 namespace humanlab.ViewModels
 {
@@ -41,15 +42,14 @@ namespace humanlab.ViewModels
         //*** Media ***//
         private MediaSource audioSource;
         private BitmapImage image = new BitmapImage();
-        private string[] authorizedPictureType = { "jpeg", "png", "jpg" };
-        private string[] authorizedAudioType = { "mp4", "mp3" };
+        private string[] authorizedPictureType = { "jpeg", "png", "jpg","gif"};
+        private string[] authorizedAudioType = { "mp4", "mp3","wav"};
 
         //*** Form Validation Controls ***//
-        Dictionary<string, string> elementsBorderBrush;
         private bool isNotAvailableName;
-
-
         public DelegateCommand SaveElementCommand { get; set; }
+
+
         public ElementFormViewModel()
         {
             this.elementName = "";
@@ -58,17 +58,20 @@ namespace humanlab.ViewModels
             this.isToggleChecked = false;
             this.isNotAvailableName = false;
             ElementsBorderBrush = InitializeColorDictionnary();
-            SaveElementCommand = new DelegateCommand(SaveElementAsync, CanSaveElement);
+            SaveElementCommand = new DelegateCommand(SaveElementAsync);
             this.repository = new Repository();
 
+            // Retrieve data from db
             repository.CreateCategories();
             GetCategoriesAsync();
             GetElementsAsync();
 
         }
 
-        private bool CanSaveElement() => true;
 
+
+        private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
+        private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
 
         public Dictionary<string, string> InitializeColorDictionnary()
         {
@@ -80,9 +83,6 @@ namespace humanlab.ViewModels
             }
             return result;
         }
-
-        private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
-        private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
 
 
         public List<string> Categories
@@ -470,7 +470,12 @@ namespace humanlab.ViewModels
         public async void SaveFileInFolder(StorageFile file)
         {
             StorageFolder assets = await Package.Current.InstalledLocation.GetFolderAsync("Assets");
-            await file.CopyAsync(assets);
+            try
+            {
+                await file.CopyAsync(assets);
+            }
+            catch { Debug.WriteLine("File does not exits"); }
+            
         }
 
         public Element GenerateModel()
@@ -480,11 +485,11 @@ namespace humanlab.ViewModels
             
             if (IsToggleChecked) {
                 audioFileName = SelectedAudio.Name;
-               //SaveFileInFolder(SelectedAudio);
+               SaveFileInFolder(SelectedAudio);
             }
             else {
                 speachText = ElementSpeach;
-              //  SaveFileInFolder(SelectedPicture);
+                SaveFileInFolder(SelectedPicture);
             }
 
             Element model = new Element
