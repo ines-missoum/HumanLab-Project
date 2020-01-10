@@ -48,6 +48,7 @@ namespace humanlab.ViewModels
         //*** Form Validation Controls ***//
         private bool isNotAvailableName;
         public DelegateCommand SaveElementCommand { get; set; }
+        public DelegateCommand PlayVocalSynthesisCommand { get; set; }
         public string DefaultColor { get; set; }
 
         public ElementFormViewModel()
@@ -59,6 +60,7 @@ namespace humanlab.ViewModels
             this.isNotAvailableName = false;
             ElementsBorderBrush = InitializeColorDictionnary();
             SaveElementCommand = new DelegateCommand(SaveElementAsync);
+            PlayVocalSynthesisCommand = new DelegateCommand(PlayVocalSynthesis, CanPlayVocalSynthesis);
             DefaultColor = ColorTheme;
             this.repository = new Repository();
 
@@ -69,6 +71,10 @@ namespace humanlab.ViewModels
 
         }
 
+        bool CanPlayVocalSynthesis()
+        {
+            return !ElementSpeach.Equals("");
+        }
         private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
         private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
 
@@ -154,6 +160,7 @@ namespace humanlab.ViewModels
                     else
                     {
                         Dictionary_SetValue("ElementSpeach", value);
+                        PlayVocalSynthesisCommand.RaiseCanExecuteChanged();
                     }
 
                     OnPropertyChanged("ElementSpeach");
@@ -410,6 +417,15 @@ namespace humanlab.ViewModels
             {
                 SelectedCategory = selected;
             }
+        }
+
+        private async void PlayVocalSynthesis()
+        {
+            MediaElement mediaElement = new MediaElement();
+            var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+            Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
+            mediaElement.SetSource(stream, stream.ContentType);
+            mediaElement.Play();
         }
 
         public bool Check_FormValidation()

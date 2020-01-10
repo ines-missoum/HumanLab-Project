@@ -17,11 +17,6 @@
     <Grid>
 
         <StackPanel Orientation="Vertical" Margin="10,15,0,10" >
-            <TextBlock Text="Formulaire de création" 
-                       Style="{StaticResource TitleTextBlockStyle}" 
-                       Width="1422" 
-                       Margin = "10"
-                       Foreground="Gray"/>
 
             <StackPanel  Margin="10,15,30,0" >
                 
@@ -92,16 +87,22 @@
                           Toggled="{x:Bind elementform.ToggleSwitch_Toggled}"/>
                     </StackPanel>
                     <StackPanel Background="LightGray" 
-                                Width="450" 
+                                Width="470" 
                                 Height="180" 
                                 Margin="10,0,0,0"
-                                Visibility="{x:Bind elementform.IsToggleNotChecked, Mode=OneWay}" >
-
+                                Visibility="{x:Bind elementform.IsToggleNotChecked, Mode=OneWay}"
+                                >
+                        <StackPanel Orientation="Horizontal">
                         <TextBox Margin="10" Header="Texte à prononcer" 
                                  PlaceholderText="J'ai soif" 
-                                 Background="White" 
+                                 Background="White"
+                                 Width="400"
                                  BorderBrush="{x:Bind elementform.ElementSpeachBorder,Mode=OneWay}"
-                                 Text="{x:Bind elementform.ElementSpeach, Mode=TwoWay}"/>
+                                 Text="{x:Bind elementform.ElementSpeach, Mode=TwoWay}" />
+                            <Button Foreground="{x:Bind elementform.DefaultColor}" Margin="0,20,0,0" Command="{Binding PlayVocalSynthesisCommand}">
+                                <SymbolIcon Symbol="Play"/>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel Background="LightGray" 
@@ -137,7 +138,7 @@
 
 
             </StackPanel>
-            <Button Background="MediumSpringGreen" 
+            <Button Background="LimeGreen" 
                     Content="Enregistrer" 
                     Foreground="White" 
                     FontSize="23" 
