@@ -83,9 +83,10 @@ namespace humanlab.ViewModels
                         case "Nouvelle grille":
                             break;
                         case "Tous les éléments":
+                            this.ContentFrame = typeof(AllElementsView);
                             break;
                         case "Nouvel élément":
-                            this.ContentFrame = typeof(CreateElementView);
+                            this.ContentFrame = typeof(ElementFormView);
                             break;
                     }
                 }

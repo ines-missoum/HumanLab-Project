@@ -20,7 +20,8 @@ namespace humanlab.Models
         public string Audio { get; set; }
         public string SpeachText { get; set; }
 
-        public Category Category { get; }
+        
+        public Category Category { get; set; }
         public ICollection<Grid> Grids { get; } = new List<Grid>();
     }
 }
