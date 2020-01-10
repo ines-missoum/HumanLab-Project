@@ -12,6 +12,16 @@
         <vm:GridFormViewModel x:Name="grid"/>
     </Page.DataContext>
 
+    <Page.Resources>
+        <DataTemplate x:Key="ImageGalleryDataTemplate">
+            <Grid  >
+                <Image Source="../Assets/StoreLogo.png" Height="100" Width="100" Stretch="UniformToFill"/>
+                <StackPanel Margin="0,12">
+                    <TextBlock Text="test1" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -70,7 +80,7 @@
         </StackPanel>
 
         <!--Selection of existing elements -->
-        <Canvas Margin="5" Background="White" Grid.Row="0" Name="creationGrid"
+        <Grid Margin="5" Background="White" Grid.Row="0" Name="creationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
@@ -81,40 +91,21 @@
                     <AutoSuggestBox  Margin="24,0,0,0" QueryIcon="Find" PlaceholderText="Catégorie..." Header="Recherche par catégorie"/>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
-
-                    <GridView SelectionMode="Multiple" ItemsSource = "{x:Bind grid.SearchedElements}" MaxWidth="300" MaxHeight="300">
-                        
-                        <GridView.ItemTemplate>
-                            <DataTemplate x:Name="ImageGalleryDataTemplate">
-                                
-                                <Grid  >
-                                    
-                                    <Image Source="../Assets/StoreLogo.png" Height="100" Width="100" Stretch="UniformToFill"/>
-                                    <StackPanel Margin="0,12">
-                                        <TextBlock Text="test1" HorizontalAlignment="Center"/>
-                                    </StackPanel>
-                                  
-                                </Grid>
-                            
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-
+                <StackPanel Orientation="Vertical" Margin="0,24,0,20">
+                    <GridView SelectionMode="Multiple" ItemsSource = "{x:Bind grid.SearchedElements}" MaxHeight="300" 
+                              ItemTemplate="{StaticResource ImageGalleryDataTemplate}">
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <ItemsWrapGrid  Orientation="Horizontal"  ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                            ScrollViewer.VerticalScrollBarVisibility="Visible" />
+                                <ItemsWrapGrid  Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
-
                     </GridView>
-                    
                 </StackPanel>
 
                 <TextBlock Text="Eléments sélectionnés" Style="{StaticResource BaseTextBlockStyle}" />
                 <Button  Margin="0,24,0,20" Content="OK" Width="190"/>
             </StackPanel>
-        </Canvas>
+        </Grid>
 
         <!--Choose the organization of the elements-->
         <Canvas Margin="5" Background="White" Grid.Row="0" Name="organizationGrid"
