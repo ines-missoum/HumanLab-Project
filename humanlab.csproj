@@ -144,6 +144,8 @@
     <Compile Include="Views\GridFormView.xaml.cs">
       <DependentUpon>GridFormView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Views\GridViewChecked.cs" />
+    <Compile Include="Helpers\Models\ElementChecked.cs" />
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>

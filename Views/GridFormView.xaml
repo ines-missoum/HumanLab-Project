@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:humanlab.ViewModels"
+    xmlns:hv="using:humanlab.Helpers.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -14,14 +15,20 @@
 
     <Page.Resources>
         <DataTemplate x:Key="ImageGalleryDataTemplate">
-            <Grid  >
-                <Image Source="../Assets/StoreLogo.png" Height="100" Width="100" Stretch="UniformToFill"/>
-                <StackPanel Margin="0,12">
-                    <TextBlock Text="test1" HorizontalAlignment="Center"/>
-                </StackPanel>
-            </Grid>
+            <GridViewItem >
+                <Grid>
+                    <StackPanel Orientation="Vertical">
+                        <Image Source="../Assets/StoreLogo.png" Height="100" Width="100" Stretch="UniformToFill"/>
+                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </GridViewItem>
         </DataTemplate>
+        <ItemsPanelTemplate x:Key="ImageGalleryPanelTemplate">
+            <ItemsWrapGrid  Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
     </Page.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -91,18 +98,23 @@
                     <AutoSuggestBox  Margin="24,0,0,0" QueryIcon="Find" PlaceholderText="Catégorie..." Header="Recherche par catégorie"/>
                 </StackPanel>
 
-                <StackPanel Orientation="Vertical" Margin="0,24,0,20">
-                    <GridView SelectionMode="Multiple" ItemsSource = "{x:Bind grid.SearchedElements}" MaxHeight="300" 
-                              ItemTemplate="{StaticResource ImageGalleryDataTemplate}">
-                        <GridView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ItemsWrapGrid  Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </GridView.ItemsPanel>
-                    </GridView>
-                </StackPanel>
+                <hv:GridViewChecked SelectionMode="Multiple"  
+                                    ItemsSource="{Binding SearchedElements}" 
+                                    MaxHeight="300" 
+                                    SelectionChanged="{x:Bind grid.OnElementSelection}"
+                                    ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
+                                    ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
+                </hv:GridViewChecked>
+                
+                <TextBlock Text="Eléments sélectionnés" Style="{StaticResource TitleTextBlockStyle}" />
+                <hv:GridViewChecked SelectionMode="Multiple"  
+                                    ItemsSource="{Binding SelectedElements}" 
+                                    MaxHeight="300" 
+                                    SelectionChanged="{x:Bind grid.OnElementSelection}"
+                                    ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
+                                    ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
+                </hv:GridViewChecked>
 
-                <TextBlock Text="Eléments sélectionnés" Style="{StaticResource BaseTextBlockStyle}" />
                 <Button  Margin="0,24,0,20" Content="OK" Width="190"/>
             </StackPanel>
         </Grid>
