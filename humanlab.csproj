@@ -167,7 +167,9 @@
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="UserAssets\ballon.gif" />
+    <Content Include="UserAssets\chute.gif" />
     <Content Include="UserAssets\fleur.jpg" />
+    <Content Include="UserAssets\smiley.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

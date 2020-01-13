@@ -12,7 +12,7 @@
         <vm:TobiiTestViewModel x:Name="tobii"/>
     </Page.DataContext>
 
-    <Grid Background="{Binding MyColor}">
+    <Grid Background="{Binding MyColor}" x:Name="mainGrid" >
         <StackPanel  HorizontalAlignment="Center" VerticalAlignment="Center">
             <ProgressBar x:Name="progressBar1" 
                      Value="{Binding FocusTime}" 
@@ -37,6 +37,32 @@
                         </Image.Source>
                     </Image>
                 </Button.Content>
+                
+            </Button>
+            <ProgressBar 
+                     Value="{Binding FocusTime}" 
+                     Maximum="{Binding MaxFocusTime}" 
+                     Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
+                     Margin="0,12" 
+                     Height="20"/>
+            <Button Command="{Binding ClickImage}"
+                     CommandParameter="{x:Bind clickButton2.Content}"
+                     x:Name="clickButton2"
+                     Height="325" 
+                     VerticalAlignment="Top" 
+                     Width="430"                    
+                >
+                <Button.Content>
+                    <Image x:Name="Chute" Stretch="Fill">
+                        <Image.Source>
+                            <BitmapImage 
+                        UriSource="/../UserAssets/chute.gif"
+                        AutoPlay="False" 
+                        />
+                        </Image.Source>
+                    </Image>
+                </Button.Content>
+
             </Button>
         </StackPanel>
         <Canvas x:Name="gazePositionCanvas">

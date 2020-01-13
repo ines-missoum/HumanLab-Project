@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Windows.Devices.Input.Preview;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Controls;
 
 namespace humanlab.Services
 {
@@ -191,33 +193,40 @@ namespace humanlab.Services
         /// <param name="elementName">The progress bar name</param>
         /// <param name="uiElement">The progress bar UI element</param>
         /// <returns></returns>
-        public bool DoesElementContainPoint(Point gazePoint, string elementName, UIElement uiElement)
+        public bool DoesElementContainPoint(Point gazePoint, UIElement uiElement)
         {
             // Use entire visual tree of progress bar.
             IEnumerable<UIElement> elementStack = VisualTreeHelper.FindElementsInHostCoordinates(gazePoint, uiElement, true);
-            foreach (UIElement item in elementStack)
+            int i = 0;
+            bool found = false;
+
+            while (!found && i < elementStack.Count())
             {
-                //Cast to FrameworkElement and get element name.
-                if (item is FrameworkElement feItem)
+                if (elementStack.ElementAt(i) is Image feItem)
                 {
-                    if (feItem.Name.Equals(elementName))
-                    {
+               
                         if (!timerStarted)
                         {
                             // Start gaze timer if gaze over element.
                             StartTimer();
                         }
                         CurrentFocusImage = feItem;
-                        return true;
-                    }
+                        found=true;
+                    
                 }
+                    i++;
             }
 
-            // Stop gaze timer and reset progress bar if gaze leaves element.
-            StopTimer();
-            CurrentFocusImage = null;
-            return false;
+            if (!found)
+            {
+                // Stop gaze timer and reset progress bar if gaze leaves element.
+                StopTimer();
+                CurrentFocusImage = null;
+               
+            }
+            return found;
         }
+
         public void StopTimer()
         {
             TimerGaze.Stop();
