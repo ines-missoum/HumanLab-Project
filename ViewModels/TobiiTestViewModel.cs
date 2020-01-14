@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Input;
 using Prism.Commands;
 using humanlab.Services;
 using Windows.UI.Xaml.Media.Imaging;
+using humanlab.Helpers.Models;
+using System.Diagnostics;
 
 namespace humanlab.ViewModels
 {
@@ -23,28 +25,59 @@ namespace humanlab.ViewModels
         {
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
             TobiiSetUpService.StartGazeDeviceWatcher();
-            FocusTime = 0;
+            //FocusTime = 0;
             MaxFocusTime = 5; //en sec
-            IsNotAnimated = true;
+            //IsNotAnimated = true;
             ClickImage = new DelegateCommand<object>(ClickOnImage, CanClickOnImage);
+            Elements = new List<ElementOfActivity>();
+            Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime));
+            Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime));
         }
 
+        private List<ElementOfActivity> elements;
         private double maxFocusTime;
-        private double focusTime;
-        private bool isNotAnimated;
+        private double focusTime1;
+        private bool isNotAnimated1;
+        private double focusTime2;
+        private bool isNotAnimated2;
         private Transform transform;
         public DelegateCommand<object> ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
 
-        public bool IsNotAnimated
+        public List<ElementOfActivity> Elements
         {
-            get => isNotAnimated;
+            get => elements;
             set
             {
-                if (value != isNotAnimated)
+                if (value != elements)
                 {
-                    isNotAnimated = value;
-                    OnPropertyChanged("IsNotAnimated");
+                    elements = value;
+                    OnPropertyChanged("Elements");
+                }
+            }
+        }
+
+        public bool IsNotAnimated1
+        {
+            get => isNotAnimated1;
+            set
+            {
+                if (value != isNotAnimated1)
+                {
+                    isNotAnimated1 = value;
+                    OnPropertyChanged("IsNotAnimated1");
+                }
+            }
+        }
+        public bool IsNotAnimated2
+        {
+            get => isNotAnimated2;
+            set
+            {
+                if (value != isNotAnimated2)
+                {
+                    isNotAnimated2 = value;
+                    OnPropertyChanged("IsNotAnimated2");
                 }
             }
         }
@@ -60,19 +93,31 @@ namespace humanlab.ViewModels
             }
         }
 
-        public double FocusTime
+        public double FocusTime1
         {
-            get => focusTime;
+            get => focusTime1;
             set
             {
-                if (value != focusTime)
+                if (value != focusTime1)
                 {
-                    focusTime = value;
-                    OnPropertyChanged("FocusTime");
+                    focusTime1 = value;
+                    OnPropertyChanged("FocusTime1");
                 }
             }
         }
 
+        public double FocusTime2
+        {
+            get => focusTime2;
+            set
+            {
+                if (value != focusTime2)
+                {
+                    focusTime2 = value;
+                    OnPropertyChanged("FocusTime2");
+                }
+            }
+        }
         public Transform Transform
         {
             get => transform;
@@ -85,6 +130,8 @@ namespace humanlab.ViewModels
                 }
             }
         }
+
+
 
         /// <summary>
         /// GazeEntered handler.
@@ -139,9 +186,14 @@ namespace humanlab.ViewModels
                 Point gazePoint = new Point(gazePointX, gazePointY);
 
                 // Basic hit test to determine if gaze point is on progress bar.
-                bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, "TestImage", null);
-                if (!hitRadialProgressBar)
-                    this.FocusTime = 0;
+                Image img = TobiiSetUpService.CurrentFocusImage as Image;
+                bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
+                if (img != null & !hitRadialProgressBar)
+                {
+                    ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
+                    current.FocusTime = 0;
+                }
+
 
                 // Mark the event handled.
                 args.Handled = true;
@@ -157,43 +209,47 @@ namespace humanlab.ViewModels
         /// <param name="e">Event args for the gaze entered event</param>
         private void TimerGaze_Tick(object sender, object e)
         {
-            // Increment progress bar.
-            FocusTime += 0.02; //because the method is called each 20ms
-
-            // If progress bar reaches maximum value, reset and relocate.
-            if (FocusTime >= MaxFocusTime)//nb de sec
+            try
             {
-                // Ensure the gaze timer restarts on new progress bar location.
-                TobiiSetUpService.StopTimer();
-                FocusTime = 0;
-                try
+                Image img = TobiiSetUpService.CurrentFocusImage as Image;
+                ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
+                BitmapImage source = img.Source as BitmapImage;
+
+                // Increment progress bar.
+                current.FocusTime += 0.02; //because the method is called each 20ms
+
+                // If progress bar reaches maximum value, reset and relocate.
+                if (current.FocusTime >= MaxFocusTime)//nb de sec
                 {
-                    Image img = TobiiSetUpService.CurrentFocusImage as Image;
-                    BitmapImage source = img.Source as BitmapImage;
+                    // Ensure the gaze timer restarts on new progress bar location.
+                    TobiiSetUpService.StopTimer();
+                    current.FocusTime = 0;
+
+
                     source.Play();
-                    IsNotAnimated = false;
+                    current.IsNotAnimated = false;
                 }
-                catch { }
-
-
             }
+            catch { }
         }
 
         ///MOUSE
         private void ClickOnImage(object args)
         {
+            Debug.WriteLine("____click");
             Image img = args as Image;
+            ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
             BitmapImage source = img.Source as BitmapImage;
 
             if (source.IsPlaying)
             {
                 source.Stop();
-                IsNotAnimated = true;
+                current.IsNotAnimated = true;
             }
             else
             {
                 source.Play();
-                IsNotAnimated = false;
+                current.IsNotAnimated = false;
             }
 
         }

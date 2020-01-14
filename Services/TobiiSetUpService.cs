@@ -6,6 +6,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls;
+using System.Diagnostics;
 
 namespace humanlab.Services
 {
@@ -204,8 +205,7 @@ namespace humanlab.Services
             {
                 if (elementStack.ElementAt(i) is Image feItem)
                 {
-               
-                        if (!timerStarted)
+                    if (!timerStarted)
                         {
                             // Start gaze timer if gaze over element.
                             StartTimer();
