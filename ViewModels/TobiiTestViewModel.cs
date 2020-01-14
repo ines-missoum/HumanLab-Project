@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Devices.Input.Preview;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -15,6 +12,10 @@ using humanlab.Services;
 using Windows.UI.Xaml.Media.Imaging;
 using humanlab.Helpers.Models;
 using System.Diagnostics;
+using Windows.Media.Playback;
+using Windows.Media.Core;
+using System;
+using Windows.Storage;
 
 namespace humanlab.ViewModels
 {
@@ -30,8 +31,10 @@ namespace humanlab.ViewModels
             //IsNotAnimated = true;
             ClickImage = new DelegateCommand<object>(ClickOnImage, CanClickOnImage);
             Elements = new List<ElementOfActivity>();
-            Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage));
-            Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage));
+            Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage, "ça doit faire mal !", null));
+            Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage, null, "/../UserAssets/married-life.mp3"));
+            playingSound = null;
+            playingSpeech = null;
         }
 
         private List<ElementOfActivity> elements;
@@ -43,6 +46,9 @@ namespace humanlab.ViewModels
         private Transform transform;
         public DelegateCommand<object> ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
+
+        private MediaPlayer playingSound;
+        private MediaElement playingSpeech;
 
         public List<ElementOfActivity> Elements
         {
@@ -225,31 +231,65 @@ namespace humanlab.ViewModels
                     TobiiSetUpService.StopTimer();
                     current.FocusTime = 0;
 
-
-                    source.Play();
-                    current.IsNotAnimated = false;
+                    Play(source, current);
                 }
             }
             catch { }
         }
 
+        private async void Play(BitmapImage source, ElementOfActivity current)
+        {
+            source.Play();
+            current.IsNotAnimated = false;
+            if (current.SoundName != null)
+            {
+                playingSound = new MediaPlayer();
+                playingSound.Source = MediaSource.CreateFromUri(new Uri(current.SoundName));
+                playingSound.Play();
+            }
+            else
+            {
+                playingSpeech = new MediaElement();
+                var synt = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synt.SynthesizeTextToStreamAsync(current.SpeechText);
+                playingSpeech.SetSource(stream, stream.ContentType);
+                playingSpeech.Play();
+            }
+
+        }
+
+        private void Stop(BitmapImage source, ElementOfActivity current)
+        {
+            source.Stop();
+            current.IsNotAnimated = true;
+            if (current.SoundName != null)
+            {
+                playingSound.Pause();
+                playingSound.Source = null;
+                playingSound = null;
+            }
+            else
+            {
+                playingSpeech.Stop();
+                playingSpeech.Source = null;
+                playingSpeech = null;
+            }
+        }
+
         ///MOUSE
         private void ClickOnImage(object args)
         {
-            Debug.WriteLine("____click");
             Image img = args as Image;
             ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
             BitmapImage source = img.Source as BitmapImage;
 
             if (source.IsPlaying)
             {
-                source.Stop();
-                current.IsNotAnimated = true;
+                Stop(source, current);
             }
             else
             {
-                source.Play();
-                current.IsNotAnimated = false;
+                Play(source, current);
             }
 
         }

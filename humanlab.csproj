@@ -170,6 +170,7 @@
     <Content Include="UserAssets\ballon.gif" />
     <Content Include="UserAssets\chute.gif" />
     <Content Include="UserAssets\fleur.jpg" />
+    <Content Include="UserAssets\married-life.mp3" />
     <Content Include="UserAssets\smiley.jpg" />
   </ItemGroup>
   <ItemGroup>

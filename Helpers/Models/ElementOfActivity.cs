@@ -16,17 +16,24 @@ namespace humanlab.Helpers.Models
         private double focusTime;
         private bool isNotAnimated;
         public string Id { get; set; }
+        public string SoundName { get; set; }
+        public string SpeechText { get; set; }
         public double MaxFocusTime { get; set; }
-        public DelegateCommand<object>  ClickImage {get;set;}
+        public DelegateCommand<object> ClickImage { get; set; }
 
-    public ElementOfActivity(string id, string imageName, double focusTime, DelegateCommand<object> clickImage)
+        public ElementOfActivity(string id, string imageName, double focusTime, DelegateCommand<object> clickImage, string speechText, string soundName)
         {
             Id = id;
-            ImageName = "ms-appx:///"+imageName;
+            ImageName = "ms-appx:///" + imageName;
             FocusTime = 0;
             IsNotAnimated = true;
             MaxFocusTime = focusTime;
             ClickImage = clickImage;
+            SpeechText = speechText;
+            if (soundName != null)
+                SoundName = "ms-appx:///" + soundName;
+            else
+                SoundName = null;
 
         }
 
