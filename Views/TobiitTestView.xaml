@@ -25,8 +25,8 @@
                      Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
                      Margin="0,12" 
                      Height="20"/>
-                            <Button Command="{Binding ElementName=ClickImage, Path=DataContext}"
-                     CommandParameter="{Binding ElementName=clickButton.Content, Path=DataContext}"
+                            <Button Command="{Binding ClickImage}"
+                     CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
                      x:Name="clickButton"
                      Height="325" 
                      VerticalAlignment="Top" 
@@ -36,9 +36,9 @@
                                     <Image Tag="{x:Bind Id}" Stretch="Fill">
                                         <Image.Source>
                                             <BitmapImage 
-                        UriSource="{x:Bind ImageName}"
-                        AutoPlay="False" 
-                        />
+                                                UriSource="{x:Bind ImageName}"
+                                                AutoPlay="False" 
+                                            />
                                         </Image.Source>
                                     </Image>
                                 </Button.Content>

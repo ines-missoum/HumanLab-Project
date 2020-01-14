@@ -30,8 +30,8 @@ namespace humanlab.ViewModels
             //IsNotAnimated = true;
             ClickImage = new DelegateCommand<object>(ClickOnImage, CanClickOnImage);
             Elements = new List<ElementOfActivity>();
-            Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime));
-            Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime));
+            Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage));
+            Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage));
         }
 
         private List<ElementOfActivity> elements;

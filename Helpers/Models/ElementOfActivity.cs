@@ -1,4 +1,5 @@
 ﻿using humanlab.ViewModels;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,16 @@ namespace humanlab.Helpers.Models
         private bool isNotAnimated;
         public string Id { get; set; }
         public double MaxFocusTime { get; set; }
+        public DelegateCommand<object>  ClickImage {get;set;}
 
-    public ElementOfActivity(string id, string imageName, double focusTime)
+    public ElementOfActivity(string id, string imageName, double focusTime, DelegateCommand<object> clickImage)
         {
             Id = id;
             ImageName = "ms-appx:///"+imageName;
             FocusTime = 0;
             IsNotAnimated = true;
             MaxFocusTime = focusTime;
+            ClickImage = clickImage;
 
         }
 
