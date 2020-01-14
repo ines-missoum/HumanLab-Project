@@ -9,7 +9,7 @@ namespace humanlab.ViewModels
     /// </summary>
     public abstract class BaseViewModel : INotifyPropertyChanged
     {
-        protected String ColorTheme = Application.Current.Resources["SystemAccentColor"].ToString();
+        protected string ColorTheme = Application.Current.Resources["SystemAccentColor"].ToString();
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)

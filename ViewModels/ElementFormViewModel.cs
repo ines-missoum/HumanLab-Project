@@ -17,6 +17,7 @@ using Windows.Media.Core;
 using Windows.UI.Popups;
 using Windows.ApplicationModel;
 using System.Diagnostics;
+using Windows.Media.Playback;
 
 namespace humanlab.ViewModels
 {
@@ -421,11 +422,12 @@ namespace humanlab.ViewModels
 
         private async void PlayVocalSynthesis()
         {
-            MediaElement mediaElement = new MediaElement();
-            var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
-            Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
-            mediaElement.SetSource(stream, stream.ContentType);
-            mediaElement.Play();
+             MediaElement mediaElement = new MediaElement();
+             var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+             Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
+             mediaElement.SetSource(stream, stream.ContentType);
+             mediaElement.Play();
+
         }
 
         public bool Check_FormValidation()
