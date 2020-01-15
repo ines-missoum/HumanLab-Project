@@ -6,6 +6,7 @@
     xmlns:hv="using:humanlab.Helpers.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:m1="using:humanlab.Helpers.Models"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -14,12 +15,12 @@
     </Page.DataContext>
 
     <Page.Resources>
-        <DataTemplate x:Key="ImageGalleryDataTemplate">
+        <DataTemplate x:Key="ImageGalleryDataTemplate" x:DataType="m1:ElementChecked">
             <GridViewItem >
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <Image Source="../Assets/StoreLogo.png" Height="100" Width="100" Stretch="UniformToFill"/>
-                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </GridViewItem>
@@ -99,7 +100,7 @@
                 </StackPanel>
 
                 <hv:GridViewChecked SelectionMode="Multiple"  
-                                    ItemsSource="{Binding SearchedElements}" 
+                                    ItemsSource="{x:Bind grid.SearchedElements}"
                                     MaxHeight="300" 
                                     SelectionChanged="{x:Bind grid.OnElementSelection}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 

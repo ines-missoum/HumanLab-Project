@@ -1,4 +1,5 @@
-﻿using humanlab.ViewModels;
+﻿using humanlab.Models;
+using humanlab.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,12 +11,12 @@ namespace humanlab.Helpers.Models
 {
     public class ElementChecked
     {
-        public String Name { get; set; }
+        public Element Element { get; set; }
         public bool IsSelected { get; set; }
 
-        public ElementChecked(string name, bool isSelected)
+        public ElementChecked(Element element, bool isSelected)
         {
-            Name = name;
+            Element = element;
             IsSelected = isSelected;
         }
     }

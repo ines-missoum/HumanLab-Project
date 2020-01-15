@@ -1,4 +1,5 @@
 ﻿using humanlab.Helpers.Models;
+using humanlab.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,21 +12,35 @@ namespace humanlab.ViewModels
 {
     public class GridFormViewModel : BaseViewModel
     {
+
+        private List<ElementChecked> searchedElements;
+        private List<ElementChecked> selectedElements;
+        private List<ElementChecked> allElements;
+
         public GridFormViewModel()
         {
             SearchedElements = new List<ElementChecked>();
-            SearchedElements.Add(new ElementChecked("hello", false));
-            SearchedElements.Add(new ElementChecked("salut", false));
-            SearchedElements.Add(new ElementChecked("hola", true));
-            SearchedElements.Add(new ElementChecked("test", false));
+            SearchedElements.Add(new ElementChecked(new Element{ ElementName = "hello"}, false));
+            SearchedElements.Add(new ElementChecked(new Element { ElementName = "salut" }, false));
+            SearchedElements.Add(new ElementChecked(new Element { ElementName = "hola" }, true));
+            SearchedElements.Add(new ElementChecked(new Element { ElementName = "test" }, false));
 
             SelectedElements = SearchedElements.Where(e => (e.IsSelected == true)).ToList();
 
         }
 
-        private List<ElementChecked> searchedElements;
-        private List<ElementChecked> selectedElements;
-
+        public List<ElementChecked> AllElements
+        {
+            get => allElements;
+            set
+            {
+                if (value != allElements)
+                {
+                    allElements = value;
+                    OnPropertyChanged("AllElements");
+                }
+            }
+        }
         public List<ElementChecked> SearchedElements
         {
             get => searchedElements;
