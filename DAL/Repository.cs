@@ -1,4 +1,5 @@
 ﻿using humanlab.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace humanlab.DAL
     class Repository
     {
         //Add Initial Categories 
-        internal async static Task CreateCategories()
+        public async Task CreateCategories()
         {
             var categorie1 = new Category();
             categorie1.CategoryName = "Alimentation";
@@ -27,7 +28,7 @@ namespace humanlab.DAL
             }
 
             }
-        internal static void SaveElement(Element model)
+        public async void SaveElementAsync(Element model, string categoryName)
         {
             using (var db = new ApplicationDbContext())
             {
@@ -38,21 +39,71 @@ namespace humanlab.DAL
                 }
                 else
                 {
-                    db.Add(model);
+                    Category selectedCategory = GetCategoryByName(categoryName, db);
+                    selectedCategory.Elements.Add(model);
                 }
 
                 db.SaveChanges();
             }
         }
 
-        internal static Category GetCategoryByName(string name)
+        public async Task<List<Element>> GetElementsAsync()
         {
             using (var db = new ApplicationDbContext())
             {
-                return (from p in db.Categories
-                        where p.CategoryName.Equals(name)
-                        select p).FirstOrDefault();
+                try
+                {
+                    return await db.Elements.ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
             }
         }
+
+        public async Task<List<string>> GetCategoriesNamesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Categories.Select(c => c.CategoryName.ToString()).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<List<string>> GetElementsNamesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Elements.Select(e => e.ElementName.ToString()).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
+
+
+
+        public Category GetCategoryByName(string name, ApplicationDbContext db)
+        {
+
+                return db.Categories.Include(c => c.Elements)
+                                    .Where(c => c.CategoryName.Equals(name))
+                                    .First();
+    
+        }
+
+
     }
 }

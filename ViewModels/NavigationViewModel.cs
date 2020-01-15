@@ -84,6 +84,7 @@ namespace humanlab.ViewModels
                             this.ContentFrame = typeof(GridFormView);
                             break;
                         case "Tous les éléments":
+                            this.ContentFrame = typeof(AllElementsView);
                             break;
                         case "Nouvel élément":
                             this.ContentFrame = typeof(ElementFormView);

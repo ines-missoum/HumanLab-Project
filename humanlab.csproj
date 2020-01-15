@@ -128,6 +128,10 @@
     <Compile Include="Migrations\20191219145634_dbHumanlab.designer.cs">
       <DependentUpon>20191219145634_dbHumanlab.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20200108235527_Migr.cs" />
+    <Compile Include="Migrations\20200108235527_Migr.designer.cs">
+      <DependentUpon>20200108235527_Migr.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\ApplicationDbContextModelSnapshot.cs" />
     <Compile Include="Models\Activity.cs" />
     <Compile Include="Models\ActivityGrids.cs" />
@@ -137,10 +141,21 @@
     <Compile Include="Models\GridElements.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ParametersService.cs" />
+    <Compile Include="ViewModels\AllElementsViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\GridFormViewModel.cs" />
     <Compile Include="ViewModels\NavigationViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\ElementFormViewModel.cs" />
+    <Compile Include="Views\AllActivitiesView.xaml.cs">
+      <DependentUpon>AllActivitiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AllElementsView.xaml.cs">
+      <DependentUpon>AllElementsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ElementFormView.xaml.cs">
+      <DependentUpon>ElementFormView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GridFormView.xaml.cs">
       <DependentUpon>GridFormView.xaml</DependentUpon>
     </Compile>
@@ -175,9 +190,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\AllActivitiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GridFormView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AllElementsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ElementFormView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SettingsView.xaml">
       <SubType>Designer</SubType>
@@ -206,7 +233,9 @@
       <Version>4.3.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="UserAssets\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
