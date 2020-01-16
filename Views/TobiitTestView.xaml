@@ -14,11 +14,11 @@
     </Page.DataContext>
 
     <Grid >
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <ListView  ItemsSource="{x:Bind tobii.Elements}">
-                <ListView.ItemTemplate>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <GridView  ItemsSource="{x:Bind tobii.Elements}">
+                <GridView.ItemTemplate>
                     <DataTemplate x:DataType="m:ElementOfActivity">
-                        <StackPanel  VerticalAlignment="Center" Margin="50">
+                        <StackPanel  VerticalAlignment="Center" Margin="50" Height="430" Width="430">
                             <ProgressBar 
                      Value="{x:Bind FocusTime, Mode=TwoWay}" 
                      Maximum="{x:Bind MaxFocusTime}" 
@@ -29,7 +29,6 @@
                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
                      x:Name="clickButton"
                      Height="325" 
-                     VerticalAlignment="Top" 
                      Width="430"                    
                 >
                                 <Button.Content>
@@ -46,8 +45,8 @@
                             </Button>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </GridView.ItemTemplate>
+            </GridView>
 
         </StackPanel>
 
