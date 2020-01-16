@@ -14,6 +14,34 @@ namespace humanlab.ViewModels
     {
         public List<Item> items = new List<Item>();
         public List<Item> slitems = new List<Item>();
+        public Boolean isCallFromSC2 = false;
+        public Boolean isConsequence = false;
+        public Boolean IsCallFromSC2
+        {
+            get => isCallFromSC2;
+            set
+            {
+                if (value != isCallFromSC2)
+                {
+                    isCallFromSC2 = value;
+                    OnPropertyChanged("IsCallFromSC2");
+                }
+            }
+        }
+
+        public Boolean IsConsequence
+        {
+            get => isCallFromSC2;
+            set
+            {
+                if (value != isConsequence)
+                {
+                    isConsequence = value;
+                    OnPropertyChanged("IsConsequence");
+                }
+            }
+        }
+
         public List<Item> Items { 
             get => items;
             set
@@ -109,14 +137,37 @@ namespace humanlab.ViewModels
         public void GridView2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             List<Item> updatedList = new List<Item>(Slitems);
-            List<Item> allItemsList = new List<Item>(Items);
+            List<Item> allList = new List<Item>(Items);
+
 
             Debug.WriteLine(" \n *********** selection 2 changé");
 
             GridView gridview = sender as GridView;
+            Debug.WriteLine(" removed size:  "+ e.RemovedItems.Count());
+            Debug.WriteLine(" added size:  "+e.AddedItems.Count());
+            if(e.RemovedItems.Count() == 1)
+            {
+                if (Slitems.Count == 1 && IsConsequence) { }
+                else {
 
+                    IsCallFromSC2 = true;
+                    Debug.WriteLine(" Premier if : e.R==1 && Slitem.count !=1");
+                    Item removedItem = e.RemovedItems.Last() as Item;
+                    Debug.WriteLine(" removeditem:  " + removedItem.Text);
+                    updatedList.Remove(removedItem);
+                    IsConsequence = true;
+                    Slitems = updatedList;
+                    IsConsequence = false;
+                    allList.Remove(removedItem);
+                    Items = allList;
+                    allList.Add(removedItem);
+                    Items = allList;
+                    IsCallFromSC2 = false;
+                    Debug.WriteLine("\n On repasse FromSC2 à false");
+                }
+            }
+            Debug.WriteLine("\n");
             gridview.SelectAll();
-
         }
 
         public void GridView2_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -129,47 +180,44 @@ namespace humanlab.ViewModels
 
         public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine(" Je suis Dans le selectionChanged \n ");
+            Debug.WriteLine(" \n Je suis Dans le selectionChanged 1 ");
             // Peut etre selecteditem.remove(i)
-
+            Debug.WriteLine(" removed size:  " + e.RemovedItems.Count());
+            Debug.WriteLine(" added size:  " + e.AddedItems.Count());
+            Debug.WriteLine("isFromSC2"+ IsCallFromSC2);
             List<Item> updatedList = new List<Item>(Slitems);
+            GridView gridview = sender as GridView;
 
-            if (e.AddedItems.Count()>0)
+            if (e.RemovedItems.Count() == 1 && !IsCallFromSC2)
             {
-                Item addedItem = e.AddedItems.First() as Item;
-                updatedList.Add(addedItem);
+                Debug.WriteLine(" Premier if : e.R==1 && fromSc2=false");
+                Item removedItem = e.RemovedItems.First() as Item;
+                Debug.WriteLine(" removeditem:  " + removedItem.Text);
+                updatedList.Remove(removedItem);
+                Slitems = updatedList;
             }
             else
             {
-                Item removedItem = e.RemovedItems.First() as Item;
-                updatedList.Remove(removedItem);
-            }
-            Slitems = updatedList; 
- 
-            /*
-            GridView lv = sender as GridView;
-            Item orange = new Item() { Text = "Orange"};
-            Item strawberry= new Item() { Text = "Strawberry" };
-            lv.Items.Last();
-
- 
-            List<Item> l2 = new List<Item>(Items);
-            l2.Add(orange);
-     
-            Items = l2;
-            //Items.Add(m);
-            lv.SelectedItems.Add(lv.Items.First());
-            lv.SelectedIndex = 1;
-            foreach (Item item in e.RemovedItems)
-            {
-                item.IsSelected = false;
+                if (e.AddedItems.Count() == 1 && !IsCallFromSC2) {
+                    Debug.WriteLine(" Deuxieme if : e.A==1 ");
+                    Item addedItem = e.AddedItems.First() as Item;
+                    Debug.WriteLine(" addeditem:  " + addedItem.Text);
+                    updatedList.Add(addedItem);
+                    Slitems = updatedList;
+                }
+                else
+                {
+                    if (e.RemovedItems.Count() > 0)
+                    {
+                        Debug.WriteLine(" Troisieme if : e.R>0");
+                        foreach (Item item in e.RemovedItems)
+                        {
+                            gridview.SelectedItems.Add(item);
+                        }
+                    }
+                }
             }
 
-            foreach (Item item in e.AddedItems)
-            {
-                item.IsSelected = true;
-            }
-            */
         }
     }
 }
