@@ -36,7 +36,7 @@ namespace humanlab.ViewModels
             SelectedElements = new List<ElementChecked>();
             searching = false;
             //pop up closed at the beginning
-            isChooseElementsOppened = true;
+            isChooseElementsOppened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
 
         }

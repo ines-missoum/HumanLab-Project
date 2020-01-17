@@ -14,6 +14,7 @@
     </Page.DataContext>
 
     <Page.Resources>
+        
         <DataTemplate x:Key="ImageGalleryDataTemplate" x:DataType="m1:ElementChecked">
             <GridViewItem >
                 <Grid>
@@ -27,6 +28,16 @@
         <ItemsPanelTemplate x:Key="ImageGalleryPanelTemplate">
             <ItemsWrapGrid  Orientation="Horizontal"/>
         </ItemsPanelTemplate>
+
+        <DataTemplate x:Key="ListViewTemplate" x:DataType="m1:ElementChecked">
+            <ListViewItem >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image Source="../Assets/StoreLogo.png" Height="50" Width="50" Stretch="UniformToFill"/>
+                </StackPanel>
+            </ListViewItem>
+        </DataTemplate>
+
     </Page.Resources>
 
     <Grid>
@@ -67,9 +78,16 @@
                     Style="{StaticResource BaseTextBlockStyle}" 
                     HorizontalAlignment="Left"
                     Margin="24,28,10,25"/>
+
         <StackPanel Grid.Row="2" Grid.Column="1" Margin="20,24,0,20" Orientation="Vertical">
-            <StackPanel Orientation="Horizontal">
-                <ComboBox Header="Taille d'affichage des éléménts  " 
+            <StackPanel Orientation="Vertical">
+                <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
+                            MaxHeight="300"
+                            ItemTemplate="{StaticResource ListViewTemplate}">
+                            
+                </ListView>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox Header="Taille d'affichage des éléménts  " 
                           Width="300">
                     <x:String>Grande</x:String>
                     <x:String>Moyenne</x:String>
@@ -79,6 +97,7 @@
                     Background="Transparent">
                     <Image Source="../Assets/info.png" Stretch="Fill"/>
                 </Button>
+            </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Button  Content="Organiser la grille" Width="190"/>
@@ -110,7 +129,7 @@
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
-                
+
                 <TextBlock Text="Eléments sélectionnés" Style="{StaticResource TitleTextBlockStyle}" />
                 <GridView SelectionMode="Multiple" IsItemClickEnabled="False" 
                                     Loading="{x:Bind grid.GridView2_Loading}"
