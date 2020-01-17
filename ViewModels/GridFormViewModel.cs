@@ -1,10 +1,11 @@
-﻿using humanlab.Helpers.Models;
+﻿using humanlab.DAL;
+using humanlab.Helpers.Models;
 using humanlab.Models;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -13,30 +14,58 @@ namespace humanlab.ViewModels
 {
     public class GridFormViewModel : BaseViewModel
     {
-
+        /*public attributes*/
         private List<ElementChecked> searchedElements;
         private List<ElementChecked> selectedElements;
         private List<ElementChecked> allElements;
+        private bool isChooseElementsOppened;
+        public DelegateCommand ChoosePopUpVisibility { get; set; }
+
+        /*private attributes*/
         private bool searching;
         private bool selectionChangedFirstGridView;
         private GridView searchedGridView;
+        private Repository repository;
+
 
         public GridFormViewModel()
         {
-            AllElements = new List<ElementChecked>();
-            AllElements.Add(new ElementChecked(new Element { ElementName = "hello" }, false));
-            AllElements.Add(new ElementChecked(new Element { ElementName = "salut" }, false));
-            AllElements.Add(new ElementChecked(new Element { ElementName = "hola" }, true));
-            AllElements.Add(new ElementChecked(new Element { ElementName = "test" }, false));
-
+            repository = new Repository();
+            InitialiseAllElements();
             SearchedElements = new List<ElementChecked>(AllElements);
-
-            SelectedElements = SearchedElements.Where(e => (e.IsSelected == true)).ToList();
-
+            SelectedElements = new List<ElementChecked>();
             searching = false;
+            //pop up closed at the beginning
+            isChooseElementsOppened = true;
+            ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
 
         }
 
+        private void ChangeChoosePopUpVisibility()
+        {
+            IsChooseElementsOppened = !IsChooseElementsOppened;
+        }
+
+        private async void InitialiseAllElements()
+        {
+            var elements = await repository.GetElementsAsync();
+            AllElements = new List<ElementChecked>();
+            elements.ForEach(e => AllElements.Add(new ElementChecked(e, false)));
+        }
+
+
+        public bool IsChooseElementsOppened
+        {
+            get => isChooseElementsOppened;
+            set
+            {
+                if (value != isChooseElementsOppened)
+                {
+                    isChooseElementsOppened = value;
+                    OnPropertyChanged("IsChooseElementsOppened");
+                }
+            }
+        }
         public List<ElementChecked> AllElements
         {
             get => allElements;

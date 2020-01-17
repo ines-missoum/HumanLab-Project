@@ -59,7 +59,7 @@
         <StackPanel Grid.Row="1" Grid.Column="1"
             Orientation="Horizontal" >
             <Button Margin="20,24,0,20" Content="Nouveaux" Width="190"/>
-            <Button Margin="20,24,0,20" Content="Existants" Width="190"/>
+            <Button Margin="20,24,0,20" Content="Existants" Width="190" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
         </StackPanel>
 
         <TextBlock  Grid.Row="2" Grid.Column="0"
@@ -91,7 +91,7 @@
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
-               Visibility="Visible">
+               Visibility="{x:Bind grid.IsChooseElementsOppened, Mode=OneWay}">
             <StackPanel Orientation="Vertical" Margin="20,24,0,20">
                 <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
                     <AutoSuggestBox  QueryIcon="Find" 
@@ -122,7 +122,7 @@
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
 
-                <Button  Margin="0,24,0,20" Content="OK" Width="190"/>
+                <Button  Margin="0,24,0,20" Content="OK" Width="190" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
             </StackPanel>
         </Grid>
 

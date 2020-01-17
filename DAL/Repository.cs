@@ -53,7 +53,7 @@ namespace humanlab.DAL
             {
                 try
                 {
-                    return await db.Elements.Include(e => e.Category).ToListAsync();
+                    return await db.Elements.ToListAsync();
                 }
                 catch (Exception e)
                 {
