@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace humanlab.ViewModels
@@ -20,7 +21,7 @@ namespace humanlab.ViewModels
         public GridFormViewModel()
         {
             SearchedElements = new List<ElementChecked>();
-            SearchedElements.Add(new ElementChecked(new Element{ ElementName = "hello"}, false));
+            SearchedElements.Add(new ElementChecked(new Element { ElementName = "hello" }, false));
             SearchedElements.Add(new ElementChecked(new Element { ElementName = "salut" }, false));
             SearchedElements.Add(new ElementChecked(new Element { ElementName = "hola" }, true));
             SearchedElements.Add(new ElementChecked(new Element { ElementName = "test" }, false));
@@ -65,13 +66,32 @@ namespace humanlab.ViewModels
                 }
             }
         }
+
+        public void GridView1_Loading(FrameworkElement sender, object args)
+        {
+            GridView gridview1 = sender as GridView;
+            foreach (ElementChecked item in SearchedElements)
+            {
+                if (item.IsSelected)
+                {
+                    gridview1.SelectedItems.Add(item);
+                }
+            }
+        }
+
+        public void GridView2_Loading(FrameworkElement sender, object args)
+        {
+            GridView gridview2 = sender as GridView;
+            gridview2.SelectAll();
+        }
+
         public void OnElementSelection(object sender, SelectionChangedEventArgs e)
         {
-           
+
             GridView gv = sender as GridView;
             Debug.WriteLine("ok");
             Debug.WriteLine(gv.SelectedItem);
-            
+
             gv.SelectedItem = SearchedElements;
 
         }
