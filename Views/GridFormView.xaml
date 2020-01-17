@@ -100,19 +100,20 @@
 
                 <GridView SelectionMode="Multiple"  
                                     Loading="{x:Bind grid.GridView1_Loading}"
-                                    ItemsSource="{x:Bind grid.SearchedElements}"
+                                    ItemsSource="{x:Bind grid.SearchedElements, Mode=TwoWay}"
                                     MaxHeight="300" 
-                                    SelectionChanged="{x:Bind grid.OnElementSelection}"
+                                    SelectionChanged="{x:Bind grid.GridView1_SelectionChanged}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
                 
                 <TextBlock Text="Eléments sélectionnés" Style="{StaticResource TitleTextBlockStyle}" />
-                <GridView SelectionMode="Multiple"  
+                <GridView SelectionMode="Multiple" IsItemClickEnabled="False" 
                                     Loading="{x:Bind grid.GridView2_Loading}"
-                                    ItemsSource="{x:Bind grid.SelectedElements}" 
+                                    ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}" 
+                                    SizeChanged="{x:Bind grid.GridView2_SizeChanged}"
                                     MaxHeight="300" 
-                                    SelectionChanged="{x:Bind grid.OnElementSelection}"
+                                    SelectionChanged="{x:Bind grid.GridView2_SelectionChanged}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>

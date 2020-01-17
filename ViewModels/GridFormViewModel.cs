@@ -59,8 +59,10 @@ namespace humanlab.ViewModels
             get => selectedElements;
             set
             {
+                Debug.WriteLine("setter");
                 if (value != selectedElements)
                 {
+                    Debug.WriteLine("changed");
                     selectedElements = value;
                     OnPropertyChanged("SelectedElements");
                 }
@@ -79,21 +81,44 @@ namespace humanlab.ViewModels
             }
         }
 
+        public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Debug.WriteLine("enter");
+            List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
+
+            if (e.AddedItems.Count() > 0)
+            {
+                Debug.WriteLine("add");
+                ElementChecked addedItem = e.AddedItems.First() as ElementChecked;
+                if (!SelectedElements.Contains(addedItem))
+                    updatedList.Add(addedItem);
+            }
+            else
+            {
+                Debug.WriteLine("remove");
+                ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
+                updatedList.Remove(removedItem);
+            }
+            SelectedElements = updatedList;
+        }
+
         public void GridView2_Loading(FrameworkElement sender, object args)
         {
             GridView gridview2 = sender as GridView;
             gridview2.SelectAll();
         }
 
-        public void OnElementSelection(object sender, SelectionChangedEventArgs e)
+        public void GridView2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
-            GridView gv = sender as GridView;
-            Debug.WriteLine("ok");
-            Debug.WriteLine(gv.SelectedItem);
-
-            gv.SelectedItem = SearchedElements;
-
+            GridView gridview = sender as GridView;
+            gridview.SelectAll();
         }
+
+        public void GridView2_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            GridView gridview = sender as GridView;
+            gridview.SelectAll();
+        }
+
     }
 }
