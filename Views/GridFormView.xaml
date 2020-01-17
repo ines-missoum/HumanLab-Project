@@ -94,7 +94,11 @@
                Visibility="Visible">
             <StackPanel Orientation="Vertical" Margin="20,24,0,20">
                 <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
-                    <AutoSuggestBox  QueryIcon="Find" PlaceholderText="Nom..." Header="Recherche par nom"/>
+                    <AutoSuggestBox  QueryIcon="Find" 
+                                     PlaceholderText="Nom..." 
+                                     Header="Recherche par nom"
+                                     TextChanged="{x:Bind grid.AutoSuggestBox_TextChanged}"
+                                     />
                     <AutoSuggestBox  Margin="24,0,0,0" QueryIcon="Find" PlaceholderText="Catégorie..." Header="Recherche par catégorie"/>
                 </StackPanel>
 

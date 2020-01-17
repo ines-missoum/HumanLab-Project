@@ -17,19 +17,37 @@ namespace humanlab.ViewModels
         private List<ElementChecked> searchedElements;
         private List<ElementChecked> selectedElements;
         private List<ElementChecked> allElements;
+        private string searchedName;
+        private bool searching;
 
         public GridFormViewModel()
         {
-            SearchedElements = new List<ElementChecked>();
-            SearchedElements.Add(new ElementChecked(new Element { ElementName = "hello" }, false));
-            SearchedElements.Add(new ElementChecked(new Element { ElementName = "salut" }, false));
-            SearchedElements.Add(new ElementChecked(new Element { ElementName = "hola" }, true));
-            SearchedElements.Add(new ElementChecked(new Element { ElementName = "test" }, false));
+            AllElements = new List<ElementChecked>();
+            AllElements.Add(new ElementChecked(new Element { ElementName = "hello" }, false));
+            AllElements.Add(new ElementChecked(new Element { ElementName = "salut" }, false));
+            AllElements.Add(new ElementChecked(new Element { ElementName = "hola" }, true));
+            AllElements.Add(new ElementChecked(new Element { ElementName = "test" }, false));
+
+            SearchedElements = new List<ElementChecked>(AllElements);
 
             SelectedElements = SearchedElements.Where(e => (e.IsSelected == true)).ToList();
 
+            searching = false;
+
         }
 
+        public string SearchedName
+        {
+            get => searchedName;
+            set
+            {
+                if (value != searchedName)
+                {
+                    searchedName = value;
+                    OnPropertyChanged("SearchedName");
+                }
+            }
+        }
         public List<ElementChecked> AllElements
         {
             get => allElements;
@@ -59,10 +77,8 @@ namespace humanlab.ViewModels
             get => selectedElements;
             set
             {
-                Debug.WriteLine("setter");
                 if (value != selectedElements)
                 {
-                    Debug.WriteLine("changed");
                     selectedElements = value;
                     OnPropertyChanged("SelectedElements");
                 }
@@ -83,23 +99,39 @@ namespace humanlab.ViewModels
 
         public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine("enter");
-            List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
-
-            if (e.AddedItems.Count() > 0)
+            if (!searching)
             {
-                Debug.WriteLine("add");
-                ElementChecked addedItem = e.AddedItems.First() as ElementChecked;
-                if (!SelectedElements.Contains(addedItem))
-                    updatedList.Add(addedItem);
+                List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
+                Debug.WriteLine(e.AddedItems.Count() + " " + e.RemovedItems.Count());
+
+                if (e.AddedItems.Count() > 0)
+                {
+                    ElementChecked addedItem = e.AddedItems.First() as ElementChecked;
+                    if (!SelectedElements.Contains(addedItem))
+                    {
+                        updatedList.Add(addedItem);
+                        SelectedElements = updatedList;
+                    }
+
+                }
+                else
+                {
+                    if (e.RemovedItems.Count() > 0)
+                    {
+                        ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
+                        updatedList.Remove(removedItem);
+                        SelectedElements = updatedList;
+                    }
+
+                }
             }
             else
             {
-                Debug.WriteLine("remove");
-                ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
-                updatedList.Remove(removedItem);
+                GridView1_Loading(sender as FrameworkElement, null);
+
             }
-            SelectedElements = updatedList;
+            
+            
         }
 
         public void GridView2_Loading(FrameworkElement sender, object args)
@@ -110,6 +142,7 @@ namespace humanlab.ViewModels
 
         public void GridView2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Debug.WriteLine("GridView2_SelectionChanged");
             GridView gridview = sender as GridView;
             gridview.SelectAll();
         }
@@ -118,6 +151,15 @@ namespace humanlab.ViewModels
         {
             GridView gridview = sender as GridView;
             gridview.SelectAll();
+        }
+
+        public void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            searching = true;
+            string text = sender.Text;
+            List<ElementChecked> newSearchedNames = new List<ElementChecked>(AllElements);
+            SearchedElements = newSearchedNames.Where(e => e.Element.ElementName.Contains(text)).ToList();
+            searching = false;
         }
 
     }
