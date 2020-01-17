@@ -84,24 +84,10 @@
                 <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
                             MaxHeight="300"
                             ItemTemplate="{StaticResource ListViewTemplate}">
-                            
                 </ListView>
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox Header="Taille d'affichage des éléménts  " 
-                          Width="300">
-                    <x:String>Grande</x:String>
-                    <x:String>Moyenne</x:String>
-                    <x:String>Petite</x:String>
-                </ComboBox>
-                <Button Margin="20,24,0,20" 
-                    Background="Transparent">
-                    <Image Source="../Assets/info.png" Stretch="Fill"/>
-                </Button>
-            </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button  Content="Organiser la grille" Width="190"/>
-                <Button Margin="20,24,0,20" Content="Valider" Width="190"/>
+                <Button  Content="Suivant" Width="190"/>
             </StackPanel>
         </StackPanel>
 
@@ -110,7 +96,7 @@
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
-               Visibility="{x:Bind grid.IsChooseElementsOppened, Mode=OneWay}">
+               Visibility="{x:Bind grid.IsChooseElementsOpened, Mode=OneWay}">
             <StackPanel Orientation="Vertical" Margin="20,24,0,20">
                 <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
                     <AutoSuggestBox  QueryIcon="Find" 
@@ -146,12 +132,13 @@
         </Grid>
 
         <!--Choose the organization of the elements-->
-        <Canvas Margin="5" Background="White" Grid.Row="0" Name="organizationGrid"
+        <Grid Margin="5" Background="White" Grid.Row="0" Name="organizationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
                Visibility="Collapsed">
 
-        </Canvas>
+        </Grid>
+        
     </Grid>
 </Page>

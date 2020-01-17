@@ -18,7 +18,7 @@ namespace humanlab.ViewModels
         private List<ElementChecked> searchedElements;
         private List<ElementChecked> selectedElements;
         private List<ElementChecked> allElements;
-        private bool isChooseElementsOppened;
+        private bool isChooseElementsOpened;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
 
         /*private attributes*/
@@ -36,14 +36,14 @@ namespace humanlab.ViewModels
             SelectedElements = new List<ElementChecked>();
             searching = false;
             //pop up closed at the beginning
-            isChooseElementsOppened = false;
+            isChooseElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
 
         }
 
         private void ChangeChoosePopUpVisibility()
         {
-            IsChooseElementsOppened = !IsChooseElementsOppened;
+            IsChooseElementsOpened = !IsChooseElementsOpened;
         }
 
         private async void InitialiseAllElements()
@@ -54,14 +54,14 @@ namespace humanlab.ViewModels
         }
 
 
-        public bool IsChooseElementsOppened
+        public bool IsChooseElementsOpened
         {
-            get => isChooseElementsOppened;
+            get => isChooseElementsOpened;
             set
             {
-                if (value != isChooseElementsOppened)
+                if (value != isChooseElementsOpened)
                 {
-                    isChooseElementsOppened = value;
+                    isChooseElementsOpened = value;
                     OnPropertyChanged("IsChooseElementsOppened");
                 }
             }
