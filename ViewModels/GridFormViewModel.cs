@@ -17,8 +17,9 @@ namespace humanlab.ViewModels
         private List<ElementChecked> searchedElements;
         private List<ElementChecked> selectedElements;
         private List<ElementChecked> allElements;
-        private string searchedName;
         private bool searching;
+        private bool selectionChangedFirstGridView;
+        private GridView searchedGridView;
 
         public GridFormViewModel()
         {
@@ -36,18 +37,6 @@ namespace humanlab.ViewModels
 
         }
 
-        public string SearchedName
-        {
-            get => searchedName;
-            set
-            {
-                if (value != searchedName)
-                {
-                    searchedName = value;
-                    OnPropertyChanged("SearchedName");
-                }
-            }
-        }
         public List<ElementChecked> AllElements
         {
             get => allElements;
@@ -88,6 +77,7 @@ namespace humanlab.ViewModels
         public void GridView1_Loading(FrameworkElement sender, object args)
         {
             GridView gridview1 = sender as GridView;
+            searchedGridView = gridview1;
             foreach (ElementChecked item in SearchedElements)
             {
                 if (item.IsSelected)
@@ -99,6 +89,8 @@ namespace humanlab.ViewModels
 
         public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Debug.WriteLine("GridView1_SelectionChanged");
+            selectionChangedFirstGridView = true;
             if (!searching)
             {
                 List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
@@ -110,6 +102,7 @@ namespace humanlab.ViewModels
                     if (!SelectedElements.Contains(addedItem))
                     {
                         updatedList.Add(addedItem);
+                        addedItem.IsSelected = true;
                         SelectedElements = updatedList;
                     }
 
@@ -120,18 +113,13 @@ namespace humanlab.ViewModels
                     {
                         ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
                         updatedList.Remove(removedItem);
+                        removedItem.IsSelected = false;
                         SelectedElements = updatedList;
                     }
 
                 }
             }
-            else
-            {
-                GridView1_Loading(sender as FrameworkElement, null);
-
-            }
-            
-            
+            selectionChangedFirstGridView = false;
         }
 
         public void GridView2_Loading(FrameworkElement sender, object args)
@@ -142,8 +130,15 @@ namespace humanlab.ViewModels
 
         public void GridView2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine("GridView2_SelectionChanged");
             GridView gridview = sender as GridView;
+
+            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1)
+            {
+                ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
+                searchedGridView.SelectedItems.Remove(removedItem);
+            }
+
+
             gridview.SelectAll();
         }
 
@@ -159,6 +154,15 @@ namespace humanlab.ViewModels
             string text = sender.Text;
             List<ElementChecked> newSearchedNames = new List<ElementChecked>(AllElements);
             SearchedElements = newSearchedNames.Where(e => e.Element.ElementName.Contains(text)).ToList();
+
+            foreach (ElementChecked item in SearchedElements)
+            {
+                if (item.IsSelected)
+                {
+                    searchedGridView.SelectedItems.Add(item);
+                }
+            }
+
             searching = false;
         }
 
