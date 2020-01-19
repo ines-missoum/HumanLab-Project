@@ -33,7 +33,7 @@ namespace humanlab.ViewModels
         {
             repository = new Repository();
             InitialiseAllElements();
-            SearchedElements = new List<ElementChecked>(AllElements);
+            SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e=> e.Element.ElementName.Length));
             SelectedElements = new List<ElementChecked>();
             searching = false;
             //pop up closed at the beginning
@@ -131,7 +131,7 @@ namespace humanlab.ViewModels
                     {
                         updatedList.Add(addedItem);
                         addedItem.IsSelected = true;
-                        SelectedElements = updatedList;
+                        SelectedElements = updatedList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
                     }
 
                 }
@@ -142,7 +142,7 @@ namespace humanlab.ViewModels
                         ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
                         updatedList.Remove(removedItem);
                         removedItem.IsSelected = false;
-                        SelectedElements = updatedList;
+                        SelectedElements = updatedList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
                     }
 
                 }
@@ -181,7 +181,9 @@ namespace humanlab.ViewModels
             searching = true;
             string text = sender.Text;
             List<ElementChecked> newSearchedNames = new List<ElementChecked>(AllElements);
-            SearchedElements = newSearchedNames.Where(e => e.Element.ElementName.Contains(text)).ToList();
+            SearchedElements = newSearchedNames.Where(e => e.Element.ElementName.Contains(text))
+                                               .OrderByDescending(e => e.Element.ElementName.Length)
+                                               .ToList();
 
             foreach (ElementChecked item in SearchedElements)
             {
