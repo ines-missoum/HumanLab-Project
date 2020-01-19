@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:humanlab.ViewModels"
+    xmlns:h="using:humanlab.Helpers.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:m1="using:humanlab.Helpers.Models"
@@ -14,12 +15,12 @@
     </Page.DataContext>
 
     <Page.Resources>
-        
+        <!--gridView design-->
         <DataTemplate x:Key="ImageGalleryDataTemplate" x:DataType="m1:ElementChecked">
             <GridViewItem >
                 <Grid>
                     <StackPanel Orientation="Vertical">
-                        <Image Source="../Assets/StoreLogo.png" Height="100" Width="100" Stretch="UniformToFill"/>
+                        <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}" Height="100" Width="100" Stretch="Fill"/>
                         <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
@@ -29,15 +30,21 @@
             <ItemsWrapGrid  Orientation="Horizontal"/>
         </ItemsPanelTemplate>
 
+        <!--listView design-->
         <DataTemplate x:Key="ListViewTemplate" x:DataType="m1:ElementChecked">
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Image Source="../Assets/StoreLogo.png" Height="50" Width="50" Stretch="UniformToFill"/>
+                    <TextBlock Text="{x:Bind Element.ElementName}" Margin="0,0,12,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}" Height="60" Width="60" 
+                           Stretch="Fill"
+                           />
                 </StackPanel>
             </ListViewItem>
         </DataTemplate>
-
+        
+        <!--converter to retrieve image path-->
+        <h:ImageNameToImagePathConverter x:Key="ImageNameToImagePathConverter"></h:ImageNameToImagePathConverter>
+     
     </Page.Resources>
 
     <Grid>
@@ -87,7 +94,7 @@
                 </ListView>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button  Content="Suivant" Width="190"/>
+                <Button  Margin="0,12,0,0" Content="Suivant" Width="190"/>
             </StackPanel>
         </StackPanel>
 

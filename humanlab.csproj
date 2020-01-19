@@ -121,6 +121,7 @@
     </Compile>
     <Compile Include="DAL\ApplicationDbContext.cs" />
     <Compile Include="DAL\Repository.cs" />
+    <Compile Include="Helpers\Converters\ImageNameToImagePathConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
