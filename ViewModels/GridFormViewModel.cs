@@ -20,6 +20,7 @@ namespace humanlab.ViewModels
         private List<ElementChecked> allElements;
         private bool isChooseElementsOpened;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
+        public DelegateCommand<object> RemoveItemCommand { get; set; }
 
         /*private attributes*/
         private bool searching;
@@ -36,9 +37,9 @@ namespace humanlab.ViewModels
             SelectedElements = new List<ElementChecked>();
             searching = false;
             //pop up closed at the beginning
-            isChooseElementsOpened = true;
+            isChooseElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
-
+            RemoveItemCommand = new DelegateCommand<object>(removeItem_Click);
         }
 
         private void ChangeChoosePopUpVisibility()
@@ -118,12 +119,10 @@ namespace humanlab.ViewModels
 
         public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine("GridView1_SelectionChanged");
             selectionChangedFirstGridView = true;
             if (!searching)
             {
                 List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
-                Debug.WriteLine(e.AddedItems.Count() + " " + e.RemovedItems.Count());
 
                 if (e.AddedItems.Count() > 0)
                 {
@@ -193,6 +192,11 @@ namespace humanlab.ViewModels
             }
 
             searching = false;
+        }
+
+        void removeItem_Click(object args)
+        {
+            Debug.WriteLine("heyyyy");
         }
 
     }

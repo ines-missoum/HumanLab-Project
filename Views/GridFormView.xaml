@@ -21,7 +21,7 @@
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}" Height="100" Width="100" Stretch="Fill"/>
-                        <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Grid>
             </GridViewItem>
@@ -34,10 +34,14 @@
         <DataTemplate x:Key="ListViewTemplate" x:DataType="m1:ElementChecked">
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{x:Bind Element.ElementName}" Margin="0,0,12,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <Button Background="White" Foreground="Red"
+                            Command="{Binding}"
+                            CommandParameter="{Binding}">
+                        <SymbolIcon Symbol="Delete" />
+                    </Button>
                     <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}" Height="60" Width="60" 
-                           Stretch="Fill"
-                           />
+                           Stretch="Fill" Margin="4"/>
+                    <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </StackPanel>
             </ListViewItem>
         </DataTemplate>
@@ -90,6 +94,7 @@
             <StackPanel Orientation="Vertical">
                 <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
                             MaxHeight="300"
+                            x:Name="listView"
                             ItemTemplate="{StaticResource ListViewTemplate}">
                 </ListView>
             </StackPanel>
@@ -124,7 +129,7 @@
                 </GridView>
 
                 <TextBlock Text="Eléments sélectionnés" Style="{StaticResource TitleTextBlockStyle}" />
-                <GridView SelectionMode="Multiple" IsItemClickEnabled="False" 
+                <GridView SelectionMode="Multiple" 
                                     Loading="{x:Bind grid.GridView2_Loading}"
                                     ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}" 
                                     SizeChanged="{x:Bind grid.GridView2_SizeChanged}"
