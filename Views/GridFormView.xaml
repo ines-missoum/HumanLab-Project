@@ -34,11 +34,6 @@
         <DataTemplate x:Key="ListViewTemplate" x:DataType="m1:ElementChecked">
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
-                    <Button Background="White" Foreground="Red"
-                            Command="{Binding}"
-                            CommandParameter="{Binding}">
-                        <SymbolIcon Symbol="Delete" />
-                    </Button>
                     <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}" Height="60" Width="60" 
                            Stretch="Fill" Margin="4"/>
                     <TextBlock Text="{x:Bind Element.ElementName}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -59,7 +54,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock  Grid.Row="0" Grid.Column="0"
@@ -73,34 +67,22 @@
                  Width="400" 
                  HorizontalAlignment="Left" />
         <TextBlock  Grid.Row="1" Grid.Column="0"
-                    Text="Ajouter des éléments" 
+                    Text="Eléments" 
                     Style="{StaticResource BaseTextBlockStyle}" 
                     HorizontalAlignment="Left"
                     Margin="24,28,10,25"/>
 
-        <StackPanel Grid.Row="1" Grid.Column="1"
-            Orientation="Horizontal" >
-            <Button Margin="20,24,0,20" Content="Nouveaux" Width="190"/>
-            <Button Margin="20,24,0,20" Content="Existants" Width="190" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
-        </StackPanel>
-
-        <TextBlock  Grid.Row="2" Grid.Column="0"
-                    Text="Elements sélectionnés" 
-                    Style="{StaticResource BaseTextBlockStyle}" 
-                    HorizontalAlignment="Left"
-                    Margin="24,28,10,25"/>
-
-        <StackPanel Grid.Row="2" Grid.Column="1" Margin="20,24,0,20" Orientation="Vertical">
-            <StackPanel Orientation="Vertical">
-                <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="20,24,0,20" Orientation="Vertical">
+            <Button Margin="0,0,0,20" 
+                    Content="{x:Bind grid.ButtonText, Mode=TwoWay}" 
+                    Width="190" 
+                    Command="{x:Bind grid.ChoosePopUpVisibility}"/>
+            <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
                             MaxHeight="300"
                             x:Name="listView"
                             ItemTemplate="{StaticResource ListViewTemplate}">
-                </ListView>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button  Margin="0,12,0,0" Content="Suivant" Width="190"/>
-            </StackPanel>
+            </ListView>
+            <Button  Margin="0,12,0,0" Content="Suivant" Width="190"/>
         </StackPanel>
 
         <!--Selection of existing elements -->

@@ -1,5 +1,6 @@
 ﻿using humanlab.Models;
 using humanlab.ViewModels;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +20,7 @@ namespace humanlab.Helpers.Models
             Element = element;
             IsSelected = isSelected;
         }
+
     }
  
     

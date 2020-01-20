@@ -20,7 +20,7 @@ namespace humanlab.ViewModels
         private List<ElementChecked> allElements;
         private bool isChooseElementsOpened;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
-        public DelegateCommand<object> RemoveItemCommand { get; set; }
+        private string buttonText;
 
         /*private attributes*/
         private bool searching;
@@ -33,13 +33,13 @@ namespace humanlab.ViewModels
         {
             repository = new Repository();
             InitialiseAllElements();
-            SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e=> e.Element.ElementName.Length));
+            SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e => e.Element.ElementName.Length));
             SelectedElements = new List<ElementChecked>();
             searching = false;
             //pop up closed at the beginning
             isChooseElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
-            RemoveItemCommand = new DelegateCommand<object>(removeItem_Click);
+            ButtonText = "Choisir";
         }
 
         private void ChangeChoosePopUpVisibility()
@@ -54,6 +54,18 @@ namespace humanlab.ViewModels
             elements.ForEach(e => AllElements.Add(new ElementChecked(e, false)));
         }
 
+        public string ButtonText
+        {
+            get => buttonText;
+            set
+            {
+                if (value != buttonText)
+                {
+                    buttonText = value;
+                    OnPropertyChanged("ButtonText");
+                }
+            }
+        }
 
         public bool IsChooseElementsOpened
         {
@@ -64,6 +76,14 @@ namespace humanlab.ViewModels
                 {
                     isChooseElementsOpened = value;
                     OnPropertyChanged("IsChooseElementsOpened");
+                    if (SelectedElements.Count() > 0)
+                    {
+                        ButtonText = "Modifier";
+                    }
+                    else
+                    {
+                        ButtonText = "Choisir";
+                    }
                 }
             }
         }
@@ -108,17 +128,12 @@ namespace humanlab.ViewModels
         {
             GridView gridview1 = sender as GridView;
             searchedGridView = gridview1;
-            foreach (ElementChecked item in SearchedElements)
-            {
-                if (item.IsSelected)
-                {
-                    gridview1.SelectedItems.Add(item);
-                }
-            }
+            RefreshSelectionSearchedGrid();
         }
 
         public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Debug.WriteLine("__grid1 "+ e.AddedItems.Count()+ e.RemovedItems.Count());
             selectionChangedFirstGridView = true;
             if (!searching)
             {
@@ -163,11 +178,13 @@ namespace humanlab.ViewModels
             if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1)
             {
                 ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
-                searchedGridView.SelectedItems.Remove(removedItem);
+                if (SelectedElements.Contains(removedItem))
+                    searchedGridView.SelectedItems.Remove(removedItem);
             }
 
 
             gridview.SelectAll();
+            Debug.WriteLine("done");
         }
 
         public void GridView2_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -185,6 +202,13 @@ namespace humanlab.ViewModels
                                                .OrderByDescending(e => e.Element.ElementName.Length)
                                                .ToList();
 
+            RefreshSelectionSearchedGrid();
+
+            searching = false;
+        }
+
+        private void RefreshSelectionSearchedGrid()
+        {
             foreach (ElementChecked item in SearchedElements)
             {
                 if (item.IsSelected)
@@ -192,14 +216,8 @@ namespace humanlab.ViewModels
                     searchedGridView.SelectedItems.Add(item);
                 }
             }
-
-            searching = false;
         }
-
-        void removeItem_Click(object args)
-        {
-            Debug.WriteLine("heyyyy");
-        }
+       
 
     }
 }
