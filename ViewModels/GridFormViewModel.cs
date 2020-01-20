@@ -13,6 +13,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace humanlab.ViewModels
 {
+    /// <summary>
+    /// View Model in charge of the grid form.
+    /// </summary>
     public class GridFormViewModel : BaseViewModel
     {
         /*** PUBLIC ATTRIBUTES ***/

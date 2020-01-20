@@ -10,6 +10,8 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <!--This Page contains three views in one to handle all the grid form. The different views are displayed by managing the visibility of each one -->
+
     <Page.DataContext>
         <vm:GridFormViewModel x:Name="grid"/>
     </Page.DataContext>
@@ -40,12 +42,13 @@
                 </StackPanel>
             </ListViewItem>
         </DataTemplate>
-        
+
         <!--converter to retrieve image path-->
         <h:ImageNameToImagePathConverter x:Key="ImageNameToImagePathConverter"></h:ImageNameToImagePathConverter>
-     
+
     </Page.Resources>
 
+    <!--PRINCIPAL VIEW-->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -79,7 +82,7 @@
                     Width="120" 
                     FontSize="18"
                     Command="{x:Bind grid.ChoosePopUpVisibility}"/>
-            
+
             <TextBlock Text="Veuillez sélectionner au moins un élément." 
                        Style="{StaticResource BodyTextBlockStyle}"
                        Visibility="{x:Bind grid.IsEmptyElementMessageShowing, Mode=OneWay}"
@@ -90,25 +93,30 @@
                             x:Name="listView"
                             ItemTemplate="{StaticResource ListViewTemplate}">
             </ListView>
+
             <Button  Margin="0,12,0,0" Background="LimeGreen" Foreground="White" 
                      FontSize="18" FontWeight="SemiBold"
                      Command="{x:Bind grid.OrganizePopUpVisibility}"
                      Visibility="{x:Bind grid.IsNextButtonShowing, Mode=OneWay}" Width="120">
+
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Suivant"/>
                     <SymbolIcon Margin="8,0,0,0" Symbol="Forward" />
-
                 </StackPanel>
+
             </Button>
+
         </StackPanel>
 
-        <!--Selection of existing elements -->
+        <!-- OTHER VIEW : SELECTION OF EXISTING ELEMENTS -->
         <Grid Margin="5" Background="White" Grid.Row="0" Name="creationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
                Visibility="{x:Bind grid.IsChooseElementsOpened, Mode=OneWay}">
+
             <StackPanel Orientation="Vertical" Margin="20,24,0,20">
+
                 <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
                     <AutoSuggestBox  QueryIcon="Find" 
                                      PlaceholderText="Nom..." 
@@ -123,7 +131,9 @@
                               Header="Recherche par catégorie"
                               />
                 </StackPanel>
+
                 <TextBlock Text="Eléments disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
+
                 <TextBlock Text="Aucun élément ne correspond à la recherche." 
                        Style="{StaticResource BodyTextBlockStyle}"
                        HorizontalAlignment="Left" 
@@ -151,10 +161,11 @@
                 </GridView>
 
                 <Button  Margin="0,24,0,20" Content="OK" Width="190" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
+
             </StackPanel>
         </Grid>
 
-        <!--Choose the organization of the elements-->
+        <!-- OTHER VIEW :CHOOOSE THE ORGANIZATION OF THE ELEMENTS-->
         <Grid Margin="5" Background="White" Grid.Row="0" Name="organizationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
@@ -162,6 +173,6 @@
                Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}">
 
         </Grid>
-        
+
     </Grid>
 </Page>
