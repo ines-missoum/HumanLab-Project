@@ -23,13 +23,16 @@ namespace humanlab.ViewModels
         public DelegateCommand ChoosePopUpVisibility { get; set; }
         private string buttonText;
         private List<string> categories;
+        private bool isEmptySearchMessageShowing;
+        private bool isEmptyElementMessageShowing;
 
         /*private attributes*/
         private bool searching;
         private bool selectionChangedFirstGridView;
         private GridView searchedGridView;
         private Repository repository;
-
+        private string searchText { get; set; }
+        private string searchCategory { get; set; }
 
         public GridFormViewModel()
         {
@@ -43,6 +46,10 @@ namespace humanlab.ViewModels
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
             ButtonText = "Choisir";
             IsNextButtonShowing = false;
+            searchText = "";
+            searchCategory = "Tout";
+            isEmptySearchMessageShowing = false;
+            isEmptyElementMessageShowing = true;
         }
 
         private void ChangeChoosePopUpVisibility()
@@ -56,6 +63,7 @@ namespace humanlab.ViewModels
             AllElements = new List<ElementChecked>();
             elements.ForEach(e => AllElements.Add(new ElementChecked(e, false)));
             Categories = elements.Select(e => e.Category.CategoryName).Distinct().ToList();
+            Categories.Add("Tout");
         }
 
         public string ButtonText
@@ -67,6 +75,30 @@ namespace humanlab.ViewModels
                 {
                     buttonText = value;
                     OnPropertyChanged("ButtonText");
+                }
+            }
+        }
+        public bool IsEmptyElementMessageShowing
+        {
+            get => isEmptyElementMessageShowing;
+            set
+            {
+                if (value != isEmptyElementMessageShowing)
+                {
+                    isEmptyElementMessageShowing = value;
+                    OnPropertyChanged("IsEmptyElementMessageShowing");
+                }
+            }
+        }
+        public bool IsEmptySearchMessageShowing
+        {
+            get => isEmptySearchMessageShowing;
+            set
+            {
+                if (value != isEmptySearchMessageShowing)
+                {
+                    isEmptySearchMessageShowing = value;
+                    OnPropertyChanged("IsEmptySearchMessageShowing");
                 }
             }
         }
@@ -95,11 +127,13 @@ namespace humanlab.ViewModels
                     {
                         ButtonText = "Modifier";
                         IsNextButtonShowing = true;
+                        IsEmptyElementMessageShowing = false;
                     }
                     else
                     {
                         ButtonText = "Choisir";
                         IsNextButtonShowing = false;
+                        IsEmptyElementMessageShowing = true;
                     }
                 }
             }
@@ -220,20 +254,6 @@ namespace humanlab.ViewModels
             gridview.SelectAll();
         }
 
-        public void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-            searching = true;
-            string text = sender.Text;
-            List<ElementChecked> newSearchedNames = new List<ElementChecked>(AllElements);
-            SearchedElements = newSearchedNames.Where(e => e.Element.ElementName.Contains(text))
-                                               .OrderByDescending(e => e.Element.ElementName.Length)
-                                               .ToList();
-
-            RefreshSelectionSearchedGrid();
-
-            searching = false;
-        }
-
         private void RefreshSelectionSearchedGrid()
         {
             foreach (ElementChecked item in SearchedElements)
@@ -245,11 +265,40 @@ namespace humanlab.ViewModels
             }
         }
 
-        public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //search methods
+
+        public void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
+            searching = true;
+            searchText = sender.Text;
+            Search();
+            searching = false;
+        }
+
+        public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            searching = true;
+
             ComboBox comboBox = sender as ComboBox;
-            string selected = comboBox.SelectedItem.ToString();
-           
+            searchCategory = comboBox.SelectedItem.ToString();
+            Search();
+            searching = false;
+        }
+
+        private void Search()
+        {
+            List<ElementChecked> newSearchedCat = new List<ElementChecked>(AllElements);
+            if (searchCategory.Equals("Tout"))
+                SearchedElements = newSearchedCat.Where(e => e.Element.ElementName.Contains(searchText))
+                                               .OrderByDescending(e => e.Element.ElementName.Length)
+                                               .ToList(); 
+            else
+                SearchedElements = newSearchedCat.Where(e => e.Element.Category.CategoryName.Equals(searchCategory) && e.Element.ElementName.Contains(searchText))
+                                                   .OrderByDescending(e => e.Element.ElementName.Length)
+                                                   .ToList();
+
+            IsEmptySearchMessageShowing = SearchedElements.Count() == 0;
+            RefreshSelectionSearchedGrid();
         }
 
 
