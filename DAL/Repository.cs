@@ -53,7 +53,7 @@ namespace humanlab.DAL
             {
                 try
                 {
-                    return await db.Elements.ToListAsync();
+                    return await db.Elements.Select(e => new Element { ElementName = e.ElementName, Image=e.Image, Category = e.Category }).ToListAsync();
                 }
                 catch (Exception e)
                 {
@@ -61,7 +61,7 @@ namespace humanlab.DAL
                 }
             }
         }
-
+        
         public async Task<List<string>> GetCategoriesNamesAsync()
         {
             using (var db = new ApplicationDbContext())

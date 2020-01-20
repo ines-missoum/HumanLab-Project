@@ -22,6 +22,7 @@ namespace humanlab.ViewModels
         private bool isNextButtonShowing;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
         private string buttonText;
+        private List<string> categories;
 
         /*private attributes*/
         private bool searching;
@@ -54,6 +55,7 @@ namespace humanlab.ViewModels
             var elements = await repository.GetElementsAsync();
             AllElements = new List<ElementChecked>();
             elements.ForEach(e => AllElements.Add(new ElementChecked(e, false)));
+            Categories = elements.Select(e => e.Category.CategoryName).Distinct().ToList();
         }
 
         public string ButtonText
@@ -99,6 +101,18 @@ namespace humanlab.ViewModels
                         ButtonText = "Choisir";
                         IsNextButtonShowing = false;
                     }
+                }
+            }
+        }
+        public List<string> Categories
+        {
+            get => categories;
+            set
+            {
+                if (value != categories)
+                {
+                    categories = value;
+                    OnPropertyChanged("Categories");
                 }
             }
         }
@@ -230,7 +244,14 @@ namespace humanlab.ViewModels
                 }
             }
         }
-       
+
+        public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            string selected = comboBox.SelectedItem.ToString();
+           
+        }
+
 
     }
 }

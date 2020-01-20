@@ -107,9 +107,14 @@
                                      Header="Recherche par nom"
                                      TextChanged="{x:Bind grid.AutoSuggestBox_TextChanged}"
                                      />
-                    <AutoSuggestBox  Margin="24,0,0,0" QueryIcon="Find" PlaceholderText="Catégorie..." Header="Recherche par catégorie"/>
+                    <ComboBox Name="ComboxBox1" 
+                              ItemsSource="{x:Bind grid.Categories}"
+                              Width="150" Margin="20,0,0,0"
+                              SelectionChanged="{x:Bind grid.ComboBox_SelectionChanged}"
+                              Header="Recherche par catégorie"
+                              />
                 </StackPanel>
-
+                <TextBlock Text="Eléments disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
                 <GridView SelectionMode="Multiple"  
                                     Loading="{x:Bind grid.GridView1_Loading}"
                                     ItemsSource="{x:Bind grid.SearchedElements, Mode=TwoWay}"
