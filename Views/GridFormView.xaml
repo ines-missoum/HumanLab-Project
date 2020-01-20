@@ -84,6 +84,7 @@
                        Visibility="{x:Bind grid.IsEmptyElementMessageShowing, Mode=OneWay}"
                        HorizontalAlignment="Left" />
             <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
+                        SelectionMode="None"
                             MaxHeight="300"
                             x:Name="listView"
                             ItemTemplate="{StaticResource ListViewTemplate}">
