@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -19,12 +20,15 @@ namespace humanlab.ViewModels
         private List<ElementChecked> selectedElements;
         private List<ElementChecked> allElements;
         private bool isChooseElementsOpened;
+        private bool isOrganizeElementsOpened;
         private bool isNextButtonShowing;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
+        public DelegateCommand OrganizePopUpVisibility { get; set; }
         private string buttonText;
         private List<string> categories;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyElementMessageShowing;
+        private string gridName;
 
         /*private attributes*/
         private bool searching;
@@ -43,18 +47,46 @@ namespace humanlab.ViewModels
             searching = false;
             //pop up closed at the beginning
             isChooseElementsOpened = false;
+            isOrganizeElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
+            OrganizePopUpVisibility = new DelegateCommand(OpenOrganizationPopUpIfAllowed);
             ButtonText = "Choisir";
             IsNextButtonShowing = false;
             searchText = "";
             searchCategory = "Tout";
             isEmptySearchMessageShowing = false;
             isEmptyElementMessageShowing = true;
+            gridName = "";
         }
 
         private void ChangeChoosePopUpVisibility()
         {
             IsChooseElementsOpened = !IsChooseElementsOpened;
+        }
+        private async void OpenOrganizationPopUpIfAllowed()
+        {
+            string errorMessage = null;
+
+            if (gridName.Equals(""))
+                errorMessage = "Veuillez entrer un nom de grille pour poursuivre.";
+            else
+            {
+                //we check if the name is not already taken
+                List<string> gridsNames = await repository.GetGridsNamesAsync();
+                if(gridsNames.Contains(gridName))
+                    errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+            }
+            
+            //we show error if there is one
+            if (errorMessage != null)
+            {
+                MessageDialog messageDialog = new MessageDialog(errorMessage);
+                // display the message dialog with the proper error 
+                await messageDialog.ShowAsync();
+            }
+            else
+                //else we display the organization view
+                IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
         }
 
         private async void InitialiseAllElements()
@@ -111,6 +143,18 @@ namespace humanlab.ViewModels
                 {
                     isNextButtonShowing = value;
                     OnPropertyChanged("IsNextButtonShowing");
+                }
+            }
+        }
+        public bool IsOrganizeElementsOpened
+        {
+            get => isOrganizeElementsOpened;
+            set
+            {
+                if (value != isOrganizeElementsOpened)
+                {
+                    isOrganizeElementsOpened = value;
+                    OnPropertyChanged("IsOrganizeElementsOpened");
                 }
             }
         }
@@ -265,6 +309,13 @@ namespace humanlab.ViewModels
             }
         }
 
+        public void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox control = sender as TextBox;
+            string name = control.Text;
+            gridName = name;
+        }
+
         //search methods
 
         public void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -291,7 +342,7 @@ namespace humanlab.ViewModels
             if (searchCategory.Equals("Tout"))
                 SearchedElements = newSearchedCat.Where(e => e.Element.ElementName.Contains(searchText))
                                                .OrderByDescending(e => e.Element.ElementName.Length)
-                                               .ToList(); 
+                                               .ToList();
             else
                 SearchedElements = newSearchedCat.Where(e => e.Element.Category.CategoryName.Equals(searchCategory) && e.Element.ElementName.Contains(searchText))
                                                    .OrderByDescending(e => e.Element.ElementName.Length)

@@ -92,6 +92,21 @@ namespace humanlab.DAL
             }
         }
 
+        public async Task<List<string>> GetGridsNamesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Grids.Select(g => g.GridName.ToString()).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
 
 
 
