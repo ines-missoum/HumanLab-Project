@@ -75,14 +75,23 @@
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="20,24,0,20" Orientation="Vertical">
             <Button Margin="0,0,0,20" 
                     Content="{x:Bind grid.ButtonText, Mode=TwoWay}" 
-                    Width="190" 
+                    Width="120" 
+                    FontSize="18"
                     Command="{x:Bind grid.ChoosePopUpVisibility}"/>
             <ListView   ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}"
                             MaxHeight="300"
                             x:Name="listView"
                             ItemTemplate="{StaticResource ListViewTemplate}">
             </ListView>
-            <Button  Margin="0,12,0,0" Content="Suivant" Width="190"/>
+            <Button  Margin="0,12,0,0" Background="LimeGreen" Foreground="White" 
+                     FontSize="18" FontWeight="SemiBold" 
+                     Visibility="{x:Bind grid.IsNextButtonShowing, Mode=OneWay}" Width="120">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Suivant"/>
+                    <SymbolIcon Margin="8,0,0,0" Symbol="Forward" />
+
+                </StackPanel>
+            </Button>
         </StackPanel>
 
         <!--Selection of existing elements -->

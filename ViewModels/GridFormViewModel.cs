@@ -19,6 +19,7 @@ namespace humanlab.ViewModels
         private List<ElementChecked> selectedElements;
         private List<ElementChecked> allElements;
         private bool isChooseElementsOpened;
+        private bool isNextButtonShowing;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
         private string buttonText;
 
@@ -40,6 +41,7 @@ namespace humanlab.ViewModels
             isChooseElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
             ButtonText = "Choisir";
+            IsNextButtonShowing = false;
         }
 
         private void ChangeChoosePopUpVisibility()
@@ -66,7 +68,18 @@ namespace humanlab.ViewModels
                 }
             }
         }
-
+        public bool IsNextButtonShowing
+        {
+            get => isNextButtonShowing;
+            set
+            {
+                if (value != isNextButtonShowing)
+                {
+                    isNextButtonShowing = value;
+                    OnPropertyChanged("IsNextButtonShowing");
+                }
+            }
+        }
         public bool IsChooseElementsOpened
         {
             get => isChooseElementsOpened;
@@ -79,10 +92,12 @@ namespace humanlab.ViewModels
                     if (SelectedElements.Count() > 0)
                     {
                         ButtonText = "Modifier";
+                        IsNextButtonShowing = true;
                     }
                     else
                     {
                         ButtonText = "Choisir";
+                        IsNextButtonShowing = false;
                     }
                 }
             }
@@ -133,7 +148,6 @@ namespace humanlab.ViewModels
 
         public void GridView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine("__grid1 "+ e.AddedItems.Count()+ e.RemovedItems.Count());
             selectionChangedFirstGridView = true;
             if (!searching)
             {
@@ -184,7 +198,6 @@ namespace humanlab.ViewModels
 
 
             gridview.SelectAll();
-            Debug.WriteLine("done");
         }
 
         public void GridView2_SizeChanged(object sender, SizeChangedEventArgs e)
