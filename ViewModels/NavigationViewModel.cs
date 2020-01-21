@@ -22,27 +22,13 @@ namespace humanlab.ViewModels
         public String Title
         {
             get => title;
-            set
-            {
-                if (value != title)
-                {
-                    title = value;
-                    OnPropertyChanged("Title");
-                }
-            }
+            set => SetProperty(ref title, value, "Title");
         }
 
         public Type ContentFrame
         {
             get => contentFrame;
-            set
-            {
-                if (value != contentFrame)
-                {
-                    contentFrame = value;
-                    OnPropertyChanged("ContentFrame");
-                }
-            }
+            set => SetProperty(ref contentFrame, value, "ContentFrame");
         }
 
 

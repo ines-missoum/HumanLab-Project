@@ -91,31 +91,15 @@ namespace humanlab.ViewModels
 
 
         public List<string> Categories
-
         {
             get => categories;
-            set
-            {
-                if (value != categories)
-                {
-                    categories = value;
-                    OnPropertyChanged("Categories");
-                }
-            }
+            set => SetProperty(ref categories, value, "Categories");
         }
 
         public List<string> Elements
-
         {
             get => elements;
-            set
-            {
-                if (value != elements)
-                {
-                    elements = value;
-                    OnPropertyChanged("Elements");
-                }
-            }
+            set => SetProperty(ref elements, value, "Elements");
         }
 
 
@@ -147,7 +131,7 @@ namespace humanlab.ViewModels
         public string ElementSpeach
         {
             get => elementSpeach;
-            set
+            set 
             {
                 if (value != elementSpeach)
                 {
@@ -241,69 +225,30 @@ namespace humanlab.ViewModels
         public bool IsNotAvailableName
         {
             get => isNotAvailableName;
-            set
-            {
-                if (value != isNotAvailableName)
-                {
-                    isNotAvailableName = value;
-                    OnPropertyChanged("IsNotAvailableName");
-                }
-            }
+            set => SetProperty(ref isNotAvailableName, value, "IsNotAvailableName");
         }
         public BitmapImage Image
         {
             get => image;
-            set
-            {
-                if (value != image)
-                {
-                    image = value;
-                    OnPropertyChanged("ImageSource");
-
-                }
-            }
+            set => SetProperty(ref image, value, "ImageSource");
         }
 
         public MediaSource AudioSource
         {
             get => audioSource;
-            set
-            {
-                if (value != audioSource)
-                {
-                    audioSource = value;
-                    OnPropertyChanged("AudioSource");
-
-                }
-            }
+            set => SetProperty(ref audioSource, value, "AudioSource");
         }
 
         public StorageFile SelectedPicture
         {
             get => selectedPicture;
-            set
-            {
-                if (value != selectedPicture)
-                {
-                    selectedPicture = value;
-                    OnPropertyChanged("SelectedPicture");
-
-                }
-            }
+            set => SetProperty(ref selectedPicture, value, "SelectedPicture");
         }
 
         public StorageFile SelectedAudio
         {
             get => selectedAudio;
-            set
-            {
-                if (value != selectedAudio)
-                {
-                    selectedAudio = value;
-                    OnPropertyChanged("SelectedAudio");
-
-                }
-            }
+            set => SetProperty(ref selectedAudio, value, "SelectedAudio");
         }
 
         public string SelectedCategory
