@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -36,24 +37,49 @@ namespace humanlab.Views
             var relativeTransform = origin.TransformToVisual(parent);
             Point parentContainerCoords = relativeTransform.TransformPoint(localCoords);
             var center = parentContainerCoords;
-
             // translate/panning
-            translateTransform.X += e.Delta.Translation.X;
-            translateTransform.Y += e.Delta.Translation.Y;
+            translateTransform.X += e.Delta.Translation.X * 1 / scrollview.ZoomFactor;
+            translateTransform.Y += e.Delta.Translation.Y * 1 / scrollview.ZoomFactor;
 
-            rotateTransform.CenterX = center.X;
-            rotateTransform.CenterY = center.Y;
-            rotateTransform.Angle += e.Delta.Rotation;
+            
 
-            scaleTransform.CenterX = center.X;
-            scaleTransform.CenterY = center.Y;
-            scaleTransform.ScaleX *= e.Delta.Scale;
-            scaleTransform.ScaleY *= e.Delta.Scale;
         }
-        private void scrollview_SizeChanged(object sender, SizeChangedEventArgs e)
+
+        private void k_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            image.Width = scrollview.ViewportWidth;
-            image.Height = scrollview.ViewportHeight;
+            FrameworkElement origin = sender as FrameworkElement;
+            FrameworkElement parent = origin.Parent as FrameworkElement;
+
+            var localCoords = e.Position;
+            var relativeTransform = origin.TransformToVisual(parent);
+            Point parentContainerCoords = relativeTransform.TransformPoint(localCoords);
+            var center = parentContainerCoords;
+
+            Debug.WriteLine("center" + center);
+            // translate/panning
+
+            var m = sender as Image;
+            
+            var x=m.CenterPoint.X;
+            var y = m.CenterPoint.Y;
+            var z = m.CenterPoint.Z;
+            var p = m.CenterPoint;
+/*
+            Debug.WriteLine("Ahdeig " + m.ActualHeight * scrollview.ZoomFactor);
+            Debug.WriteLine("Awithd " + m.ActualWidth * scrollview.ZoomFactor);
+            Debug.WriteLine("hdeig " + m.Height * scrollview.ZoomFactor);
+            Debug.WriteLine("withd " + m.Width * scrollview.ZoomFactor);*/
+        }
+
+
+        private void scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+
+            var l = scrollview.ZoomFactor;
+        /*    Debug.WriteLine("extent " + scrollview.ActualWidth);
+            Debug.WriteLine("extent " + scrollview.ActualHeight); */
+
+
         }
     }
 }

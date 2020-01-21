@@ -121,6 +121,7 @@
     </Compile>
     <Compile Include="DAL\ApplicationDbContext.cs" />
     <Compile Include="DAL\Repository.cs" />
+    <Compile Include="Helpers\Models\ElementPlaced.cs" />
     <Compile Include="Helpers\Models\Item.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -144,6 +145,7 @@
     <Compile Include="Services\ParametersService.cs" />
     <Compile Include="ViewModels\AllElementsViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\ElementsPositioningViewModel.cs" />
     <Compile Include="ViewModels\ItemsViewModel.cs" />
     <Compile Include="ViewModels\ElementFormViewModel.cs" />
     <Compile Include="ViewModels\NavigationViewModel.cs" />
@@ -170,6 +172,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\IMG_7688.JPG" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

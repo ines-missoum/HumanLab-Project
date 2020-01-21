@@ -6,21 +6,26 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    xmlns:vm="using:humanlab.ViewModels"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Canvas>
-            <ScrollViewer x:Name="scrollview" ZoomMode="Enabled" HorizontalScrollBarVisibility="Auto"  SizeChanged="scrollview_SizeChanged" Background="Red">
-                <Image Source="../Assets/StoreLogo.png"  x:Name="image" ManipulationMode = "TranslateX, TranslateY, Scale" ManipulationDelta = "t_ManipulationDelta" >
-                </Image>
-                <ScrollViewer.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform x:Name="scaleTransform" />
-                        <RotateTransform x:Name="rotateTransform" />
-                        <TranslateTransform x:Name="translateTransform" />
-                    </TransformGroup>
-                </ScrollViewer.RenderTransform>
-            </ScrollViewer>
-        </Canvas>
+    <Page.DataContext>
+        <vm:ElementsPositioningViewModel x:Name="vm"/>
+    </Page.DataContext>
+
+    <Grid Margin="10,60,0,10" Background="Green" SizeChanged="{x:Bind vm.Grid_SizeChanged}" >
+        <ScrollViewer x:Name="scrollview" ZoomMode="Enabled"  SizeChanged="{x:Bind vm.Scrollview_SizeChanged}" ViewChanged="scrollview_ViewChanged" Background="Red">
+
+
+            <Image Source="../Assets/StoreLogo.png"  x:Name="image1" ManipulationMode = "TranslateX, TranslateY, System" ManipulationDelta = "{x:Bind vm.Image_ManipulationDelta}" Width="400" Height="400">
+                <Image.RenderTransform>
+                    <TranslateTransform x:Name="translateTransform"/>
+                </Image.RenderTransform>
+            </Image>
+
+        </ScrollViewer>
+
+
+
     </Grid>
 </Page>
