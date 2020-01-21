@@ -6,27 +6,31 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    xmlns:pa="using:Windows.ApplicationModel.Package.Current.InstalledLocation"
     xmlns:vm="using:humanlab.ViewModels"
-    
+    xmlns:h="using:humanlab.Helpers.Converters"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
         <vm:AllElementsViewModel x:Name="vm"/>
     </Page.DataContext>
- 
+
+    <Page.Resources>
+        <!--converter to retrieve image path-->
+        <h:ImageNameToImagePathConverter x:Key="ImageNameToImagePathConverter"></h:ImageNameToImagePathConverter>
+    </Page.Resources>
 
     <Grid>
 
         <StackPanel Orientation="Vertical" Margin="10,15,0,10" >
-            <GridView ItemsSource="{x:Bind vm.AllElements}">
+            <GridView ItemsSource="{x:Bind vm.AllElements}" SelectionMode="None">
                 <GridView.ItemTemplate>
                     <DataTemplate x:Name="ImageTextDataTemplate"  x:DataType="x:String">
                         <StackPanel Margin="12" >
-                            <Image Source="ms-appx:///Assets/IMG_7690.JPG" Height="100" Width="100" Stretch="UniformToFill"/>
-                            <StackPanel Margin="0,12">
-                                <TextBlock Text="{Binding ElementName}"/>
-                                <TextBlock Text="{Binding Category.CategoryName}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
+                            <Image Source="{Binding Image, Converter={StaticResource ImageNameToImagePathConverter}}" 
+                                   Height="100" Width="100" Stretch="Fill"/>
+                            <StackPanel Margin="0,12" >
+                                <TextBlock HorizontalAlignment="Center" Text="{Binding ElementName}"/>
+                                <TextBlock HorizontalAlignment="Center" Text="{Binding Category.CategoryName}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
                             </StackPanel>
                         </StackPanel>
                     </DataTemplate>
