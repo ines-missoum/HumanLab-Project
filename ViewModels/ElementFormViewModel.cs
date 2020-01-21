@@ -17,6 +17,7 @@ using Windows.Media.Core;
 using Windows.UI.Popups;
 using Windows.ApplicationModel;
 using System.Diagnostics;
+using Windows.Media.Playback;
 
 namespace humanlab.ViewModels
 {
@@ -44,11 +45,14 @@ namespace humanlab.ViewModels
         private BitmapImage image = new BitmapImage();
         private string[] authorizedPictureType = { "jpeg", "png", "jpg","gif"};
         private string[] authorizedAudioType = { "mp4", "mp3","wav"};
+        //play/stop button
+        private MediaPlayer playingSound;
+        private string buttonIcon;
 
         //*** Form Validation Controls ***//
         private bool isNotAvailableName;
         public DelegateCommand SaveElementCommand { get; set; }
-        public DelegateCommand PlayVocalSynthesisCommand { get; set; }
+        public DelegateCommand PlayCommand { get; set; }
         public string DefaultColor { get; set; }
 
         public ElementFormViewModel()
@@ -60,7 +64,7 @@ namespace humanlab.ViewModels
             this.isNotAvailableName = false;
             ElementsBorderBrush = InitializeColorDictionnary();
             SaveElementCommand = new DelegateCommand(SaveElementAsync);
-            PlayVocalSynthesisCommand = new DelegateCommand(PlayVocalSynthesis, CanPlayVocalSynthesis);
+            PlayCommand = new DelegateCommand(Play, CanPlay);
             DefaultColor = ColorTheme;
             this.repository = new Repository();
 
@@ -69,12 +73,59 @@ namespace humanlab.ViewModels
             GetCategoriesAsync();
             GetElementsAsync();
 
+            playingSound = null;
+            ButtonIcon = "Play";
         }
 
-        bool CanPlayVocalSynthesis()
+        bool CanPlay()
         {
-            return !ElementSpeach.Equals("");
+            if (IsToggleChecked)
+            {
+                return SelectedAudio != null;
+            }
+            else
+            {
+                return !ElementSpeach.Equals("");
+            }
+            
         }
+
+        private async void Play()
+        {
+            if (IsToggleChecked)
+            {
+                if (playingSound != null)
+                {
+                    playingSound = new MediaPlayer();
+                    playingSound.Source = AudioSource;
+                    playingSound.Play();
+                    ButtonIcon = "Pause";
+                }
+                else
+                {
+                    playingSound.Pause();
+                    playingSound.Source = null;
+                    playingSound = null;
+                    ButtonIcon = "Play";
+                } 
+            }
+            else
+            {
+                MediaElement mediaElement = new MediaElement();
+                var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
+                mediaElement.SetSource(stream, stream.ContentType);
+                mediaElement.Play();
+            }
+
+        }
+
+        public string ButtonIcon
+        {
+            get => buttonIcon;
+            set => SetProperty(ref buttonIcon, value, "ButtonIcon");
+        }
+
         private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
         private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
 
@@ -144,7 +195,7 @@ namespace humanlab.ViewModels
                     else
                     {
                         Dictionary_SetValue("ElementSpeach", value);
-                        PlayVocalSynthesisCommand.RaiseCanExecuteChanged();
+                        PlayCommand.RaiseCanExecuteChanged();
                     }
 
                     OnPropertyChanged("ElementSpeach");
@@ -276,6 +327,7 @@ namespace humanlab.ViewModels
                 {
                     isToggleChecked = value;
 
+                    PlayCommand.RaiseCanExecuteChanged();
                     OnPropertyChanged("IsToggleChecked");
                     OnPropertyChanged("IsToggleNotChecked");
 
@@ -362,15 +414,6 @@ namespace humanlab.ViewModels
             {
                 SelectedCategory = selected;
             }
-        }
-
-        private async void PlayVocalSynthesis()
-        {
-            MediaElement mediaElement = new MediaElement();
-            var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
-            Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
-            mediaElement.SetSource(stream, stream.ContentType);
-            mediaElement.Play();
         }
 
         public bool Check_FormValidation()
