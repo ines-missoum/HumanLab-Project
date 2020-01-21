@@ -69,7 +69,7 @@ namespace humanlab.Migrations
 
                     b.Property<string>("Audio");
 
-                    b.Property<int?>("CategoryId");
+                    b.Property<int>("CategoryId");
 
                     b.Property<string>("ElementName")
                         .IsRequired()
@@ -139,7 +139,8 @@ namespace humanlab.Migrations
                 {
                     b.HasOne("humanlab.Models.Category", "Category")
                         .WithMany("Elements")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("humanlab.Models.GridElements", b =>

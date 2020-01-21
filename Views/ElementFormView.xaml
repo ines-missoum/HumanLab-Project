@@ -122,11 +122,7 @@
                             <TextBlock Text="{x:Bind elementform.SelectedAudio.Name, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" Margin="15" />
                         </StackPanel>
                         <Border BorderBrush="{x:Bind elementform.SelectedAudioBorder, Mode=OneWay}" BorderThickness="2">
-                            <MediaPlayerElement x:Name="mediaPlayer" 
-                                      Source="{x:Bind elementform.AudioSource}" 
-                                      Width="400" 
-                                      AutoPlay="True"
-                                      AreTransportControlsEnabled="True"/>
+                           
                         </Border>
 
 

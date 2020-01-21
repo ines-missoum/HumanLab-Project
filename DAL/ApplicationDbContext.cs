@@ -50,7 +50,8 @@ namespace humanlab
 
             modelBuilder.Entity<Element>()
                 .HasOne(p => p.Category)
-                .WithMany(b => b.Elements);
+                .WithMany(b => b.Elements)
+                .HasForeignKey(e => e.CategoryId);
            
             modelBuilder.Entity<Category>()
                 .HasMany(c => c.Elements)
