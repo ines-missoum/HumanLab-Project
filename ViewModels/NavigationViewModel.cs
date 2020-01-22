@@ -16,9 +16,16 @@ namespace humanlab.ViewModels
         }
 
         public String ColorNav { get; set; }
+        /// <summary>
+        /// the current view
+        /// </summary>
         public Type contentFrame;
+        /// <summary>
+        /// the current view title
+        /// </summary>
         public String title;
 
+        /*** GETTERS AND SETTERS ***/
         public String Title
         {
             get => title;
@@ -31,7 +38,12 @@ namespace humanlab.ViewModels
             set => SetProperty(ref contentFrame, value, "ContentFrame");
         }
 
-
+        /*** METHODS ***/
+        /// <summary>
+        /// Method called when the navigation view is loaded (ie : in our case when the application is loaded)
+        /// </summary>
+        /// <param name="sender">navigation view</param>
+        /// <param name="args">arguments</param>
         public void nvTopLevelNav_Loaded(object sender, RoutedEventArgs e)
         {
             NavigationView NavView = sender as NavigationView;
@@ -43,6 +55,11 @@ namespace humanlab.ViewModels
             // we use itemInvoked instead
         }
 
+        /// <summary>
+        /// Method called when we click on a menu item
+        /// </summary>
+        /// <param name="sender">navigation view</param>
+        /// <param name="args">arguments</param>
         public void nvTopLevelNav_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
 
