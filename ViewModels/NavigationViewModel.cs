@@ -34,6 +34,9 @@ namespace humanlab.ViewModels
 
         public void nvTopLevelNav_Loaded(object sender, RoutedEventArgs e)
         {
+            NavigationView NavView = sender as NavigationView;
+            NavView.SelectedItem = NavView.MenuItems[1];
+            Debug.WriteLine(NavView.MenuItems[1]);
         }
 
         public void nvTopLevelNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
