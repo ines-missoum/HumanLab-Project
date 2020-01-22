@@ -11,7 +11,7 @@ namespace humanlab.ViewModels
         public NavigationViewModel()
         {
             contentFrame = typeof(AllActivitiesView);
-            title = "Accueil";
+            title = "Lancer une activité";
             ColorNav = ColorTheme;
         }
 
@@ -36,7 +36,6 @@ namespace humanlab.ViewModels
         {
             NavigationView NavView = sender as NavigationView;
             NavView.SelectedItem = NavView.MenuItems[1];
-            Debug.WriteLine(NavView.MenuItems[1]);
         }
 
         public void nvTopLevelNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -62,7 +61,7 @@ namespace humanlab.ViewModels
                     switch (ItemContent)
                     {
                         
-                        case "Toutes les activités":
+                        case "Lancer une activité":
                             this.ContentFrame = typeof(AllActivitiesView);
                             break;
                         case "Nouvelle activité":
