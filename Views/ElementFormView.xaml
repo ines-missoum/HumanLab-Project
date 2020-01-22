@@ -96,48 +96,49 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,0" Orientation="Horizontal"  HorizontalAlignment="Left">
+
             <StackPanel Orientation="Vertical">
-            <StackPanel Background="LightGray" 
+                <StackPanel Background="LightGray" 
                                 Width="470" 
                                 Height="100" 
                                 Visibility="{x:Bind elementform.IsToggleNotChecked, Mode=OneWay}"
                                 >
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Margin="10" Header="Texte à prononcer" 
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Margin="10" Header="Texte à prononcer" 
                                  PlaceholderText="J'ai soif" 
                                  Background="White"
                                  Width="400"
                                  BorderBrush="{x:Bind elementform.ElementSpeachBorder,Mode=OneWay}"
                                  Text="{x:Bind elementform.ElementSpeach, Mode=TwoWay}" />
-                    <Button Foreground="{x:Bind elementform.DefaultColor}" Margin="0,20,0,0" Command="{Binding PlayVocalSynthesisCommand}">
-                        <SymbolIcon Symbol="Play"/>
-                    </Button>
+                        <Button Foreground="{x:Bind elementform.DefaultColor}" Margin="0,20,0,0" Command="{Binding PlayCommand}">
+                            <SymbolIcon Symbol="Play"/>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
 
-                <StackPanel Background="LightGray" 
+                <Border BorderBrush="{x:Bind elementform.SelectedAudioBorder, Mode=OneWay}" BorderThickness="2">
+                    <StackPanel Background="LightGray" 
                                 Width="470" 
                                 Height="100"  
                                 Visibility="{x:Bind elementform.IsToggleChecked, Mode=OneWay}">
-
-                    <StackPanel Orientation="Horizontal" >
-                        <TextBlock Text="Fichier son associé" Margin="10" Style="{StaticResource BaseTextBlockStyle}" Height="28" Foreground="Black" />
-                        <Button Height="auto" 
+                        <StackPanel Orientation="Vertical" >
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock Text="Fichier son associé" Margin="10" Style="{StaticResource BaseTextBlockStyle}" Height="28" Foreground="Black" />
+                                <Button Height="auto" 
                                     Width="100"  
                                     Margin="10,10,0,15" 
                                     Background="{x:Bind elementform.DefaultColor}"
                                     Content="Choisir"  
                                     Foreground="White"
                                     Click="{x:Bind elementform.ChooseAudio}"/>
-                        <TextBlock Text="{x:Bind elementform.SelectedAudio.Name, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" Margin="15" />
-                        <Button Margin="10,10,0,15" Foreground="{x:Bind elementform.DefaultColor}"  Command="{Binding PlayVocalSynthesisCommand}">
-                            <SymbolIcon Symbol="{x:Bind elementform.ButtonIcon}"/>
-                        </Button>
+                                <Button Margin="10,10,0,15" Foreground="{x:Bind elementform.DefaultColor}"  Command="{Binding PlayCommand}">
+                                    <SymbolIcon Symbol="{x:Bind elementform.ButtonIcon, Mode=TwoWay}"/>
+                                </Button>
+                            </StackPanel>
+                            <TextBlock Text="{x:Bind elementform.SelectedAudio.Name, Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" />
+                        </StackPanel>
                     </StackPanel>
-                    <Border BorderBrush="{x:Bind elementform.SelectedAudioBorder, Mode=OneWay}" BorderThickness="2">
-
-                    </Border>
-                </StackPanel>
+                </Border>
 
                 <Button Background="LimeGreen" 
                     Content="Enregistrer" 
@@ -146,7 +147,7 @@
                     HorizontalAlignment="Right" 
                     Margin="0,24,0,0"
                     Command="{Binding SaveElementCommand}"/>
-            </StackPanel>
+        </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

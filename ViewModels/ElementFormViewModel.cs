@@ -94,28 +94,34 @@ namespace humanlab.ViewModels
         {
             if (IsToggleChecked)
             {
-                if (playingSound != null)
+                if (playingSound == null)
                 {
+                    Debug.WriteLine("playing start");
                     playingSound = new MediaPlayer();
                     playingSound.Source = AudioSource;
                     playingSound.Play();
                     ButtonIcon = "Pause";
+                    Debug.WriteLine("playing end");
                 }
                 else
                 {
+                    Debug.WriteLine("NOT playing start");
                     playingSound.Pause();
                     playingSound.Source = null;
                     playingSound = null;
                     ButtonIcon = "Play";
+                    Debug.WriteLine("NOT playing end");
                 } 
             }
             else
             {
+                Debug.WriteLine("vocal start");
                 MediaElement mediaElement = new MediaElement();
                 var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
                 Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
                 mediaElement.SetSource(stream, stream.ContentType);
                 mediaElement.Play();
+                Debug.WriteLine("vocal end");
             }
 
         }
@@ -391,6 +397,7 @@ namespace humanlab.ViewModels
                 LoadMediaPlayer();
                 Dictionary_SetValue("SelectedAudio", file.Name);
                 OnPropertyChanged("SelectedAudioBorder");
+                PlayCommand.RaiseCanExecuteChanged();
             }
 
             else {
