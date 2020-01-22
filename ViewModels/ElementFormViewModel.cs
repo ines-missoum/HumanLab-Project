@@ -17,6 +17,7 @@ using Windows.Media.Core;
 using Windows.UI.Popups;
 using Windows.ApplicationModel;
 using System.Diagnostics;
+using Windows.Media.Playback;
 
 namespace humanlab.ViewModels
 {
@@ -44,11 +45,14 @@ namespace humanlab.ViewModels
         private BitmapImage image = new BitmapImage();
         private string[] authorizedPictureType = { "jpeg", "png", "jpg","gif"};
         private string[] authorizedAudioType = { "mp4", "mp3","wav"};
+        //play/stop button
+        private MediaPlayer playingSound;
+        private string buttonIcon;
 
         //*** Form Validation Controls ***//
         private bool isNotAvailableName;
         public DelegateCommand SaveElementCommand { get; set; }
-        public DelegateCommand PlayVocalSynthesisCommand { get; set; }
+        public DelegateCommand PlayCommand { get; set; }
         public string DefaultColor { get; set; }
 
         public ElementFormViewModel()
@@ -60,7 +64,7 @@ namespace humanlab.ViewModels
             this.isNotAvailableName = false;
             ElementsBorderBrush = InitializeColorDictionnary();
             SaveElementCommand = new DelegateCommand(SaveElementAsync);
-            PlayVocalSynthesisCommand = new DelegateCommand(PlayVocalSynthesis, CanPlayVocalSynthesis);
+            PlayCommand = new DelegateCommand(Play, CanPlay);
             DefaultColor = ColorTheme;
             this.repository = new Repository();
 
@@ -69,12 +73,65 @@ namespace humanlab.ViewModels
             GetCategoriesAsync();
             GetElementsAsync();
 
+            playingSound = null;
+            ButtonIcon = "Play";
         }
 
-        bool CanPlayVocalSynthesis()
+        bool CanPlay()
         {
-            return !ElementSpeach.Equals("");
+            if (IsToggleChecked)
+            {
+                return SelectedAudio != null;
+            }
+            else
+            {
+                return !ElementSpeach.Equals("");
+            }
+            
         }
+
+        private async void Play()
+        {
+            if (IsToggleChecked)
+            {
+                if (playingSound == null)
+                {
+                    Debug.WriteLine("playing start");
+                    playingSound = new MediaPlayer();
+                    playingSound.Source = AudioSource;
+                    playingSound.Play();
+                    ButtonIcon = "Pause";
+                    Debug.WriteLine("playing end");
+                }
+                else
+                {
+                    Debug.WriteLine("NOT playing start");
+                    playingSound.Pause();
+                    playingSound.Source = null;
+                    playingSound = null;
+                    ButtonIcon = "Play";
+                    Debug.WriteLine("NOT playing end");
+                } 
+            }
+            else
+            {
+                Debug.WriteLine("vocal start");
+                MediaElement mediaElement = new MediaElement();
+                var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
+                mediaElement.SetSource(stream, stream.ContentType);
+                mediaElement.Play();
+                Debug.WriteLine("vocal end");
+            }
+
+        }
+
+        public string ButtonIcon
+        {
+            get => buttonIcon;
+            set => SetProperty(ref buttonIcon, value, "ButtonIcon");
+        }
+
         private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
         private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
 
@@ -91,31 +148,15 @@ namespace humanlab.ViewModels
 
 
         public List<string> Categories
-
         {
             get => categories;
-            set
-            {
-                if (value != categories)
-                {
-                    categories = value;
-                    OnPropertyChanged("Categories");
-                }
-            }
+            set => SetProperty(ref categories, value, "Categories");
         }
 
         public List<string> Elements
-
         {
             get => elements;
-            set
-            {
-                if (value != elements)
-                {
-                    elements = value;
-                    OnPropertyChanged("Elements");
-                }
-            }
+            set => SetProperty(ref elements, value, "Elements");
         }
 
 
@@ -147,7 +188,7 @@ namespace humanlab.ViewModels
         public string ElementSpeach
         {
             get => elementSpeach;
-            set
+            set 
             {
                 if (value != elementSpeach)
                 {
@@ -160,7 +201,7 @@ namespace humanlab.ViewModels
                     else
                     {
                         Dictionary_SetValue("ElementSpeach", value);
-                        PlayVocalSynthesisCommand.RaiseCanExecuteChanged();
+                        PlayCommand.RaiseCanExecuteChanged();
                     }
 
                     OnPropertyChanged("ElementSpeach");
@@ -241,69 +282,30 @@ namespace humanlab.ViewModels
         public bool IsNotAvailableName
         {
             get => isNotAvailableName;
-            set
-            {
-                if (value != isNotAvailableName)
-                {
-                    isNotAvailableName = value;
-                    OnPropertyChanged("IsNotAvailableName");
-                }
-            }
+            set => SetProperty(ref isNotAvailableName, value, "IsNotAvailableName");
         }
         public BitmapImage Image
         {
             get => image;
-            set
-            {
-                if (value != image)
-                {
-                    image = value;
-                    OnPropertyChanged("ImageSource");
-
-                }
-            }
+            set => SetProperty(ref image, value, "ImageSource");
         }
 
         public MediaSource AudioSource
         {
             get => audioSource;
-            set
-            {
-                if (value != audioSource)
-                {
-                    audioSource = value;
-                    OnPropertyChanged("AudioSource");
-
-                }
-            }
+            set => SetProperty(ref audioSource, value, "AudioSource");
         }
 
         public StorageFile SelectedPicture
         {
             get => selectedPicture;
-            set
-            {
-                if (value != selectedPicture)
-                {
-                    selectedPicture = value;
-                    OnPropertyChanged("SelectedPicture");
-
-                }
-            }
+            set => SetProperty(ref selectedPicture, value, "SelectedPicture");
         }
 
         public StorageFile SelectedAudio
         {
             get => selectedAudio;
-            set
-            {
-                if (value != selectedAudio)
-                {
-                    selectedAudio = value;
-                    OnPropertyChanged("SelectedAudio");
-
-                }
-            }
+            set => SetProperty(ref selectedAudio, value, "SelectedAudio");
         }
 
         public string SelectedCategory
@@ -331,6 +333,7 @@ namespace humanlab.ViewModels
                 {
                     isToggleChecked = value;
 
+                    PlayCommand.RaiseCanExecuteChanged();
                     OnPropertyChanged("IsToggleChecked");
                     OnPropertyChanged("IsToggleNotChecked");
 
@@ -394,6 +397,7 @@ namespace humanlab.ViewModels
                 LoadMediaPlayer();
                 Dictionary_SetValue("SelectedAudio", file.Name);
                 OnPropertyChanged("SelectedAudioBorder");
+                PlayCommand.RaiseCanExecuteChanged();
             }
 
             else {
@@ -417,15 +421,6 @@ namespace humanlab.ViewModels
             {
                 SelectedCategory = selected;
             }
-        }
-
-        private async void PlayVocalSynthesis()
-        {
-            MediaElement mediaElement = new MediaElement();
-            var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
-            Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(ElementSpeach);
-            mediaElement.SetSource(stream, stream.ContentType);
-            mediaElement.Play();
         }
 
         public bool Check_FormValidation()

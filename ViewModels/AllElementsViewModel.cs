@@ -20,11 +20,14 @@ namespace humanlab.ViewModels
         {
             this.repository = new Repository();
             GetElementsAsync();
-
         }
-        
-   
-        private async void GetElementsAsync() => AllElements = await repository.GetElementsAsync();
+
+
+        private async void GetElementsAsync()
+        {
+            var elements = await repository.GetElementsAsync();
+            AllElements = elements.OrderByDescending(e => e.ElementName.Length).ToList(); 
+        }
         
     }
 }
