@@ -58,8 +58,19 @@
                         <BitmapIcon UriSource="ms-appx:///Assets/addImage.png"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItemSeparator  />
+
+                <NavigationViewItemHeader Content="Catégorie" />
+                <NavigationViewItem Content="Gestion des catégories">
+                    <NavigationViewItem.Icon >
+                        <BitmapIcon UriSource="ms-appx:///Assets/tag.png"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                
             </NavigationView.MenuItems>
 
+            
+            
             <Frame  SourcePageType="{x:Bind navigation.ContentFrame, Mode=TwoWay}"/>
 
         </NavigationView>

@@ -154,6 +154,9 @@
     <Compile Include="Views\AllElementsView.xaml.cs">
       <DependentUpon>AllElementsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CategoriesManagementView.xaml.cs">
+      <DependentUpon>CategoriesManagementView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ElementFormView.xaml.cs">
       <DependentUpon>ElementFormView.xaml</DependentUpon>
     </Compile>
@@ -176,6 +179,7 @@
     <Content Include="Assets\grid.png" />
     <Content Include="Assets\image.png" />
     <Content Include="Assets\plus.png" />
+    <Content Include="Assets\tag.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -195,6 +199,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\AllActivitiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CategoriesManagementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -237,9 +245,7 @@
       <Version>4.3.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UserAssets\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
