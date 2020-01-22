@@ -9,6 +9,32 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="24">
+            
+            <TextBlock Text="Nouvelle catégorie"  Style="{StaticResource SubtitleTextBlockStyle}" 
+                                 VerticalAlignment="Center" Margin="8"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="400" Margin="8" />
+                <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Catégories éxistantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
+                                 VerticalAlignment="Center" Margin="8"/>
+            </StackPanel>
+            <ListView x:Name="FruitsList" Width="400">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{x:Bind}" FontSize="14" Style="{StaticResource BaseTextBlockStyle}" 
+                                 VerticalAlignment="Center"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <x:String>Apricot</x:String>
+                <x:String>Banana</x:String>
+                <x:String>Cherry</x:String>
+                <x:String>Orange</x:String>
+                <x:String>Strawberry</x:String>
+            </ListView>
+        </StackPanel>
     </Grid>
 </Page>
