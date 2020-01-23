@@ -1,7 +1,9 @@
 ﻿using humanlab.DAL;
+using humanlab.Helpers.Models;
 using humanlab.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace humanlab.ViewModels
         /// <summary>
         /// the categories of the database
         /// </summary>
-        private List<Category> categories;
+        private IEnumerable<IGrouping<string, CategoryOrdered>> categories;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -34,7 +36,7 @@ namespace humanlab.ViewModels
 
         /*** GETTERS AND SETTERS FOR PUBLIC ATTRIBUTES ***/
 
-        public List<Category> Categories
+        public IEnumerable<IGrouping<string, CategoryOrdered>> Categories
         {
             get => categories;
             set => SetProperty(ref categories, value, "Categories");
@@ -43,9 +45,10 @@ namespace humanlab.ViewModels
         /*** METHODS ***/
         private async void InitialiseCategories()
         {
-            var categories = await repository.GetAllCategoriesAsync();
-            Categories = new List<Category>();
-            categories.ForEach(category => Categories.Add(category));
+            List<Category> categories = await repository.GetAllCategoriesAsync();
+            var dbCat = new List<CategoryOrdered>();
+            categories.ForEach(c => dbCat.Add(new CategoryOrdered(c, c.CategoryName.First().ToString().ToUpper())));
+            Categories = from t in dbCat group t by t.Key;
         }
     }
 }

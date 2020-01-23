@@ -123,6 +123,7 @@
     <Compile Include="DAL\CategoryRepository.cs" />
     <Compile Include="DAL\Repository.cs" />
     <Compile Include="Helpers\Converters\ImageNameToImagePathConverter.cs" />
+    <Compile Include="Helpers\Models\CategoryOrdered.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

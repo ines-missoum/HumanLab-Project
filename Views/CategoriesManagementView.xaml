@@ -5,35 +5,62 @@
     xmlns:vm="using:humanlab.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:humanlab.Models"
+    xmlns:modelHelper="using:humanlab.Helpers.Models"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
         <vm:CategoriesManagementViewModel x:Name="categoriesVM"/>
     </Page.DataContext>
-    
-    <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="24">
-            
-            <TextBlock Text="Nouvelle catégorie"  Style="{StaticResource SubtitleTextBlockStyle}" 
-                                 VerticalAlignment="Center" Margin="8"/>
-            <StackPanel Orientation="Horizontal">
-                <TextBox Width="400" Margin="8" />
-                <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"/>
-            </StackPanel>
+    <Page.Resources>
+        <CollectionViewSource x:Name="groupCategories" 
+                              IsSourceGrouped="True" 
+                              Source="{x:Bind categoriesVM.Categories}"
+                              />
+    </Page.Resources>
 
-            <TextBlock Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
-                                 VerticalAlignment="Center" Margin="8"/>
+    <Grid HorizontalAlignment="Left" Margin="24">
 
-            <ListView x:Name="FruitsList" Width="400" ItemsSource="{x:Bind categoriesVM.Categories}">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Category">
-                        <TextBlock Text="{x:Bind CategoryName, Mode=TwoWay}" FontSize="14" Style="{StaticResource BaseTextBlockStyle}" 
-                                 VerticalAlignment="Center"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+
+        <TextBlock Grid.Row="0"  Text="Nouvelle catégorie"  Style="{StaticResource SubtitleTextBlockStyle}" 
+                                 VerticalAlignment="Center" Margin="8"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBox Width="400" Margin="8" />
+            <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"/>
         </StackPanel>
+
+        <TextBlock Grid.Row="2" Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
+                                 VerticalAlignment="Center" Margin="8"/>
+
+        <ListView Grid.Row="3" x:Name="FruitsList" Width="400" ItemsSource="{Binding Source={StaticResource groupCategories}}" 
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="modelHelper:CategoryOrdered">
+                    <TextBlock Text="{x:Bind Category.CategoryName}" FontSize="14" Style="{StaticResource BaseTextBlockStyle}" 
+                                 VerticalAlignment="Center"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid Background="LightGray" Width="30" Height="30" >
+                                <TextBlock Foreground="Black" Text="{Binding Key}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
     </Grid>
 </Page>
