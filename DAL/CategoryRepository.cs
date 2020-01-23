@@ -14,7 +14,7 @@ namespace humanlab.DAL
         /// It checks if the category name is allowed (ie: doesn't exists in the database) then if it's an existing category updates the name else creates it.
         /// </summary>
         /// <param name="category"> a category to update ou create </param>
-        public void SaveCategoryAsync(Category category)
+        public bool SaveCategoryAsync(Category category)
         {
             using (var db = new ApplicationDbContext())
             {
@@ -34,7 +34,9 @@ namespace humanlab.DAL
                     }
 
                     db.SaveChanges();
+                    return true;
                 }
+                return false;
             }
         }
 
@@ -46,7 +48,7 @@ namespace humanlab.DAL
         /// <returns></returns>
         private bool IsExistingCategory(string name, ApplicationDbContext db)
         {
-            return db.Categories.Where(c => c.CategoryName.Equals(name))
+            return db.Categories.Where(c => c.CategoryName.ToLower().Equals(name.ToLower()))
                                 .Count() > 0;
         }
 

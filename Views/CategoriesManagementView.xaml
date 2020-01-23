@@ -15,7 +15,7 @@
     <Page.Resources>
         <CollectionViewSource x:Name="groupCategories" 
                               IsSourceGrouped="True" 
-                              Source="{x:Bind categoriesVM.Categories}"
+                              Source="{x:Bind categoriesVM.Categories, Mode=TwoWay}"
                               />
     </Page.Resources>
 
@@ -34,11 +34,16 @@
 
         <TextBlock Grid.Row="0"  Text="Nouvelle catégorie"  Style="{StaticResource SubtitleTextBlockStyle}" 
                                  VerticalAlignment="Center" Margin="8"/>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <TextBox Width="400" Margin="8" />
-            <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"/>
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <StackPanel  Orientation="Horizontal">
+                <TextBox Width="400" Margin="8" Text="{x:Bind categoriesVM.NewCategoryName}" 
+                     TextChanging="{x:Bind categoriesVM.TextBox_TextChanging}"/>
+            <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"
+                    Command="{x:Bind categoriesVM.SaveNewCategoryDelegate}"/>
+            </StackPanel>
+            <TextBlock  Text="{x:Bind categoriesVM.ErrorNameMessage, Mode=TwoWay}" Foreground="Red" Margin="8"/>
         </StackPanel>
-
+     
         <TextBlock Grid.Row="2" Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
                                  VerticalAlignment="Center" Margin="8"/>
 
