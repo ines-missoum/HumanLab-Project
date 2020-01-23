@@ -120,6 +120,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="DAL\ApplicationDbContext.cs" />
+    <Compile Include="DAL\CategoryRepository.cs" />
     <Compile Include="DAL\Repository.cs" />
     <Compile Include="Helpers\Converters\ImageNameToImagePathConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
