@@ -42,8 +42,8 @@
         <TextBlock Grid.Row="2" Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
                                  VerticalAlignment="Center" Margin="8"/>
 
-        <ListView Grid.Row="3" x:Name="FruitsList" Width="400" ItemsSource="{Binding Source={StaticResource groupCategories}}" 
-                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <ListView Grid.Row="3" x:Name="FruitsList"  ItemsSource="{Binding Source={StaticResource groupCategories}}" 
+                      ScrollViewer.VerticalScrollBarVisibility="Auto" >
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="modelHelper:CategoryOrdered">
                     <TextBlock Text="{x:Bind Category.CategoryName}" FontSize="14" Style="{StaticResource BaseTextBlockStyle}" 
@@ -54,8 +54,8 @@
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
-                            <Grid Background="LightGray" Width="30" Height="30" >
-                                <TextBlock Foreground="Black" Text="{Binding Key}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Grid Width="400" Height="30" HorizontalAlignment="Right">
+                                <TextBlock  Text="{Binding Key}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             </Grid>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
