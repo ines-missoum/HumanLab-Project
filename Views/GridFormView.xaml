@@ -181,14 +181,13 @@
         </Grid>
 
         <!-- OTHER VIEW :CHOOOSE THE ORGANIZATION OF THE ELEMENTS-->
-        
+
         <Grid Margin="5" Grid.Row="0" Name="organizationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
                Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" >
-            <Grid Height="{x:Bind grid.ScrollViewerHeigth, Mode=TwoWay}" Width="{x:Bind grid.ScrollViewerWidth, Mode=TwoWay}" Background="Yellow" Margin="200"></Grid>
-            <Grid Loading="{x:Bind grid.Grid_Loading}" SizeChanged="{x:Bind grid.Grid_SizeChanged}" >
+            <Grid Loading="{x:Bind grid.Grid_Loading}" >
 
                 <ScrollViewer x:Name="scrollview" ZoomMode="Enabled"  SizeChanged="{x:Bind grid.Scrollview_SizeChanged}" ViewChanged="{x:Bind grid.Scrollview_ViewChanged}" Background="Green">
                     <ItemsControl ItemsSource="{x:Bind grid.ElementsPlaced}"

@@ -1,12 +1,10 @@
 ﻿using humanlab.DAL;
 using humanlab.Helpers.Models;
-using humanlab.Models;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -38,11 +36,7 @@ namespace humanlab.ViewModels
         public DelegateCommand OrganizePopUpVisibility { get; set; }
         private double marginWindow_ScrollViewer;
 
-        private double scrollViewerHeigth;
-
-        private double scrollViewerWidth;
-        private double scrollViewZoomFactor;
-        private ScrollViewer sc;
+        private ScrollViewer scrollView;
 
         private List<ElementPlaced> elementsPlaced;
 
@@ -93,7 +87,7 @@ namespace humanlab.ViewModels
             SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e => e.Element.ElementName.Length));
             SelectedElements = new List<ElementChecked>();
             //A supprimer just test
-         
+
 
             //the views are not displayed at the the beginning
             isChooseElementsOpened = false;
@@ -117,11 +111,7 @@ namespace humanlab.ViewModels
             //scrollview attributes
             this.marginWindow_ScrollViewer = 0;
             this.elementsPlaced = new List<ElementPlaced>();
-            this.scrollViewZoomFactor = 1;
-            this.sc = new ScrollViewer();
-            this.scrollViewerHeigth = 10;
-            this.scrollViewerWidth = 10;
-
+            this.scrollView = new ScrollViewer();
 
         }
 
@@ -155,28 +145,15 @@ namespace humanlab.ViewModels
             }
         }
 
-        public double ScrollViewZoomFactor
+        public ScrollViewer ScrollView
         {
-            get => scrollViewZoomFactor;
+            get => scrollView;
             set
             {
-                if (value != scrollViewZoomFactor)
+                if (value != scrollView)
                 {
-                    scrollViewZoomFactor = value;
-                    OnPropertyChanged("ScrollViewZoomFactor");
-                }
-            }
-        }
-
-                public ScrollViewer Sc
-        {
-            get => sc;
-            set
-            {
-                if (value != sc)
-                {
-                    sc = value;
-                    OnPropertyChanged("Sc");
+                    scrollView = value;
+                    OnPropertyChanged("ScrollView");
                 }
             }
         }
@@ -527,31 +504,28 @@ namespace humanlab.ViewModels
 
         public void Grid_Loading(FrameworkElement sender, object args)
         {
+            // Retrieve checked elements and create new ElementPlaced item
             foreach (ElementChecked element in SelectedElements)
             {
-    
+                //Initialize values to 0 before setting them to their real value
                 ElementPlaced ep = new ElementPlaced(element.Element, 0, 0, 0, 0);
                 ElementsPlaced.Add(ep);
-              
             }
-
-            ElementTest = ElementsPlaced.First();
-            ElementTest.HeigthString = "800";
-            ElementTest.WidthString = "800";
-            OnPropertyChanged("WidthString");
-            OnPropertyChanged("HeigthString");
-
         }
+
 
         public void ItemsControl_Loaded(object sender, RoutedEventArgs e)
         {
+            // Collection of Selected Elements to be placed in the grid
             ItemsControl itemsControl = sender as ItemsControl;
             var items = itemsControl.Items;
-                foreach ( var item in items)
+            foreach (var item in items)
             {
+                // Retrieve all UIElements (images) from the DataTemplate 
+                // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
                 UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
-                Debug.WriteLine(element.ToString());
-                //ItemContainerGenerator.ContainerFromItem(item);
+
+                // Add to each element their own delegate method manipulationDelta
                 element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
             }
 
@@ -569,153 +543,95 @@ namespace humanlab.ViewModels
                 }
             }
         }
-        public Double MarginWindow_ScrollViewer
-        {
-            get => marginWindow_ScrollViewer;
-            set
-            {
-                if (value != marginWindow_ScrollViewer)
-                {
-                    marginWindow_ScrollViewer = value;
-                    OnPropertyChanged("MarginWindow_ScrollViewer");
-                }
-            }
-        }
 
-        public Double ScrollViewerHeigth
-        {
-            get => scrollViewerHeigth;
-            set
-            {
-                if (value != scrollViewerHeigth)
-                {
-                    scrollViewerHeigth = value;
-                    OnPropertyChanged("ScrollViewerHeigth");
-                }
-            }
-        }
-
-        public Double ScrollViewerWidth
-        {
-            get => scrollViewerWidth;
-            set
-            {
-                if (value != scrollViewerWidth)
-                {
-                    scrollViewerWidth = value;
-                    OnPropertyChanged("ScrollViewerWidth");
-                }
-            }
-        }
         public void Image_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var ecart = 30;
-            var cp = sender as ContentPresenter;
-            var child = VisualTreeHelper.GetChild(cp, 0);
+
+            var contentPresenter = sender as ContentPresenter;
+
+            //Get image wrapped in the sender of type ContentPresenter
+            var child = VisualTreeHelper.GetChild(contentPresenter, 0);
+
+            //Cast object to image 
             Image image = child as Image;
+
+            //Retrieve image's tag to check on which element('current') we should apply the translation
             string tagImage = image.Tag.ToString();
-            Debug.WriteLine(" tag " + tagImage);
 
-            var position = image.TransformToVisual(Sc);
-            Point p = position.TransformPoint(new Point(0, 0));
-
-            Debug.WriteLine(" zooom Fa" + ScrollViewZoomFactor);
             ElementPlaced current = ElementsPlaced.Select(element => element)
                                                  .Where(element => element.Element.ElementName.Equals(tagImage)).First();
-            //Limits calculs
-            var BorderLeft = p.X;
-            var BorderRight = p.X + (image.Width * ScrollViewZoomFactor);
 
-            Debug.WriteLine("Window Size = " + Window.Current.Bounds.Height);
-            Debug.WriteLine("SV Heigth Size = " + ScrollViewerHeigth);
+            //Get Position of the current inside the scrollViewer
+            var position = image.TransformToVisual(ScrollView);
+            Point p = position.TransformPoint(new Point(0, 0));
 
+            /***CALCULS FOR LIMITATIONS***/
 
-            var BorderTop = p.Y;
-            var BorderBottom = p.Y + (image.Height * ScrollViewZoomFactor);
+            //Distance between ScrollViewer's left border and the Image's left Border
+            var LeftBorder = p.X;
 
-            Debug.WriteLine("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    " + p.X + "    " + p.Y);
+            //Distance between ScrollViewer's left border and the Image's rigth Border
+            var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
 
-            var excessInTop = Window.Current.Bounds.Height - ScrollViewerHeigth;
-            Debug.WriteLine("longueur A " + excessInTop);
+            //Distance between ScrollViewer's top border and the Image's top
+            var TopBorder = p.Y;
 
-            Debug.WriteLine("image heigth  " + (image.Height * ScrollViewZoomFactor));
-            Debug.WriteLine("image Width  " + (image.Width * ScrollViewZoomFactor));
+            //Distance between ScrollViewer's top border and the Image's bottom
+            var BottomBorder = p.Y + (image.Height * ScrollView.ZoomFactor);
 
-            Debug.WriteLine("Border R  " + BorderRight);
-            Debug.WriteLine("Border L  " + BorderLeft);
-            Debug.WriteLine("image Width  " + (image.Width * ScrollViewZoomFactor) / 2);
+            //Small shift(delta) on the horizontal axis 
             var xAdjustment = e.Delta.Translation.X;
+
+            //Small shift(delta) on the vertical axis 
             var yAdjustment = e.Delta.Translation.Y;
 
 
 
-            //Conditions to translate object
-               if (BorderLeft + xAdjustment >= 0 && BorderRight + xAdjustment <= ScrollViewerWidth)
-                {
-                    current.PositionX += xAdjustment*(1/ScrollViewZoomFactor);
-                }
+            //Conditions before object's translation
 
-                if(BorderTop + yAdjustment >= 0 && BorderBottom + yAdjustment <= ScrollViewerHeigth)
-                {
-                    current.PositionY += yAdjustment * (1 / ScrollViewZoomFactor); 
-                }
-      
+            Debug.WriteLine(ScrollView.Width);
+            if (LeftBorder + xAdjustment >= 0 && RightBorder + xAdjustment <= ScrollView.ViewportWidth)
+            {
+                current.PositionX += xAdjustment * (1 / ScrollView.ZoomFactor);
+            }
 
+            if (TopBorder + yAdjustment >= 0 && BottomBorder + yAdjustment <= ScrollView.ViewportHeight)
+            {
+                current.PositionY += yAdjustment * (1 / ScrollView.ZoomFactor);
+            }
 
         }
 
-        
-        
-
-        public void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-            double windowHeigth = Window.Current.Bounds.Height;
-            MarginWindow_ScrollViewer = windowHeigth - ScrollViewerHeigth;
-        }
 
         public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             ScrollViewer scrollViewer = sender as ScrollViewer;
-            sc = scrollViewer;
-
-            ScrollViewZoomFactor = scrollViewer.ZoomFactor;
-            ScrollViewerHeigth = scrollViewer.ViewportHeight;
-            ScrollViewerWidth = scrollViewer.ViewportWidth;
-            Debug.WriteLine("Heigth/Width " + ScrollViewerHeigth + " "+ ScrollViewerWidth);
-
+            ScrollView = scrollViewer;
         }
 
         public void Scrollview_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ScrollViewer scrollViewer = sender as ScrollViewer;
 
-            // Get Scrollviewer size
-            ScrollViewerHeigth = scrollViewer.ViewportHeight;
-            ScrollViewerWidth = scrollViewer.ViewportWidth;
+            // Set Scrollviewer size
+            ScrollView = scrollViewer;
 
-            // Get Window App size
-            double windowHeigth = Window.Current.Bounds.Height;
-
-            // Calculate difference between scrollViewer and Frame Title 
-            MarginWindow_ScrollViewer = windowHeigth - ScrollViewerHeigth;
-
-            double initialWidth = ScrollViewerWidth / 2;
-            double initialHeigth = ScrollViewerHeigth / 2;
-
-            foreach (ElementPlaced ep in ElementsPlaced)
+            // Get UIElements initial size in function of Scrollviewer size
+            double initialWidth = ScrollView.ViewportWidth / 2;
+            double initialHeigth = ScrollView.ViewportHeight / 2;
             {
+                // Set UIElements object width/heigth
+                foreach (ElementPlaced ep in ElementsPlaced)
+                {
 
-                ep.WidthString = initialWidth.ToString();
-                ep.HeigthString = initialHeigth.ToString();
-               
-                OnPropertyChanged("WidthString");
-                OnPropertyChanged("HeigthString");
+                    ep.WidthString = initialWidth.ToString();
+                    ep.HeigthString = initialHeigth.ToString();
 
+                    OnPropertyChanged("WidthString");
+                    OnPropertyChanged("HeigthString");
+
+                }
             }
-            Debug.WriteLine("Initial w/h" + initialWidth + " " + initialHeigth);
-            Debug.WriteLine(" element ******** " + ElementsPlaced.Count());
-            Debug.WriteLine(" width" + ElementsPlaced.First().WidthString);
         }
     }
 }
