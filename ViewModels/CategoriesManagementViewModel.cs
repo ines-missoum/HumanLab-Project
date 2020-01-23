@@ -117,6 +117,7 @@ namespace humanlab.ViewModels
                 AddCategoryToDbCategories(newCategory);
                 UpdateCategoriesForView();
                 messageDialog = new MessageDialog("La catégorie " + NewCategoryName + " a été créée avec succès.");
+                NewCategoryName = "";
             }
             else
                 messageDialog = new MessageDialog("Echec de la création de la catégorie " + NewCategoryName + ".");
