@@ -1,8 +1,8 @@
 ﻿using humanlab.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace humanlab.DAL
@@ -50,5 +50,23 @@ namespace humanlab.DAL
                                 .Count() > 0;
         }
 
+        /// <summary>
+        /// Retrieves all the categories names of the database
+        /// </summary>
+        /// <returns>the list of the categories names of the database</returns>
+        public async Task<List<Category>> GetAllCategoriesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Categories.ToListAsync();
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+        }
     }
 }

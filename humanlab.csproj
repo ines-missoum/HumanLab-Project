@@ -145,6 +145,7 @@
     <Compile Include="Services\ParametersService.cs" />
     <Compile Include="ViewModels\AllElementsViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\CategoriesManagementViewModel.cs" />
     <Compile Include="ViewModels\GridFormViewModel.cs" />
     <Compile Include="ViewModels\NavigationViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
