@@ -189,15 +189,30 @@
                Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" >
             <Grid Loading="{x:Bind grid.Grid_Loading}" >
 
-                <ScrollViewer x:Name="scrollview" ZoomMode="Enabled"  SizeChanged="{x:Bind grid.Scrollview_SizeChanged}" ViewChanged="{x:Bind grid.Scrollview_ViewChanged}" Background="Green">
+                <ScrollViewer x:Name="scrollview"
+                              Background="LightGray"
+                              ZoomMode="Enabled" 
+                              MaxZoomFactor="1.4"
+                              SizeChanged="{x:Bind grid.Scrollview_SizeChanged}" 
+                              ViewChanged="{x:Bind grid.Scrollview_ViewChanged}"
+                              >
                     <ItemsControl ItemsSource="{x:Bind grid.ElementsPlaced}"
                                   ItemTemplate="{StaticResource ScrollViewTemplate}"
                                   Loaded="{x:Bind grid.ItemsControl_Loaded}"
+                                  Opacity="0.8"
                                   />
                  
                 </ScrollViewer>
+
             </Grid>
-       
+
         </Grid>
+        <Button Background="LimeGreen" 
+                    Content="Enregistrer" 
+                    Foreground="White" 
+                    FontSize="23" 
+                    HorizontalAlignment="Right" 
+                    ></Button>
     </Grid>
+    
 </Page>

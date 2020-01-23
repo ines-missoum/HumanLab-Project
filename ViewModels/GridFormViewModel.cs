@@ -551,6 +551,7 @@ namespace humanlab.ViewModels
 
             //Get image wrapped in the sender of type ContentPresenter
             var child = VisualTreeHelper.GetChild(contentPresenter, 0);
+        
 
             //Cast object to image 
             Image image = child as Image;
@@ -589,7 +590,6 @@ namespace humanlab.ViewModels
 
             //Conditions before object's translation
 
-            Debug.WriteLine(ScrollView.Width);
             if (LeftBorder + xAdjustment >= 0 && RightBorder + xAdjustment <= ScrollView.ViewportWidth)
             {
                 current.PositionX += xAdjustment * (1 / ScrollView.ZoomFactor);
@@ -607,6 +607,72 @@ namespace humanlab.ViewModels
         {
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
+
+            
+            var child = VisualTreeHelper.GetChild(scrollView,0);
+            var nb1 = VisualTreeHelper.GetChild(child,0);
+            var nb2 = VisualTreeHelper.GetChild(nb1, 0);
+            var nb = VisualTreeHelper.GetChild(nb2, 0);
+            Debug.WriteLine("trsertttez   "+scrollView.ZoomFactor);
+            ItemsControl itemsControl = nb as ItemsControl;
+            var items = itemsControl.Items;
+            foreach (var item in items)
+            {
+                // Retrieve all UIElements (images) from the DataTemplate 
+                // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
+                UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
+                var contentPresenter = element as ContentPresenter;
+
+                //Get image wrapped in the sender of type ContentPresenter
+                var child2 = VisualTreeHelper.GetChild(contentPresenter, 0);
+
+                //Cast object to image 
+                Image image = child2 as Image;
+
+                //Retrieve image's tag to check on which element('current') we should apply the translation
+                string tagImage = image.Tag.ToString();
+
+                ElementPlaced current = ElementsPlaced.Select(el => el)
+                                                     .Where(el => el.Element.ElementName.Equals(tagImage)).First();
+
+                //Get Position of the current inside the scrollViewer
+                var position = image.TransformToVisual(ScrollView);
+                Point p = position.TransformPoint(new Point(0, 0));
+
+                /***CALCULS FOR LIMITATIONS***/
+
+                //Distance between ScrollViewer's left border and the Image's left Border
+                var LeftBorder = p.X;
+
+                //Distance between ScrollViewer's left border and the Image's rigth Border
+                var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
+
+                //Distance between ScrollViewer's top border and the Image's top
+                var TopBorder = p.Y;
+
+                //Distance between ScrollViewer's top border and the Image's bottom
+                var BottomBorder = p.Y + (image.Height * ScrollView.ZoomFactor);
+
+
+                if (LeftBorder<0)
+                {
+                    current.PositionX += (-LeftBorder);
+                }
+
+                else if (RightBorder> ScrollView.ViewportWidth)
+                {
+                    current.PositionX -= RightBorder;
+                }
+
+                if (TopBorder < 0)
+                {
+                    current.PositionY += (-TopBorder);
+                }
+                else if(BottomBorder > ScrollView.ViewportHeight){
+                    current.PositionY -= BottomBorder;
+                }
+
+            }
         }
 
         public void Scrollview_SizeChanged(object sender, SizeChangedEventArgs e)
