@@ -43,6 +43,21 @@
             </ListViewItem>
         </DataTemplate>
 
+        <!--scrollView design-->
+        <DataTemplate x:Key="ScrollViewTemplate" x:DataType="m1:ElementPlaced">
+            <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}"  
+                   x:Name="image1" 
+                   Tag="{x:Bind Element.ElementName}"
+                   ManipulationMode = "TranslateX, TranslateY, System" 
+                   Width="{x:Bind WidthString,Mode=TwoWay}" 
+                   Height="{x:Bind HeigthString,Mode=TwoWay}"
+                   Stretch="Fill"
+                   >
+                <Image.RenderTransform>
+                    <TranslateTransform x:Name="translateTransform" X="{x:Bind PositionX, Mode=TwoWay}" Y="{x:Bind PositionY, Mode=TwoWay}"  />
+                </Image.RenderTransform>
+            </Image>
+        </DataTemplate>
         <!--converter to retrieve image path-->
         <h:ImageNameToImagePathConverter x:Key="ImageNameToImagePathConverter"></h:ImageNameToImagePathConverter>
 
@@ -56,7 +71,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <TextBlock  Grid.Row="0" Grid.Column="0"
@@ -160,19 +175,30 @@
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
 
-                <Button  Margin="0,24,0,20" Content="OK" Width="190" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
+                <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" FontSize="18" FontWeight="SemiBold" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
 
             </StackPanel>
         </Grid>
 
         <!-- OTHER VIEW :CHOOOSE THE ORGANIZATION OF THE ELEMENTS-->
-        <Grid Margin="5" Background="White" Grid.Row="0" Name="organizationGrid"
+        
+        <Grid Margin="5" Grid.Row="0" Name="organizationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
-               Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}">
+               Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" >
+            <Grid Height="{x:Bind grid.ScrollViewerHeigth, Mode=TwoWay}" Width="{x:Bind grid.ScrollViewerWidth, Mode=TwoWay}" Background="Yellow" Margin="200"></Grid>
+            <Grid Loading="{x:Bind grid.Grid_Loading}" SizeChanged="{x:Bind grid.Grid_SizeChanged}" >
 
+                <ScrollViewer x:Name="scrollview" ZoomMode="Enabled"  SizeChanged="{x:Bind grid.Scrollview_SizeChanged}" ViewChanged="{x:Bind grid.Scrollview_ViewChanged}" Background="Green">
+                    <ItemsControl ItemsSource="{x:Bind grid.ElementsPlaced}"
+                                  ItemTemplate="{StaticResource ScrollViewTemplate}"
+                                  Loaded="{x:Bind grid.ItemsControl_Loaded}"
+                                  />
+                 
+                </ScrollViewer>
+            </Grid>
+       
         </Grid>
-
     </Grid>
 </Page>

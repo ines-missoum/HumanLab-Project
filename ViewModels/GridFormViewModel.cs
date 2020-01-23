@@ -7,9 +7,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace humanlab.ViewModels
 {
@@ -24,6 +27,7 @@ namespace humanlab.ViewModels
         private List<ElementChecked> searchedElements;
         private List<ElementChecked> selectedElements;
         private List<string> categories;
+        private ElementPlaced elementTest;
 
         //attributes of choosing elements view
         private bool isChooseElementsOpened;
@@ -32,6 +36,15 @@ namespace humanlab.ViewModels
         //attributes of organize elements view
         private bool isOrganizeElementsOpened;
         public DelegateCommand OrganizePopUpVisibility { get; set; }
+        private double marginWindow_ScrollViewer;
+
+        private double scrollViewerHeigth;
+
+        private double scrollViewerWidth;
+        private double scrollViewZoomFactor;
+        private ScrollViewer sc;
+
+        private List<ElementPlaced> elementsPlaced;
 
         //attributes linked to dynamic messages in front
         private bool isNextButtonShowing;
@@ -63,6 +76,7 @@ namespace humanlab.ViewModels
         private string searchCategory { get; set; }
         private string gridName;
 
+
         /// <summary>
         /// Responsible for looking in database
         /// </summary>
@@ -78,6 +92,8 @@ namespace humanlab.ViewModels
             InitialiseAllElementsAndCategories();
             SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e => e.Element.ElementName.Length));
             SelectedElements = new List<ElementChecked>();
+            //A supprimer just test
+         
 
             //the views are not displayed at the the beginning
             isChooseElementsOpened = false;
@@ -97,6 +113,16 @@ namespace humanlab.ViewModels
             searchCategory = "Tout";
             searchText = "";
             gridName = "";
+
+            //scrollview attributes
+            this.marginWindow_ScrollViewer = 0;
+            this.elementsPlaced = new List<ElementPlaced>();
+            this.scrollViewZoomFactor = 1;
+            this.sc = new ScrollViewer();
+            this.scrollViewerHeigth = 10;
+            this.scrollViewerWidth = 10;
+
+
         }
 
         /// <summary>
@@ -125,6 +151,32 @@ namespace humanlab.ViewModels
                 {
                     buttonText = value;
                     OnPropertyChanged("ButtonText");
+                }
+            }
+        }
+
+        public double ScrollViewZoomFactor
+        {
+            get => scrollViewZoomFactor;
+            set
+            {
+                if (value != scrollViewZoomFactor)
+                {
+                    scrollViewZoomFactor = value;
+                    OnPropertyChanged("ScrollViewZoomFactor");
+                }
+            }
+        }
+
+                public ScrollViewer Sc
+        {
+            get => sc;
+            set
+            {
+                if (value != sc)
+                {
+                    sc = value;
+                    OnPropertyChanged("Sc");
                 }
             }
         }
@@ -212,6 +264,19 @@ namespace humanlab.ViewModels
                 }
             }
         }
+        public ElementPlaced ElementTest
+        {
+            get => elementTest;
+            set
+            {
+                if (value != elementTest)
+                {
+                    elementTest = value;
+                    OnPropertyChanged("ElementTest");
+                }
+            }
+        }
+
         public List<ElementChecked> AllElements
         {
             get => allElements;
@@ -456,5 +521,201 @@ namespace humanlab.ViewModels
             RefreshSelectionSearchedGrid();
         }
 
+
+
+        /*********************************************************************************************************************************/
+
+        public void Grid_Loading(FrameworkElement sender, object args)
+        {
+            foreach (ElementChecked element in SelectedElements)
+            {
+    
+                ElementPlaced ep = new ElementPlaced(element.Element, 0, 0, 0, 0);
+                ElementsPlaced.Add(ep);
+              
+            }
+
+            ElementTest = ElementsPlaced.First();
+            ElementTest.HeigthString = "800";
+            ElementTest.WidthString = "800";
+            OnPropertyChanged("WidthString");
+            OnPropertyChanged("HeigthString");
+
+        }
+
+        public void ItemsControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            ItemsControl itemsControl = sender as ItemsControl;
+            var items = itemsControl.Items;
+                foreach ( var item in items)
+            {
+                UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
+                Debug.WriteLine(element.ToString());
+                //ItemContainerGenerator.ContainerFromItem(item);
+                element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
+            }
+
+        }
+
+        public List<ElementPlaced> ElementsPlaced
+        {
+            get => elementsPlaced;
+            set
+            {
+                if (value != elementsPlaced)
+                {
+                    elementsPlaced = value;
+                    OnPropertyChanged("ElementsPlaced");
+                }
+            }
+        }
+        public Double MarginWindow_ScrollViewer
+        {
+            get => marginWindow_ScrollViewer;
+            set
+            {
+                if (value != marginWindow_ScrollViewer)
+                {
+                    marginWindow_ScrollViewer = value;
+                    OnPropertyChanged("MarginWindow_ScrollViewer");
+                }
+            }
+        }
+
+        public Double ScrollViewerHeigth
+        {
+            get => scrollViewerHeigth;
+            set
+            {
+                if (value != scrollViewerHeigth)
+                {
+                    scrollViewerHeigth = value;
+                    OnPropertyChanged("ScrollViewerHeigth");
+                }
+            }
+        }
+
+        public Double ScrollViewerWidth
+        {
+            get => scrollViewerWidth;
+            set
+            {
+                if (value != scrollViewerWidth)
+                {
+                    scrollViewerWidth = value;
+                    OnPropertyChanged("ScrollViewerWidth");
+                }
+            }
+        }
+        public void Image_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var ecart = 30;
+            var cp = sender as ContentPresenter;
+            var child = VisualTreeHelper.GetChild(cp, 0);
+            Image image = child as Image;
+            string tagImage = image.Tag.ToString();
+            Debug.WriteLine(" tag " + tagImage);
+
+            var position = image.TransformToVisual(Sc);
+            Point p = position.TransformPoint(new Point(0, 0));
+
+            Debug.WriteLine(" zooom Fa" + ScrollViewZoomFactor);
+            ElementPlaced current = ElementsPlaced.Select(element => element)
+                                                 .Where(element => element.Element.ElementName.Equals(tagImage)).First();
+            //Limits calculs
+            var BorderLeft = p.X;
+            var BorderRight = p.X + (image.Width * ScrollViewZoomFactor);
+
+            Debug.WriteLine("Window Size = " + Window.Current.Bounds.Height);
+            Debug.WriteLine("SV Heigth Size = " + ScrollViewerHeigth);
+
+
+            var BorderTop = p.Y;
+            var BorderBottom = p.Y + (image.Height * ScrollViewZoomFactor);
+
+            Debug.WriteLine("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW    " + p.X + "    " + p.Y);
+
+            var excessInTop = Window.Current.Bounds.Height - ScrollViewerHeigth;
+            Debug.WriteLine("longueur A " + excessInTop);
+
+            Debug.WriteLine("image heigth  " + (image.Height * ScrollViewZoomFactor));
+            Debug.WriteLine("image Width  " + (image.Width * ScrollViewZoomFactor));
+
+            Debug.WriteLine("Border R  " + BorderRight);
+            Debug.WriteLine("Border L  " + BorderLeft);
+            Debug.WriteLine("image Width  " + (image.Width * ScrollViewZoomFactor) / 2);
+            var xAdjustment = e.Delta.Translation.X;
+            var yAdjustment = e.Delta.Translation.Y;
+
+
+
+            //Conditions to translate object
+               if (BorderLeft + xAdjustment >= 0 && BorderRight + xAdjustment <= ScrollViewerWidth)
+                {
+                    current.PositionX += xAdjustment*(1/ScrollViewZoomFactor);
+                }
+
+                if(BorderTop + yAdjustment >= 0 && BorderBottom + yAdjustment <= ScrollViewerHeigth)
+                {
+                    current.PositionY += yAdjustment * (1 / ScrollViewZoomFactor); 
+                }
+      
+
+
+        }
+
+        
+        
+
+        public void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+            double windowHeigth = Window.Current.Bounds.Height;
+            MarginWindow_ScrollViewer = windowHeigth - ScrollViewerHeigth;
+        }
+
+        public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            ScrollViewer scrollViewer = sender as ScrollViewer;
+            sc = scrollViewer;
+
+            ScrollViewZoomFactor = scrollViewer.ZoomFactor;
+            ScrollViewerHeigth = scrollViewer.ViewportHeight;
+            ScrollViewerWidth = scrollViewer.ViewportWidth;
+            Debug.WriteLine("Heigth/Width " + ScrollViewerHeigth + " "+ ScrollViewerWidth);
+
+        }
+
+        public void Scrollview_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ScrollViewer scrollViewer = sender as ScrollViewer;
+
+            // Get Scrollviewer size
+            ScrollViewerHeigth = scrollViewer.ViewportHeight;
+            ScrollViewerWidth = scrollViewer.ViewportWidth;
+
+            // Get Window App size
+            double windowHeigth = Window.Current.Bounds.Height;
+
+            // Calculate difference between scrollViewer and Frame Title 
+            MarginWindow_ScrollViewer = windowHeigth - ScrollViewerHeigth;
+
+            double initialWidth = ScrollViewerWidth / 2;
+            double initialHeigth = ScrollViewerHeigth / 2;
+
+            foreach (ElementPlaced ep in ElementsPlaced)
+            {
+
+                ep.WidthString = initialWidth.ToString();
+                ep.HeigthString = initialHeigth.ToString();
+               
+                OnPropertyChanged("WidthString");
+                OnPropertyChanged("HeigthString");
+
+            }
+            Debug.WriteLine("Initial w/h" + initialWidth + " " + initialHeigth);
+            Debug.WriteLine(" element ******** " + ElementsPlaced.Count());
+            Debug.WriteLine(" width" + ElementsPlaced.First().WidthString);
+        }
     }
 }
