@@ -30,7 +30,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
 
         <TextBlock Grid.Row="0"  Text="Nouvelle catégorie"  Style="{StaticResource SubtitleTextBlockStyle}" 
                                  VerticalAlignment="Center" Margin="8"/>
@@ -38,17 +38,19 @@
             <StackPanel  Orientation="Horizontal">
                 <TextBox Width="400" Margin="8" Text="{x:Bind categoriesVM.NewCategoryName}" 
                      TextChanging="{x:Bind categoriesVM.TextBox_TextChanging}"/>
-            <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"
+                <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"
                     Command="{x:Bind categoriesVM.SaveNewCategoryDelegate}"/>
             </StackPanel>
-            <TextBlock  Text="{x:Bind categoriesVM.ErrorNameMessage, Mode=TwoWay}" Foreground="Red" Margin="8"/>
+            <TextBlock  Text="{x:Bind categoriesVM.ErrorNameMessageCreation, Mode=TwoWay}" Foreground="Red" Margin="8"/>
         </StackPanel>
-     
+
         <TextBlock Grid.Row="2" Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
                                  VerticalAlignment="Center" Margin="8"/>
 
-        <ListView Grid.Row="3" x:Name="FruitsList"  ItemsSource="{Binding Source={StaticResource groupCategories}}" 
-                      ScrollViewer.VerticalScrollBarVisibility="Auto" >
+        <ListView Grid.Row="3" ItemsSource="{Binding Source={StaticResource groupCategories}}" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  IsSynchronizedWithCurrentItem="False"
+                  SelectionChanged="{x:Bind categoriesVM.ListView_SelectionChanged}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="modelHelper:CategoryOrdered">
                     <TextBlock Text="{x:Bind Category.CategoryName}" FontSize="14" Style="{StaticResource BaseTextBlockStyle}" 
@@ -67,5 +69,30 @@
                 </GroupStyle>
             </ListView.GroupStyle>
         </ListView>
+
+        <ContentDialog x:Name="categoryModification"
+                       PrimaryButtonText="Modifier" IsPrimaryButtonEnabled="False"
+                       CloseButtonText="Annuler"
+                       CloseButtonClick="{x:Bind categoriesVM.categoryModification_CloseButtonClick}"
+                       Loaded="{x:Bind categoriesVM.categoryModificationContentDialog_Loaded}"
+                       PrimaryButtonClick="{x:Bind categoriesVM.categoryModification_PrimaryButtonClick}"
+                       >
+            <ContentDialog.TitleTemplate>
+                <DataTemplate>
+                    <TextBlock Text="Modification de catégorie"/>
+                </DataTemplate>
+            </ContentDialog.TitleTemplate>
+            <StackPanel>
+                <TextBlock TextWrapping="WrapWholeWords">
+                    <Run>Cette modification sera répercutée sur tous les éléments affiliés à cette catégorie.</Run><LineBreak/>
+                </TextBlock>
+                <TextBox IsEnabled="False" Header="Ancien nom" 
+                         Text="{x:Bind categoriesVM.SelectedCategory.Category.CategoryName, Mode=TwoWay}"/>
+                <TextBox x:Name="updateCategory" Header="Nouveau nom" Text="{x:Bind categoriesVM.UpdatedCategoryName, Mode=TwoWay}"
+                         TextChanged="{x:Bind categoriesVM.updateCategory_TextChanged}"/>
+                <TextBlock  Text="{x:Bind categoriesVM.ErrorNameMessageUpdate, Mode=TwoWay}" Foreground="Red" Margin="8"/>
+               
+            </StackPanel>
+        </ContentDialog>
     </Grid>
 </Page>

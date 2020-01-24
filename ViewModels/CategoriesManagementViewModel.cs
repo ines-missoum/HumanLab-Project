@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace humanlab.ViewModels
@@ -21,9 +22,15 @@ namespace humanlab.ViewModels
 
         private string newCategoryName;
 
+        private string updatedCategoryName;
+
         public DelegateCommand SaveNewCategoryDelegate { get; set; }
 
-        private string errorNameMessage;
+        private string errorNameMessageCreation;
+
+        private string errorNameMessageUpdate;
+
+        private CategoryOrdered selectedCategory;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -34,6 +41,8 @@ namespace humanlab.ViewModels
 
         private List<CategoryOrdered> dbCategories;
 
+        private ContentDialog updateCategoryDialog;
+
         /*** CONSTRUCTOR ***/
 
         public CategoriesManagementViewModel()
@@ -41,6 +50,7 @@ namespace humanlab.ViewModels
             repository = new CategoryRepository();
             InitialiseCategories();
             newCategoryName = "";
+            updatedCategoryName = "";
             SaveNewCategoryDelegate = new DelegateCommand(SaveNewCategoryAsync, CanSaveNewCategory);
         }
 
@@ -62,10 +72,32 @@ namespace humanlab.ViewModels
             }
         }
 
-        public string ErrorNameMessage
+        public string UpdatedCategoryName
         {
-            get => errorNameMessage;
-            set => SetProperty(ref errorNameMessage, value, "ErrorNameMessage");
+            get => updatedCategoryName;
+            set
+            {
+                SetProperty(ref updatedCategoryName, value, "UpdatedCategoryName");
+                SaveNewCategoryDelegate.RaiseCanExecuteChanged();
+            }
+        }
+
+        public string ErrorNameMessageCreation
+        {
+            get => errorNameMessageCreation;
+            set => SetProperty(ref errorNameMessageCreation, value, "ErrorNameMessageCreation");
+        }
+
+        public string ErrorNameMessageUpdate
+        {
+            get => errorNameMessageUpdate;
+            set => SetProperty(ref errorNameMessageUpdate, value, "ErrorNameMessageUpdate");
+        }
+
+        public CategoryOrdered SelectedCategory
+        {
+            get => selectedCategory;
+            set => SetProperty(ref selectedCategory, value, "SelectedCategory");
         }
 
         /*** METHODS ***/
@@ -130,10 +162,51 @@ namespace humanlab.ViewModels
         {
             bool existingCategory = IsExistingCategory(NewCategoryName);
             if (existingCategory)
-                ErrorNameMessage = "Cette Catégorie existe déjà.";
+                ErrorNameMessageCreation = "Cette Catégorie existe déjà.";
             else
-                ErrorNameMessage = "";
+                ErrorNameMessageCreation = "";
             return !existingCategory && (NewCategoryName.Length > 0);
+        }
+
+        //Modification of category methods
+
+        public async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListView listView = sender as ListView;
+            SelectedCategory = (CategoryOrdered) listView.SelectedItem;
+            Debug.WriteLine(SelectedCategory.Category.CategoryName);
+            await updateCategoryDialog.ShowAsync();
+        }
+
+        public void categoryModificationContentDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            updateCategoryDialog = sender as ContentDialog;
+        }
+
+
+        public void updateCategory_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            UpdatedCategoryName = textBox.Text;
+
+            bool existingCategory = IsExistingCategory(UpdatedCategoryName);
+            if (existingCategory)
+                ErrorNameMessageUpdate = "Cette Catégorie existe déjà.";
+            else
+                ErrorNameMessageUpdate = "";
+
+            updateCategoryDialog.IsPrimaryButtonEnabled = !existingCategory && (UpdatedCategoryName.Length > 0);
+
+        }
+
+        public void categoryModification_CloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            UpdatedCategoryName = "";
+        }
+
+        public void categoryModification_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+
         }
     }
 }
