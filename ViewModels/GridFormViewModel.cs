@@ -527,10 +527,38 @@ namespace humanlab.ViewModels
 
                 // Add to each element their own delegate method manipulationDelta
                 element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
+                element.ManipulationStarted += new ManipulationStartedEventHandler(Image_ManipulationStarted);
+                element.ManipulationCompleted += new ManipulationCompletedEventHandler(Image_ManipulationCompleted);
             }
 
         }
 
+
+        private void Image_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            var contentPresenter = sender as ContentPresenter;
+
+            //Get image wrapped in the sender of type ContentPresenter
+            var child = VisualTreeHelper.GetChild(contentPresenter, 0);
+
+
+            //Cast object to image 
+            Image image = child as Image;
+            image.Opacity = 1;
+        }
+
+        private void Image_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            var contentPresenter = sender as ContentPresenter;
+
+            //Get image wrapped in the sender of type ContentPresenter
+            var child = VisualTreeHelper.GetChild(contentPresenter, 0);
+
+
+            //Cast object to image 
+            Image image = child as Image;
+            image.Opacity = 0.8;
+        }
         public List<ElementPlaced> ElementsPlaced
         {
             get => elementsPlaced;
@@ -605,6 +633,7 @@ namespace humanlab.ViewModels
 
         public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
+            Debug.WriteLine("Je suis bien là ;)");
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
 
@@ -613,7 +642,6 @@ namespace humanlab.ViewModels
             var nb1 = VisualTreeHelper.GetChild(child,0);
             var nb2 = VisualTreeHelper.GetChild(nb1, 0);
             var nb = VisualTreeHelper.GetChild(nb2, 0);
-            Debug.WriteLine("trsertttez   "+scrollView.ZoomFactor);
             ItemsControl itemsControl = nb as ItemsControl;
             var items = itemsControl.Items;
             foreach (var item in items)
@@ -697,6 +725,8 @@ namespace humanlab.ViewModels
                     OnPropertyChanged("HeigthString");
 
                 }
+                float initialZoomFactor = 0.7F;
+                ScrollView.ChangeView(0, 0, initialZoomFactor);
             }
         }
     }

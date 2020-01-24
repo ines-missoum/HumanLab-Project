@@ -52,7 +52,7 @@
                    Width="{x:Bind WidthString,Mode=TwoWay}" 
                    Height="{x:Bind HeigthString,Mode=TwoWay}"
                    Stretch="Fill"
-                   >
+                   Opacity="0.8">
                 <Image.RenderTransform>
                     <TranslateTransform x:Name="translateTransform" X="{x:Bind PositionX, Mode=TwoWay}" Y="{x:Bind PositionY, Mode=TwoWay}"  />
                 </Image.RenderTransform>
@@ -199,7 +199,7 @@
                     <ItemsControl ItemsSource="{x:Bind grid.ElementsPlaced}"
                                   ItemTemplate="{StaticResource ScrollViewTemplate}"
                                   Loaded="{x:Bind grid.ItemsControl_Loaded}"
-                                  Opacity="0.8"
+                                  
                                   />
                  
                 </ScrollViewer>
@@ -212,7 +212,8 @@
                     Foreground="White" 
                     FontSize="23" 
                     HorizontalAlignment="Right" 
-                    ></Button>
+                    Margin="10,0,0,0"
+                   Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" />
     </Grid>
     
 </Page>
