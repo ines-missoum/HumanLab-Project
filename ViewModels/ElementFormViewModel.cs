@@ -70,7 +70,7 @@ namespace humanlab.ViewModels
             GetElementsAsync();
 
         }
-
+ 
         bool CanPlayVocalSynthesis()
         {
             return !ElementSpeach.Equals("");

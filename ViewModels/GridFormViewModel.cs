@@ -37,9 +37,11 @@ namespace humanlab.ViewModels
         private double marginWindow_ScrollViewer;
 
         private ScrollViewer scrollView;
-
+        private ItemsControl itemsControl;
+        private Boolean isPositionsSet;
         private List<ElementPlaced> elementsPlaced;
-
+        public DelegateCommand SaveGridPlacementCommand{ get; set; }
+        public DelegateCommand ReturnToSelectionCommand { get; set; }
         //attributes linked to dynamic messages in front
         private bool isNextButtonShowing;
         private string buttonText;
@@ -112,7 +114,28 @@ namespace humanlab.ViewModels
             this.marginWindow_ScrollViewer = 0;
             this.elementsPlaced = new List<ElementPlaced>();
             this.scrollView = new ScrollViewer();
+            this.itemsControl = new ItemsControl();
+            SaveGridPlacementCommand = new DelegateCommand(SaveGridPlacementAsync, CanSaveGridPlacement);
+            ReturnToSelectionCommand = new DelegateCommand(ReturnToSelection);
+            isPositionsSet = false;
+        }
 
+        private void ReturnToSelection()
+        {
+            IsOrganizeElementsOpened = false;
+            ElementsPlaced = new List<ElementPlaced>();
+            Debug.WriteLine("itc clear source" + ItemsControl.Items.Count());
+            
+        }
+
+        private bool CanSaveGridPlacement()
+        {
+            return isPositionsSet;
+        }
+
+        private void SaveGridPlacementAsync()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -154,6 +177,32 @@ namespace humanlab.ViewModels
                 {
                     scrollView = value;
                     OnPropertyChanged("ScrollView");
+                }
+            }
+        }
+
+        public ItemsControl ItemsControl
+        {
+            get => itemsControl;
+            set
+            {
+                if (value != itemsControl)
+                {
+                    itemsControl = value;
+                    OnPropertyChanged("ItemsControl");
+                }
+            }
+        }
+
+        public bool IsPositionsSet
+        {
+            get => isPositionsSet;
+            set
+            {
+                if (value != isPositionsSet)
+                {
+                    isPositionsSet = value;
+                    OnPropertyChanged("IsPositionsSet");
                 }
             }
         }
@@ -323,9 +372,23 @@ namespace humanlab.ViewModels
                 // display the message dialog with the proper error 
                 await messageDialog.ShowAsync();
             }
-            else
+            else {
+                List<ElementPlaced> listBis = new List<ElementPlaced>(ElementsPlaced);
                 //else we display the organization view
+                // Retrieve checked elements and create new ElementPlaced item
+                foreach (ElementChecked element in SelectedElements)
+                {
+                    //Initialize values to 0 before setting them to their real value
+                    ElementPlaced ep = new ElementPlaced(element.Element, 0, 0, 0, 0);
+                    listBis.Add(ep);
+                }
+                ElementsPlaced = listBis;
                 IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
+                Debug.WriteLine("items in itc  " + ItemsControl.Items.Count);
+                AddDelegatesToItems(ItemsControl);
+                SetInitialWidthToElements();
+            }
+
         }
 
         /*** METHODS THAT DEALS WITH GRIDVIEW SELECTION ISSUES IN THE CHOOSE ELEMENT VIEW***/
@@ -502,35 +565,55 @@ namespace humanlab.ViewModels
 
         /*********************************************************************************************************************************/
 
-        public void Grid_Loading(FrameworkElement sender, object args)
-        {
-            // Retrieve checked elements and create new ElementPlaced item
-            foreach (ElementChecked element in SelectedElements)
-            {
-                //Initialize values to 0 before setting them to their real value
-                ElementPlaced ep = new ElementPlaced(element.Element, 0, 0, 0, 0);
-                ElementsPlaced.Add(ep);
-            }
-        }
-
-
         public void ItemsControl_Loaded(object sender, RoutedEventArgs e)
         {
             // Collection of Selected Elements to be placed in the grid
-            ItemsControl itemsControl = sender as ItemsControl;
+            ItemsControl = sender as ItemsControl;
+            AddDelegatesToItems(ItemsControl);
+
+        }
+
+        public void AddDelegatesToItems(ItemsControl itemsControl)
+        {
+            Debug.WriteLine("add delegate ok");
             var items = itemsControl.Items;
+
             foreach (var item in items)
             {
+                Debug.WriteLine("item $$$" + item.ToString());
                 // Retrieve all UIElements (images) from the DataTemplate 
                 // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
+                itemsControl.UpdateLayout();
                 UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
 
+                Debug.WriteLine("element " + element);
                 // Add to each element their own delegate method manipulationDelta
                 element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
                 element.ManipulationStarted += new ManipulationStartedEventHandler(Image_ManipulationStarted);
                 element.ManipulationCompleted += new ManipulationCompletedEventHandler(Image_ManipulationCompleted);
             }
 
+        }
+
+        public void SetInitialWidthToElements()
+        {
+            double initialWidth = ScrollView.ViewportWidth / 2;
+            double initialHeigth = ScrollView.ViewportHeight / 2;
+            {
+                // Set UIElements object width/heigth
+                foreach (ElementPlaced ep in ElementsPlaced)
+                {
+
+                    ep.WidthString = initialWidth.ToString();
+                    ep.HeigthString = initialHeigth.ToString();
+
+                    OnPropertyChanged("WidthString");
+                    OnPropertyChanged("HeigthString");
+
+                }
+                float initialZoomFactor = 0.7F;
+                ScrollView.ChangeView(0, 0, initialZoomFactor);
+            }
         }
 
 
@@ -567,6 +650,7 @@ namespace humanlab.ViewModels
                 if (value != elementsPlaced)
                 {
                     elementsPlaced = value;
+                    Debug.WriteLine("PChanged");
                     OnPropertyChanged("ElementsPlaced");
                 }
             }
@@ -627,7 +711,7 @@ namespace humanlab.ViewModels
             {
                 current.PositionY += yAdjustment * (1 / ScrollView.ZoomFactor);
             }
-
+            IsPositionsSet = true;
         }
 
 
