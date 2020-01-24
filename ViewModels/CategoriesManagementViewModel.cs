@@ -173,9 +173,9 @@ namespace humanlab.ViewModels
         public async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListView listView = sender as ListView;
-            SelectedCategory = (CategoryOrdered) listView.SelectedItem;
-            Debug.WriteLine(SelectedCategory.Category.CategoryName);
-            await updateCategoryDialog.ShowAsync();
+            SelectedCategory = (CategoryOrdered)listView.SelectedItem;
+            if (SelectedCategory != null)
+                await updateCategoryDialog.ShowAsync();
         }
 
         public void categoryModificationContentDialog_Loaded(object sender, RoutedEventArgs e)
@@ -204,8 +204,24 @@ namespace humanlab.ViewModels
             UpdatedCategoryName = "";
         }
 
-        public void categoryModification_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        public async void categoryModification_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            Category newCategory = new Category { CategoryName = UpdatedCategoryName, CategoryId = SelectedCategory.Category.CategoryId };
+            bool wellSaved = repository.SaveCategoryAsync(newCategory);
+
+            //we display the message when process ends and update the view
+            MessageDialog messageDialog;
+            if (wellSaved)
+            {
+                //AddCategoryToDbCategories(newCategory);
+                messageDialog = new MessageDialog("La catégorie " + SelectedCategory.Category.CategoryName + " a été renommée par " + UpdatedCategoryName + ".");
+                SelectedCategory.Category.CategoryName = UpdatedCategoryName;
+                UpdateCategoriesForView();
+            }
+            else
+                messageDialog = new MessageDialog("Echec de la modification de la catégorie " + SelectedCategory.Category.CategoryName + ".");
+
+            await messageDialog.ShowAsync();
 
         }
     }
