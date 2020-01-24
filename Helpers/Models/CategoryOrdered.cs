@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace humanlab.Helpers.Models
 {
+    /// <summary>
+    /// Class used to modelize a category that is able to be grouped by its key
+    /// </summary>
     class CategoryOrdered
     {
         public Category Category { get; set; }
