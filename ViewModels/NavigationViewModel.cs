@@ -94,6 +94,9 @@ namespace humanlab.ViewModels
                         case "Nouvel élément":
                             this.ContentFrame = typeof(ElementFormView);
                             break;
+                        case "Gestion des catégories":
+                            this.ContentFrame = typeof(CategoriesManagementView);
+                            break;
                     }
                 }
 
