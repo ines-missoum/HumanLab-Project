@@ -17,6 +17,6 @@ namespace humanlab.Models
         [Required]
         public int FixingTime { get; set; }
 
-        public ICollection<Grid> Grids { get; } = new List<Grid>();
+        public ICollection<ActivityGrids> ActivityGrids { get; } = new List<ActivityGrids>();
     }
 }

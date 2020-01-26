@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using humanlab.Models;
 
 namespace humanlab.ViewModels
 {
@@ -77,12 +78,14 @@ namespace humanlab.ViewModels
         /// Responsible for looking in database
         /// </summary>
         private Repository repository;
+        private GridRepository gridRepository;
 
         /***CONSTRUCTOR***/
 
         public GridFormViewModel()
         {
             repository = new Repository();
+            gridRepository = new GridRepository();
 
             //initialisation of al the lists
             InitialiseAllElementsAndCategories();
@@ -130,12 +133,30 @@ namespace humanlab.ViewModels
 
         private bool CanSaveGridPlacement()
         {
-            return isPositionsSet;
+            return IsPositionsSet;
         }
 
-        private void SaveGridPlacementAsync()
+        private async void SaveGridPlacementAsync()
         {
-            throw new NotImplementedException();
+            MessageDialog messageDialog= new MessageDialog("Une erreur s'est produite");
+
+            Models.Grid newGrid = new Models.Grid
+            {
+                GridName = this.gridName,
+                ElementsHeight = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor,
+                ElementsWidth = (ScrollView.ViewportWidth / 2) * ScrollView.ZoomFactor,
+            };
+            try {
+                 gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
+                 messageDialog = new MessageDialog("Votre grille " + gridName + " a été sauvegardée avec succès.");
+            }
+            catch
+            {
+                Debug.WriteLine(" Erreur ");
+            }
+            finally {
+                await messageDialog.ShowAsync(); }
+
         }
 
         /// <summary>
@@ -711,7 +732,12 @@ namespace humanlab.ViewModels
             {
                 current.PositionY += yAdjustment * (1 / ScrollView.ZoomFactor);
             }
+            Debug.WriteLine(" Avant le set true" + IsPositionsSet);
+
             IsPositionsSet = true;
+            SaveGridPlacementCommand.RaiseCanExecuteChanged();
+
+            Debug.WriteLine(" Avant le set true" + IsPositionsSet);
         }
 
 
@@ -771,7 +797,7 @@ namespace humanlab.ViewModels
                     current.PositionX += (-LeftBorder);
                 }
 
-                else if (RightBorder> ScrollView.ViewportWidth)
+                if (RightBorder> ScrollView.ViewportWidth)
                 {
                     current.PositionX -= RightBorder;
                 }
@@ -780,7 +806,7 @@ namespace humanlab.ViewModels
                 {
                     current.PositionY += (-TopBorder);
                 }
-                else if(BottomBorder > ScrollView.ViewportHeight){
+                if(BottomBorder > ScrollView.ViewportHeight){
                     current.PositionY -= BottomBorder;
                 }
 

@@ -216,6 +216,7 @@
                     FontSize="23" 
                     HorizontalAlignment="Right" 
                     Margin="20,20,0,0"
+                    Command="{ Binding SaveGridPlacementCommand}"
                    Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" />
         <Button Background="Red" 
                     Content="Annuler" 

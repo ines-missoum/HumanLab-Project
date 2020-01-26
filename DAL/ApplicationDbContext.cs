@@ -16,8 +16,9 @@ namespace humanlab
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
 
+        public virtual DbSet<GridElements> GridElements { get; set; }
 
-
+        public virtual DbSet<ActivityGrids> ActivityGrids { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=Humanlab.db");
@@ -29,8 +30,28 @@ namespace humanlab
             modelBuilder.Entity<GridElements>()
                 .HasKey(t => new { t.GridId, t.ElementId });
 
+            modelBuilder.Entity<GridElements>()
+           .HasOne(g => g.Grid)
+           .WithMany(g => g.GridElements)
+           .HasForeignKey(g => g.GridId);
+
+            modelBuilder.Entity<GridElements>()
+           .HasOne(e => e.Element)
+           .WithMany(e => e.GridElements)
+           .HasForeignKey(e => e.ElementId);
+
             modelBuilder.Entity<ActivityGrids>()
                 .HasKey(t => new { t.ActivityId, t.GridId });
+
+            modelBuilder.Entity<ActivityGrids>()
+            .HasOne(a => a.Activity)
+            .WithMany(a => a.ActivityGrids)
+            .HasForeignKey(a => a.ActivityId);
+
+            modelBuilder.Entity<ActivityGrids>()
+           .HasOne(g => g.Grid)
+           .WithMany(g => g.ActivityGrids)
+           .HasForeignKey(g => g.GridId);
 
             modelBuilder.Entity<Element>()
             .Property(e => e.ElementId)
@@ -52,7 +73,7 @@ namespace humanlab
                 .HasOne(p => p.Category)
                 .WithMany(b => b.Elements)
                 .HasForeignKey(e => e.CategoryId);
-           
+
             modelBuilder.Entity<Category>()
                 .HasMany(c => c.Elements)
                 .WithOne(e => e.Category);

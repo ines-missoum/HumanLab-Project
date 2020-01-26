@@ -92,7 +92,9 @@ namespace humanlab.Migrations
                     b.Property<int>("GridId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ElementsSize");
+                    b.Property<double>("ElementsHeight");
+
+                    b.Property<double>("ElementsWidth");
 
                     b.Property<string>("GridName")
                         .IsRequired()
@@ -125,12 +127,12 @@ namespace humanlab.Migrations
             modelBuilder.Entity("humanlab.Models.ActivityGrids", b =>
                 {
                     b.HasOne("humanlab.Models.Activity", "Activity")
-                        .WithMany()
+                        .WithMany("ActivityGrids")
                         .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("humanlab.Models.Grid", "Grid")
-                        .WithMany()
+                        .WithMany("ActivityGrids")
                         .HasForeignKey("GridId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -146,12 +148,12 @@ namespace humanlab.Migrations
             modelBuilder.Entity("humanlab.Models.GridElements", b =>
                 {
                     b.HasOne("humanlab.Models.Element", "Element")
-                        .WithMany()
+                        .WithMany("GridElements")
                         .HasForeignKey("ElementId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("humanlab.Models.Grid", "Grid")
-                        .WithMany()
+                        .WithMany("GridElements")
                         .HasForeignKey("GridId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

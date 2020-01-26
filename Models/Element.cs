@@ -22,6 +22,6 @@ namespace humanlab.Models
 
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public ICollection<Grid> Grids { get; } = new List<Grid>();
+        public ICollection<GridElements> GridElements { get; } = new List<GridElements>();
     }
 }
