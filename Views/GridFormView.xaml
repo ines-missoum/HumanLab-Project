@@ -43,6 +43,21 @@
             </ListViewItem>
         </DataTemplate>
 
+        <!--scrollView design-->
+        <DataTemplate x:Key="ScrollViewTemplate" x:DataType="m1:ElementPlaced">
+            <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}"  
+                   x:Name="image1" 
+                   Tag="{x:Bind Element.ElementName}"
+                   ManipulationMode = "TranslateX, TranslateY, System" 
+                   Width="{x:Bind WidthString,Mode=TwoWay}" 
+                   Height="{x:Bind HeigthString,Mode=TwoWay}"
+                   Stretch="Fill"
+                   Opacity="0.8">
+                <Image.RenderTransform>
+                    <TranslateTransform x:Name="translateTransform" X="{x:Bind PositionX, Mode=TwoWay}" Y="{x:Bind PositionY, Mode=TwoWay}"  />
+                </Image.RenderTransform>
+            </Image>
+        </DataTemplate>
         <!--converter to retrieve image path-->
         <h:ImageNameToImagePathConverter x:Key="ImageNameToImagePathConverter"></h:ImageNameToImagePathConverter>
 
@@ -56,7 +71,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <TextBlock  Grid.Row="0" Grid.Column="0"
@@ -91,7 +106,8 @@
                         SelectionMode="None"
                             MaxHeight="300"
                             x:Name="listView"
-                            ItemTemplate="{StaticResource ListViewTemplate}">
+                            ItemTemplate="{StaticResource ListViewTemplate}"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto">
             </ListView>
 
             <Button  Margin="0,12,0,0" Background="LimeGreen" Foreground="White" 
@@ -160,19 +176,58 @@
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
 
-                <Button  Margin="0,24,0,20" Content="OK" Width="190" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
+                <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" FontSize="18" FontWeight="SemiBold" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
 
             </StackPanel>
         </Grid>
 
         <!-- OTHER VIEW :CHOOOSE THE ORGANIZATION OF THE ELEMENTS-->
-        <Grid Margin="5" Background="White" Grid.Row="0" Name="organizationGrid"
+
+        <Grid Margin="5" Grid.Row="0" Name="organizationGrid"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
-               Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}">
+               Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" >
+            <Grid>
+
+                <ScrollViewer x:Name="scrollview"
+                              Background="LightGray"
+                              ZoomMode="Enabled" 
+                              MaxZoomFactor="1.4"
+                              SizeChanged="{x:Bind grid.Scrollview_SizeChanged}" 
+                              ViewChanged="{x:Bind grid.Scrollview_ViewChanged}"
+                              >
+                    <ItemsControl ItemsSource="{x:Bind grid.ElementsPlaced, Mode=TwoWay}" 
+                                  ItemTemplate="{StaticResource ScrollViewTemplate}"
+                                  Loaded="{x:Bind grid.ItemsControl_Loaded}"
+                                  
+                                  />
+                 
+                </ScrollViewer>
+
+            </Grid>
 
         </Grid>
-
+        <StackPanel Orientation="Vertical" >
+        <Button x:Name="SaveButton"
+            Background="LimeGreen" 
+                    Content="Enregistrer" 
+                    Foreground="White" 
+                    FontSize="23" 
+                    HorizontalAlignment="Right" 
+                    Margin="20,20,0,0"
+                    Command="{ Binding SaveGridPlacementCommand}"
+                   Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" />
+        <Button Background="Red" 
+                    Content="Annuler" 
+                    Foreground="White" 
+                    FontSize="23" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,10,0,0"
+                    Width="130"
+                    Command="{Binding ReturnToSelectionCommand}"
+                   Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" />
+        </StackPanel>
     </Grid>
+    
 </Page>

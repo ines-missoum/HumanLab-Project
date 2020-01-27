@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using humanlab.Helpers.Models;
 
 namespace humanlab.DAL
 {
@@ -41,11 +42,14 @@ namespace humanlab.DAL
                 {
                     Category selectedCategory = GetCategoryByName(categoryName, db);
                     selectedCategory.Elements.Add(model);
+                    
                 }
 
                 db.SaveChanges();
             }
         }
+
+
 
         public async Task<List<Element>> GetElementsAsync()
         {

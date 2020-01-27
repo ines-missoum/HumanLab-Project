@@ -14,9 +14,10 @@ namespace humanlab.Models
         [MaxLength(40)]
         public string GridName { get; set; }
         [Required]
-        public int ElementsSize { get; set; }
+        public double ElementsWidth { get; set; }
+        public double ElementsHeight{ get; set; }
 
-        public ICollection<Activity> Activities { get; } = new List<Activity>();
-        public ICollection<Element> Elements { get; } = new List<Element>();
+        public ICollection<ActivityGrids> ActivityGrids { get; set; } = new List<ActivityGrids>();
+        public ICollection<GridElements> GridElements { get; set; } = new List<GridElements>();
     }
 }

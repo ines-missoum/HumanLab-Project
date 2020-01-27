@@ -8,8 +8,8 @@ using humanlab;
 namespace humanlab.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200108235527_Migr")]
-    partial class Migr
+    [Migration("20200126220411_setup")]
+    partial class setup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,7 +70,7 @@ namespace humanlab.Migrations
 
                     b.Property<string>("Audio");
 
-                    b.Property<int?>("CategoryId");
+                    b.Property<int>("CategoryId");
 
                     b.Property<string>("ElementName")
                         .IsRequired()
@@ -93,7 +93,9 @@ namespace humanlab.Migrations
                     b.Property<int>("GridId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ElementsSize");
+                    b.Property<double>("ElementsHeight");
+
+                    b.Property<double>("ElementsWidth");
 
                     b.Property<string>("GridName")
                         .IsRequired()
@@ -126,12 +128,12 @@ namespace humanlab.Migrations
             modelBuilder.Entity("humanlab.Models.ActivityGrids", b =>
                 {
                     b.HasOne("humanlab.Models.Activity", "Activity")
-                        .WithMany()
+                        .WithMany("ActivityGrids")
                         .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("humanlab.Models.Grid", "Grid")
-                        .WithMany()
+                        .WithMany("ActivityGrids")
                         .HasForeignKey("GridId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -140,18 +142,19 @@ namespace humanlab.Migrations
                 {
                     b.HasOne("humanlab.Models.Category", "Category")
                         .WithMany("Elements")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("humanlab.Models.GridElements", b =>
                 {
                     b.HasOne("humanlab.Models.Element", "Element")
-                        .WithMany()
+                        .WithMany("GridElements")
                         .HasForeignKey("ElementId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("humanlab.Models.Grid", "Grid")
-                        .WithMany()
+                        .WithMany("GridElements")
                         .HasForeignKey("GridId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

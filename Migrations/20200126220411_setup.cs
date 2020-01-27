@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace humanlab.Migrations
 {
-    public partial class dbHumanlab : Migration
+    public partial class setup : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,7 +41,8 @@ namespace humanlab.Migrations
                 {
                     GridId = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
-                    ElementsSize = table.Column<int>(nullable: false),
+                    ElementsHeight = table.Column<double>(nullable: false),
+                    ElementsWidth = table.Column<double>(nullable: false),
                     GridName = table.Column<string>(maxLength: 40, nullable: false)
                 },
                 constraints: table =>
@@ -56,7 +57,7 @@ namespace humanlab.Migrations
                     ElementId = table.Column<int>(nullable: false)
                         .Annotation("Autoincrement", true),
                     Audio = table.Column<string>(nullable: true),
-                    CategoryId = table.Column<int>(nullable: true),
+                    CategoryId = table.Column<int>(nullable: false),
                     ElementName = table.Column<string>(maxLength: 40, nullable: false),
                     Image = table.Column<string>(nullable: false),
                     SpeachText = table.Column<string>(nullable: true)
@@ -69,7 +70,7 @@ namespace humanlab.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,7 +78,8 @@ namespace humanlab.Migrations
                 columns: table => new
                 {
                     ActivityId = table.Column<int>(nullable: false),
-                    GridId = table.Column<int>(nullable: false)
+                    GridId = table.Column<int>(nullable: false),
+                    Order = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,7 +103,9 @@ namespace humanlab.Migrations
                 columns: table => new
                 {
                     GridId = table.Column<int>(nullable: false),
-                    ElementId = table.Column<int>(nullable: false)
+                    ElementId = table.Column<int>(nullable: false),
+                    Xposition = table.Column<int>(nullable: false),
+                    Yposition = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
