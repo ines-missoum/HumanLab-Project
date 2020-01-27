@@ -65,6 +65,7 @@ namespace humanlab.ViewModels
         public ActivityFormViewModel()
         {
             gridRepository = new GridRepository();
+            activityRepository = new ActivityRepository();
 
             //initialisation of al the lists
             InitialiseAllGrids();
@@ -101,7 +102,9 @@ namespace humanlab.ViewModels
             //retrieve all the elements
             var grids = await gridRepository.GetGridsAsync();
             AllGrids = new List<GridChecked>();
+            grids.OrderByDescending(g => g.GridName.Length).ToList();
             grids.ForEach(g => AllGrids.Add(new GridChecked(g, false)));
+            
 
         }
 
