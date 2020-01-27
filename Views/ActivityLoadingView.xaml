@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:humanlab.ViewModels"
     xmlns:m="using:humanlab.Helpers.Models"
+    xmlns:h="using:humanlab.Helpers.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -14,9 +15,14 @@
         <vm:ActivityLoadingViewModel x:Name="tobii"/>
     </Page.DataContext>
 
+    <Page.Resources>
+        <!--converter to retrieve image path-->
+        <h:ImageNameToImageUriConverter x:Key="ImageNameToImageUriConverter"></h:ImageNameToImageUriConverter>
+    </Page.Resources>
+    
     <Grid >
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <GridView  ItemsSource="{x:Bind tobii.Elements}">
+            <GridView  ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}">
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="m:ElementOfActivity">
                         <StackPanel  VerticalAlignment="Center" Margin="50" Height="430" Width="430">
@@ -26,6 +32,7 @@
                      Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
                      Margin="0,12" 
                      Height="20"/>
+                            
                             <Button Command="{Binding ClickImage}"
                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
                      x:Name="clickButton"
@@ -33,10 +40,10 @@
                      Width="430"                    
                 >
                                 <Button.Content>
-                                    <Image Tag="{x:Bind Id}" Stretch="Fill">
+                                    <Image Tag="{Binding Element.ElementId}" Stretch="Fill">
                                         <Image.Source>
                                             <BitmapImage 
-                                                UriSource="{x:Bind ImageName}"
+                                                UriSource="{Binding Element.Image, Converter={StaticResource ImageNameToImageUriConverter}}"
                                                 AutoPlay="False" 
                                             />
                                         </Image.Source>

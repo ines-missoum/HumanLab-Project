@@ -18,6 +18,7 @@ using System;
 using Windows.Storage;
 using humanlab.DAL;
 using humanlab.Models;
+using System.Threading.Tasks;
 
 namespace humanlab.ViewModels
 {
@@ -45,30 +46,37 @@ namespace humanlab.ViewModels
 
         public ActivityLoadingViewModel()
         {
+            gridRepository = new GridRepository();
+            Elements = new List<ElementOfActivity>();
+            //retrieve list of elements
+            GetElementsOfGrid(1);
+
+
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
             TobiiSetUpService.StartGazeDeviceWatcher();
             //FocusTime = 0;
             MaxFocusTime = 5; //en sec
             //IsNotAnimated = true;
-            ClickImage = new DelegateCommand<object>(ClickOnImage);
-           Elements = new List<ElementOfActivity>();
-           // Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage, "ça doit faire mal !", null));
+           ClickImage = new DelegateCommand<object>(ClickOnImage);
+           // Elements.Add(new ElementOfActivity(new Element(), MaxFocusTime, ClickImage));
+           //Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage, "ça doit faire mal !", null));
            // Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage, null, "/../UserAssets/married-life.mp3"));
             playingSound = null;
             playingSpeech = null;
+            Debug.WriteLine("end initialise");
 
-            gridRepository = new GridRepository();
-            //retrieve list of elements
-            GetElements();
         }
 
-        private async void GetElements()
+        private async void GetElementsOfGrid(int gridId)
         {
-            List<Element> dbElements = await gridRepository.GetAllGridElements(1);
-            List<ElementOfActivity> viewElements;
-            dbElements.ForEach(e=>Debug.WriteLine(e.ElementName));
-         
+            List<Element> dbElements = await gridRepository.GetAllGridElements(gridId);
 
+            List<ElementOfActivity> viewElements = new List<ElementOfActivity>();
+            dbElements.ForEach(e=> viewElements.Add(new ElementOfActivity(e,MaxFocusTime,ClickImage)));
+
+            Elements = viewElements;
+            Debug.WriteLine(Elements.Count());
+            Debug.WriteLine(Elements.First().Element.Image);
         }
 
         /***GETTERS & SETTERS***/
@@ -174,7 +182,7 @@ namespace humanlab.ViewModels
                 bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
                 if (img != null & !hitRadialProgressBar)
                 {
-                    ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
+                    ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
                     current.FocusTime = 0;
                 }
 
@@ -196,7 +204,7 @@ namespace humanlab.ViewModels
             try
             {
                 Image img = TobiiSetUpService.CurrentFocusImage as Image;
-                ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
+                ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
                 BitmapImage source = img.Source as BitmapImage;
 
                 // Increment progress bar.
@@ -217,19 +225,20 @@ namespace humanlab.ViewModels
 
         private async void Play(BitmapImage source, ElementOfActivity current)
         {
+            string path = "ms-appx:///Assets/";
             source.Play();
             current.IsNotAnimated = false;
-            if (current.SoundName != null)
+            if (current.Element.Audio != "")
             {
                 playingSound = new MediaPlayer();
-                playingSound.Source = MediaSource.CreateFromUri(new Uri(current.SoundName));
+                playingSound.Source = MediaSource.CreateFromUri(new Uri(path+current.Element.Audio));
                 playingSound.Play();
             }
             else
             {
                 playingSpeech = new MediaElement();
                 var synt = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
-                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synt.SynthesizeTextToStreamAsync(current.SpeechText);
+                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synt.SynthesizeTextToStreamAsync(path+current.Element.SpeachText);
                 playingSpeech.SetSource(stream, stream.ContentType);
                 playingSpeech.Play();
             }
@@ -240,7 +249,7 @@ namespace humanlab.ViewModels
         {
             source.Stop();
             current.IsNotAnimated = true;
-            if (current.SoundName != null)
+            if (current.Element.Audio != "")
             {
                 playingSound.Pause();
                 playingSound.Source = null;
@@ -258,7 +267,7 @@ namespace humanlab.ViewModels
         private void ClickOnImage(object args)
         {
             Image img = args as Image;
-            ElementOfActivity current = Elements.Where(el => el.Id.Equals(img.Tag)).First();
+            ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
             BitmapImage source = img.Source as BitmapImage;
 
             if (source.IsPlaying)
