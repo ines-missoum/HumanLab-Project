@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using humanlab.Helpers.Models;
 using humanlab.Models;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace humanlab.DAL
 {
@@ -36,6 +37,36 @@ namespace humanlab.DAL
                     };
                     db.GridElements.Add(newGridElement);
                     db.SaveChanges();
+                }
+            }
+        }
+
+        public async Task<List<Element>> GetAllGridElements(int gridId)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    //we retrieve the grid of the corresponding id
+                    var grid = await db.Grids.Include(g => g.GridElements)
+                        .ThenInclude(g=> g.Element)
+                        .Where(g=> g.GridId==1)
+                        .FirstAsync();
+
+                    //we retrieve all its elements.
+                    List<Element> allGridElements = new List<Element>();                 
+                    foreach (GridElements gridElement in grid.GridElements)
+                    {
+                        allGridElements.Add(gridElement.Element) ;
+                    }
+                    
+                    return allGridElements;
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error");
+                    return null;
                 }
             }
         }

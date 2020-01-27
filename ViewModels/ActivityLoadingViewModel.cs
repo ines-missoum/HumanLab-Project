@@ -16,6 +16,8 @@ using Windows.Media.Playback;
 using Windows.Media.Core;
 using System;
 using Windows.Storage;
+using humanlab.DAL;
+using humanlab.Models;
 
 namespace humanlab.ViewModels
 {
@@ -36,6 +38,9 @@ namespace humanlab.ViewModels
         private MediaPlayer playingSound;
         private MediaElement playingSpeech;
 
+        //repository
+        private GridRepository gridRepository;
+
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -45,12 +50,25 @@ namespace humanlab.ViewModels
             //FocusTime = 0;
             MaxFocusTime = 5; //en sec
             //IsNotAnimated = true;
-            ClickImage = new DelegateCommand<object>(ClickOnImage, CanClickOnImage);
-            Elements = new List<ElementOfActivity>();
-            Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage, "ça doit faire mal !", null));
-            Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage, null, "/../UserAssets/married-life.mp3"));
+            ClickImage = new DelegateCommand<object>(ClickOnImage);
+           Elements = new List<ElementOfActivity>();
+           // Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage, "ça doit faire mal !", null));
+           // Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage, null, "/../UserAssets/married-life.mp3"));
             playingSound = null;
             playingSpeech = null;
+
+            gridRepository = new GridRepository();
+            //retrieve list of elements
+            GetElements();
+        }
+
+        private async void GetElements()
+        {
+            List<Element> dbElements = await gridRepository.GetAllGridElements(1);
+            List<ElementOfActivity> viewElements;
+            dbElements.ForEach(e=>Debug.WriteLine(e.ElementName));
+         
+
         }
 
         /***GETTERS & SETTERS***/
@@ -251,11 +269,6 @@ namespace humanlab.ViewModels
             {
                 Play(source, current);
             }
-        }
-
-        private bool CanClickOnImage(object args)
-        {
-            return true;
         }
 
     }
