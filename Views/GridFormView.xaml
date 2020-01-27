@@ -13,7 +13,7 @@
     <!--This Page contains three views in one to handle all the grid form. The different views are displayed by managing the visibility of each one -->
 
     <Page.DataContext>
-        <vm:GridFormViewModel x:Name="grid"/>
+        <vm:GridFormViewModel x:Name="grid" />
     </Page.DataContext>
 
     <Page.Resources>

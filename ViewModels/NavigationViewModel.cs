@@ -11,43 +11,43 @@ namespace humanlab.ViewModels
         public NavigationViewModel()
         {
             contentFrame = typeof(AllActivitiesView);
-            title = "Accueil";
+            title = "Lancer une activité";
             ColorNav = ColorTheme;
         }
 
         public String ColorNav { get; set; }
+        /// <summary>
+        /// the current view
+        /// </summary>
         public Type contentFrame;
+        /// <summary>
+        /// the current view title
+        /// </summary>
         public String title;
 
+        /*** GETTERS AND SETTERS ***/
         public String Title
         {
             get => title;
-            set
-            {
-                if (value != title)
-                {
-                    title = value;
-                    OnPropertyChanged("Title");
-                }
-            }
+            set => SetProperty(ref title, value, "Title");
         }
 
         public Type ContentFrame
         {
             get => contentFrame;
-            set
-            {
-                if (value != contentFrame)
-                {
-                    contentFrame = value;
-                    OnPropertyChanged("ContentFrame");
-                }
-            }
+            set => SetProperty(ref contentFrame, value, "ContentFrame");
         }
 
-
+        /*** METHODS ***/
+        /// <summary>
+        /// Method called when the navigation view is loaded (ie : in our case when the application is loaded)
+        /// </summary>
+        /// <param name="sender">navigation view</param>
+        /// <param name="args">arguments</param>
         public void nvTopLevelNav_Loaded(object sender, RoutedEventArgs e)
         {
+            NavigationView NavView = sender as NavigationView;
+            NavView.SelectedItem = NavView.MenuItems[1];
         }
 
         public void nvTopLevelNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -55,6 +55,11 @@ namespace humanlab.ViewModels
             // we use itemInvoked instead
         }
 
+        /// <summary>
+        /// Method called when we click on a menu item
+        /// </summary>
+        /// <param name="sender">navigation view</param>
+        /// <param name="args">arguments</param>
         public void nvTopLevelNav_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
 
@@ -73,7 +78,7 @@ namespace humanlab.ViewModels
                     switch (ItemContent)
                     {
                         
-                        case "Toutes les activités":
+                        case "Lancer une activité":
                             this.ContentFrame = typeof(AllActivitiesView);
                             break;
                         case "Nouvelle activité":
@@ -88,6 +93,9 @@ namespace humanlab.ViewModels
                             break;
                         case "Nouvel élément":
                             this.ContentFrame = typeof(ElementFormView);
+                            break;
+                        case "Gestion des catégories":
+                            this.ContentFrame = typeof(CategoriesManagementView);
                             break;
                     }
                 }
