@@ -127,7 +127,7 @@ namespace humanlab.ViewModels
         {
             IsOrganizeElementsOpened = false;
             ElementsPlaced = new List<ElementPlaced>();
-            Debug.WriteLine("itc clear source" + ItemsControl.Items.Count());
+
             
         }
 
@@ -405,7 +405,7 @@ namespace humanlab.ViewModels
                 }
                 ElementsPlaced = listBis;
                 IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
-                Debug.WriteLine("items in itc  " + ItemsControl.Items.Count);
+
                 AddDelegatesToItems(ItemsControl);
                 SetInitialWidthToElements();
             }
@@ -596,18 +596,17 @@ namespace humanlab.ViewModels
 
         public void AddDelegatesToItems(ItemsControl itemsControl)
         {
-            Debug.WriteLine("add delegate ok");
             var items = itemsControl.Items;
 
             foreach (var item in items)
             {
-                Debug.WriteLine("item $$$" + item.ToString());
+
                 // Retrieve all UIElements (images) from the DataTemplate 
                 // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
                 itemsControl.UpdateLayout();
                 UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
 
-                Debug.WriteLine("element " + element);
+
                 // Add to each element their own delegate method manipulationDelta
                 element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
                 element.ManipulationStarted += new ManipulationStartedEventHandler(Image_ManipulationStarted);
@@ -671,7 +670,6 @@ namespace humanlab.ViewModels
                 if (value != elementsPlaced)
                 {
                     elementsPlaced = value;
-                    Debug.WriteLine("PChanged");
                     OnPropertyChanged("ElementsPlaced");
                 }
             }
@@ -684,7 +682,7 @@ namespace humanlab.ViewModels
 
             //Get image wrapped in the sender of type ContentPresenter
             var child = VisualTreeHelper.GetChild(contentPresenter, 0);
-        
+
 
             //Cast object to image 
             Image image = child as Image;
@@ -696,23 +694,20 @@ namespace humanlab.ViewModels
                                                  .Where(element => element.Element.ElementName.Equals(tagImage)).First();
 
             //Get Position of the current inside the scrollViewer
-            var position = image.TransformToVisual(ScrollView);
-            Point p = position.TransformPoint(new Point(0, 0));
-
+            var results = GetItemPositionInScrollViewer(image);
             /***CALCULS FOR LIMITATIONS***/
 
             //Distance between ScrollViewer's left border and the Image's left Border
-            var LeftBorder = p.X;
-            Debug.WriteLine(" left bd  " + LeftBorder);
+            var LeftBorder = results["LeftBorder"];
 
             //Distance between ScrollViewer's left border and the Image's rigth Border
-            var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
+            var RightBorder = results["RightBorder"];
 
             //Distance between ScrollViewer's top border and the Image's top
-            var TopBorder = p.Y;
-            Debug.WriteLine(" top bd  " + TopBorder);
+            var TopBorder = results["TopBorder"];
+
             //Distance between ScrollViewer's top border and the Image's bottom
-            var BottomBorder = p.Y + (image.Height * ScrollView.ZoomFactor);
+            var BottomBorder = results["BottomBorder"];
 
             //Small shift(delta) on the horizontal axis 
             var xAdjustment = e.Delta.Translation.X;
@@ -737,18 +732,65 @@ namespace humanlab.ViewModels
                 current.DeltaOnY += yAdjustment * (1 / ScrollView.ZoomFactor);
                 current.YPosition = TopBorder + yAdjustment;
             }
-            Debug.WriteLine(" Avant le set true" + IsPositionsSet);
 
             IsPositionsSet = true;
             SaveGridPlacementCommand.RaiseCanExecuteChanged();
 
-            Debug.WriteLine(" Avant le set true" + IsPositionsSet);
         }
 
-
-        public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        public Image GetImageFromUIElement (object item)
         {
-            Debug.WriteLine("Je suis bien là ;)");
+            // Retrieve all UIElements (images) from the DataTemplate 
+            // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
+            UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
+            var contentPresenter = element as ContentPresenter;
+
+            //Get image wrapped in the sender of type ContentPresenter
+            var child2 = VisualTreeHelper.GetChild(contentPresenter, 0);
+
+            //Cast object to image 
+            Image image = child2 as Image;
+
+            return image;
+
+
+        }
+        public Dictionary<string, double> GetItemPositionInScrollViewer(Image image)
+        {
+
+            Dictionary<string, double > results = new Dictionary<string, double>();
+
+
+                //Get Position of the current inside the scrollViewer
+                var position = image.TransformToVisual(ScrollView);
+                Point p = position.TransformPoint(new Point(0, 0));
+
+                /***CALCULS FOR LIMITATIONS***/
+
+                //Distance between ScrollViewer's left border and the Image's left Border
+                var LeftBorder = p.X;
+            results.Add("LeftBorder", LeftBorder);
+
+                //Distance between ScrollViewer's left border and the Image's rigth Border
+                var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
+            results.Add("RightBorder", RightBorder);
+
+            //Distance between ScrollViewer's top border and the Image's top
+            var TopBorder = p.Y;
+            results.Add("TopBorder", TopBorder);
+
+            //Distance between ScrollViewer's top border and the Image's bottom
+            var BottomBorder = p.Y + (image.Height * ScrollView.ZoomFactor);
+            results.Add("BottomBorder", BottomBorder);
+
+            return results;
+            }
+
+            
+
+            public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
 
@@ -759,62 +801,44 @@ namespace humanlab.ViewModels
             var nb = VisualTreeHelper.GetChild(nb2, 0);
             ItemsControl itemsControl = nb as ItemsControl;
             var items = itemsControl.Items;
+
             foreach (var item in items)
             {
-                // Retrieve all UIElements (images) from the DataTemplate 
-                // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
-                UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
-                var contentPresenter = element as ContentPresenter;
+                var image = GetImageFromUIElement(item);
 
-                //Get image wrapped in the sender of type ContentPresenter
-                var child2 = VisualTreeHelper.GetChild(contentPresenter, 0);
+                var results= GetItemPositionInScrollViewer(image);
+                /***CALCULS FOR LIMITATIONS***/
 
-                //Cast object to image 
-                Image image = child2 as Image;
+                //Distance between ScrollViewer's left border and the Image's left Border
+                var LeftBorder = results["LeftBorder"];
+
+                //Distance between ScrollViewer's left border and the Image's rigth Border
+                var RightBorder = results["RightBorder"];
+
+                //Distance between ScrollViewer's top border and the Image's top
+                var TopBorder = results["TopBorder"];
+
+                //Distance between ScrollViewer's top border and the Image's bottom
+                var BottomBorder = results["BottomBorder"];
+
 
                 //Retrieve image's tag to check on which element('current') we should apply the translation
                 string tagImage = image.Tag.ToString();
 
                 ElementPlaced current = ElementsPlaced.Select(el => el)
-                                                     .Where(el => el.Element.ElementName.Equals(tagImage)).First();
+                                                      .Where(el => el.Element.ElementName.Equals(tagImage))
+                                                      .First();
 
-                //Get Position of the current inside the scrollViewer
-                var position = image.TransformToVisual(ScrollView);
-                Point p = position.TransformPoint(new Point(0, 0));
-
-                /***CALCULS FOR LIMITATIONS***/
-
-                //Distance between ScrollViewer's left border and the Image's left Border
-                var LeftBorder = p.X;
-
-                //Distance between ScrollViewer's left border and the Image's rigth Border
-                var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
-
-                //Distance between ScrollViewer's top border and the Image's top
-                var TopBorder = p.Y;
-
-                //Distance between ScrollViewer's top border and the Image's bottom
-                var BottomBorder = p.Y + (image.Height * ScrollView.ZoomFactor);
+                if (LeftBorder < 0) { current.DeltaOnX += (-LeftBorder); }
 
 
-                if (LeftBorder<0)
-                {
-                    current.DeltaOnX += (-LeftBorder);
+                if (RightBorder > ScrollView.ViewportWidth) { current.DeltaOnX -= RightBorder; }
 
-                }
 
-                if (RightBorder> ScrollView.ViewportWidth)
-                {
-                    current.DeltaOnX -= RightBorder;
-                }
+                if (TopBorder < 0) { current.DeltaOnY += (-TopBorder); }
 
-                if (TopBorder < 0)
-                {
-                    current.DeltaOnY += (-TopBorder);
-                }
-                if(BottomBorder > ScrollView.ViewportHeight){
-                    current.DeltaOnY -= BottomBorder;
-                }
+
+                if (BottomBorder > ScrollView.ViewportHeight) { current.DeltaOnY -= BottomBorder; }
 
             }
         }
