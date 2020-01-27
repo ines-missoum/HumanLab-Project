@@ -1,0 +1,66 @@
+﻿<Page
+    x:Class="humanlab.Views.ActivityLoadingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:humanlab.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:humanlab.ViewModels"
+    xmlns:m="using:humanlab.Helpers.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <vm:ActivityLoadingViewModel x:Name="tobii"/>
+    </Page.DataContext>
+
+    <Grid >
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <GridView  ItemsSource="{x:Bind tobii.Elements}">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="m:ElementOfActivity">
+                        <StackPanel  VerticalAlignment="Center" Margin="50" Height="430" Width="430">
+                            <ProgressBar 
+                     Value="{x:Bind FocusTime, Mode=TwoWay}" 
+                     Maximum="{x:Bind MaxFocusTime}" 
+                     Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
+                     Margin="0,12" 
+                     Height="20"/>
+                            <Button Command="{Binding ClickImage}"
+                     CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
+                     x:Name="clickButton"
+                     Height="325" 
+                     Width="430"                    
+                >
+                                <Button.Content>
+                                    <Image Tag="{x:Bind Id}" Stretch="Fill">
+                                        <Image.Source>
+                                            <BitmapImage 
+                                                UriSource="{x:Bind ImageName}"
+                                                AutoPlay="False" 
+                                            />
+                                        </Image.Source>
+                                    </Image>
+                                </Button.Content>
+
+                            </Button>
+                        </StackPanel>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+
+        </StackPanel>
+
+        <Canvas x:Name="gazePositionCanvas">
+            <Ellipse 
+                    x:Name="eyeGazePositionEllipse"
+                    Width="20" Height="20"
+                    Fill="Black" 
+                    Opacity="0.5" 
+                    Visibility="Visible"
+                RenderTransform="{Binding Transform}"
+                >
+            </Ellipse>
+        </Canvas>
+    </Grid>
+</Page>
