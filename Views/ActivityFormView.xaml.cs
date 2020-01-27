@@ -26,5 +26,10 @@ namespace humanlab.Views
         {
             this.InitializeComponent();
         }
+
+        private void timeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+
+        }
     }
 }
