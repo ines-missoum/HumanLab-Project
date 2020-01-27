@@ -14,9 +14,13 @@ namespace humanlab.Helpers.Models
     {
 
         public Element Element { get; set; }
-        public double positionX;
 
-        public double positionY;
+
+        public double xPosition;
+        public double yPosition;
+        public double deltaOnX;
+
+        public double deltaOnY;
 
         public double width;
         public double heigth;
@@ -29,8 +33,8 @@ namespace humanlab.Helpers.Models
         public ElementPlaced(Element element, double x, double y, double width, double heigth)
         {
             this.Element = element;
-            this.positionX = x;
-            this.positionY = y;
+            this.deltaOnX = x;
+            this.deltaOnY = y;
             this.width = width;
             this.heigth = heigth;
             this.widthString = width.ToString();
@@ -98,30 +102,60 @@ namespace humanlab.Helpers.Models
         }
 
 
-        public double PositionX
+        public double DeltaOnX
         {
-            get => positionX;
+            get => deltaOnX;
             set
             {
-                if (value != positionX)
+                if (value != deltaOnX)
                 {
-                    positionX = value;
-                    OnPropertyChanged("PositionX");
+                    deltaOnX = value;
+                    OnPropertyChanged("DeltaOnX");
 
 
                 }
             }
         }
 
-        public double PositionY
+        public double DeltaOnY
         {
-            get => positionY;
+            get => deltaOnY;
             set
             {
-                if (value != positionY)
+                if (value != deltaOnY)
                 {
-                    positionY = value;
-                    OnPropertyChanged("PositionY");
+                    deltaOnY = value;
+                    OnPropertyChanged("DeltaOnY");
+
+
+                }
+            }
+        }
+
+        public double XPosition
+        {
+            get => xPosition;
+            set
+            {
+                if (value != xPosition)
+                {
+                    xPosition = value;
+                    OnPropertyChanged("XPosition");
+
+
+                }
+            }
+        }
+
+        public double YPosition
+        {
+            get => yPosition;
+            set
+            {
+                if (value != yPosition)
+                {
+                    yPosition = value;
+                    OnPropertyChanged("YPosition");
 
 
                 }

@@ -54,7 +54,7 @@
                    Stretch="Fill"
                    Opacity="0.8">
                 <Image.RenderTransform>
-                    <TranslateTransform x:Name="translateTransform" X="{x:Bind PositionX, Mode=TwoWay}" Y="{x:Bind PositionY, Mode=TwoWay}"  />
+                    <TranslateTransform x:Name="translateTransform" X="{x:Bind DeltaOnX, Mode=TwoWay}" Y="{x:Bind DeltaOnY, Mode=TwoWay}"  />
                 </Image.RenderTransform>
             </Image>
         </DataTemplate>

@@ -703,13 +703,14 @@ namespace humanlab.ViewModels
 
             //Distance between ScrollViewer's left border and the Image's left Border
             var LeftBorder = p.X;
+            Debug.WriteLine(" left bd  " + LeftBorder);
 
             //Distance between ScrollViewer's left border and the Image's rigth Border
             var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
 
             //Distance between ScrollViewer's top border and the Image's top
             var TopBorder = p.Y;
-
+            Debug.WriteLine(" top bd  " + TopBorder);
             //Distance between ScrollViewer's top border and the Image's bottom
             var BottomBorder = p.Y + (image.Height * ScrollView.ZoomFactor);
 
@@ -725,12 +726,16 @@ namespace humanlab.ViewModels
 
             if (LeftBorder + xAdjustment >= 0 && RightBorder + xAdjustment <= ScrollView.ViewportWidth)
             {
-                current.PositionX += xAdjustment * (1 / ScrollView.ZoomFactor);
+                current.DeltaOnX += xAdjustment * (1 / ScrollView.ZoomFactor);
+
+                current.XPosition = LeftBorder + xAdjustment;
+
             }
 
             if (TopBorder + yAdjustment >= 0 && BottomBorder + yAdjustment <= ScrollView.ViewportHeight)
             {
-                current.PositionY += yAdjustment * (1 / ScrollView.ZoomFactor);
+                current.DeltaOnY += yAdjustment * (1 / ScrollView.ZoomFactor);
+                current.YPosition = TopBorder + yAdjustment;
             }
             Debug.WriteLine(" Avant le set true" + IsPositionsSet);
 
@@ -794,20 +799,21 @@ namespace humanlab.ViewModels
 
                 if (LeftBorder<0)
                 {
-                    current.PositionX += (-LeftBorder);
+                    current.DeltaOnX += (-LeftBorder);
+
                 }
 
                 if (RightBorder> ScrollView.ViewportWidth)
                 {
-                    current.PositionX -= RightBorder;
+                    current.DeltaOnX -= RightBorder;
                 }
 
                 if (TopBorder < 0)
                 {
-                    current.PositionY += (-TopBorder);
+                    current.DeltaOnY += (-TopBorder);
                 }
                 if(BottomBorder > ScrollView.ViewportHeight){
-                    current.PositionY -= BottomBorder;
+                    current.DeltaOnY -= BottomBorder;
                 }
 
             }
