@@ -36,7 +36,8 @@
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
                     <Grid Background="LightGreen" >
-                        <TextBlock Text="1" FontSize="23" TextAlignment="Center" Width="32" Height="32"/>
+                        <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},
+                                      Path=(ListView.AlternationIndex)}" FontSize="23" TextAlignment="Center" Width="32" Height="32"/>
                     </Grid>
                     <TextBlock Margin="8,0,0,0" Text="{x:Bind Grid.GridName}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </StackPanel>
@@ -91,7 +92,8 @@
                             ItemTemplate="{StaticResource ListViewTemplate}"
                        ScrollViewer.VerticalScrollBarVisibility="Auto"
                         CanReorderItems="True"
-                        AllowDrop="True">
+                        AllowDrop="True"
+                       >
             </ListView>
 
 
