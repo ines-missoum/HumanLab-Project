@@ -3,6 +3,7 @@ using humanlab.Helpers.Models;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace humanlab.ViewModels
 
         private List<GridChecked> allGrids;
         private List<GridChecked> searchedGrids;
+        private ObservableCollection<GridChecked> selectedGridsSource;
         private List<GridChecked> selectedGrids;
 
         //attributes of choosing elements view
@@ -71,6 +73,8 @@ namespace humanlab.ViewModels
             InitialiseAllGrids();
             SearchedGrids = new List<GridChecked>(AllGrids.OrderByDescending(e => e.Grid.GridName.Length));
             SelectedGrids = new List<GridChecked>();
+            SelectedGridsSource = new ObservableCollection<GridChecked>();
+
             //A supprimer just test
 
 
@@ -173,7 +177,23 @@ namespace humanlab.ViewModels
         public List<GridChecked> SelectedGrids
         {
             get => selectedGrids;
-            set => SetProperty(ref selectedGrids, value, "SelectedGrids");
+            set {
+                if (value != selectedGrids)
+                {
+                    selectedGrids = value;
+                    SelectedGridsSource = new ObservableCollection<GridChecked>(value);
+                    OnPropertyChanged("SelectedGridsSource");
+                    OnPropertyChanged("SelectedGrids");
+                    OnPropertyChanged("ButtonText");
+                }
+            }
+
+        }
+
+        public ObservableCollection<GridChecked> SelectedGridsSource
+        {
+            get => selectedGridsSource;
+            set => SetProperty(ref selectedGridsSource, value, "SelectedGridsSource");
 
         }
 
