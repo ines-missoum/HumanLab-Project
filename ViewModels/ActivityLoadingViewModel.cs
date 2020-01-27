@@ -57,13 +57,10 @@ namespace humanlab.ViewModels
             //FocusTime = 0;
             MaxFocusTime = 5; //en sec
             //IsNotAnimated = true;
-           ClickImage = new DelegateCommand<object>(ClickOnImage);
-           // Elements.Add(new ElementOfActivity(new Element(), MaxFocusTime, ClickImage));
-           //Elements.Add(new ElementOfActivity("1", "/../UserAssets/chute.gif", MaxFocusTime, ClickImage, "ça doit faire mal !", null));
-           // Elements.Add(new ElementOfActivity("2", "/../UserAssets/ballon.gif", MaxFocusTime, ClickImage, null, "/../UserAssets/married-life.mp3"));
+
             playingSound = null;
             playingSpeech = null;
-            Debug.WriteLine("end initialise");
+
 
         }
 
@@ -75,8 +72,7 @@ namespace humanlab.ViewModels
             dbElements.ForEach(e=> viewElements.Add(new ElementOfActivity(e,MaxFocusTime,ClickImage)));
 
             Elements = viewElements;
-            Debug.WriteLine(Elements.Count());
-            Debug.WriteLine(Elements.First().Element.Image);
+
         }
 
         /***GETTERS & SETTERS***/
@@ -238,7 +234,7 @@ namespace humanlab.ViewModels
             {
                 playingSpeech = new MediaElement();
                 var synt = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
-                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synt.SynthesizeTextToStreamAsync(path+current.Element.SpeachText);
+                Windows.Media.SpeechSynthesis.SpeechSynthesisStream stream = await synt.SynthesizeTextToStreamAsync(current.Element.SpeachText);
                 playingSpeech.SetSource(stream, stream.ContentType);
                 playingSpeech.Play();
             }
@@ -270,7 +266,7 @@ namespace humanlab.ViewModels
             ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
             BitmapImage source = img.Source as BitmapImage;
 
-            if (source.IsPlaying)
+            if (current.IsNotAnimated)
             {
                 Stop(source, current);
             }

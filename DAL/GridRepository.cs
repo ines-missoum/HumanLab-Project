@@ -49,17 +49,17 @@ namespace humanlab.DAL
                 {
                     //we retrieve the grid of the corresponding id
                     var grid = await db.Grids.Include(g => g.GridElements)
-                        .ThenInclude(g=> g.Element)
-                        .Where(g=> g.GridId==1)
+                        .ThenInclude(g => g.Element)
+                        .Where(g => g.GridId == gridId)
                         .FirstAsync();
 
                     //we retrieve all its elements.
-                    List<Element> allGridElements = new List<Element>();                 
+                    List<Element> allGridElements = new List<Element>();
                     foreach (GridElements gridElement in grid.GridElements)
                     {
-                        allGridElements.Add(gridElement.Element) ;
+                        allGridElements.Add(gridElement.Element);
                     }
-                    
+
                     return allGridElements;
 
                 }
