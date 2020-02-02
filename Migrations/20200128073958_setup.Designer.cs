@@ -8,7 +8,7 @@ using humanlab;
 namespace humanlab.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200126220411_setup")]
+    [Migration("20200128073958_setup")]
     partial class setup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

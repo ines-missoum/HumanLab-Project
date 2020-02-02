@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using System.Diagnostics;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace humanlab.ViewModels
 {
@@ -55,6 +57,7 @@ namespace humanlab.ViewModels
         //values of the form 
         private string searchText { get; set; }
         private string activityName;
+        private double fixingTime;
 
         /// <summary>
         /// Responsible for looking in database
@@ -94,6 +97,7 @@ namespace humanlab.ViewModels
             //form default values
             searchText = "";
             activityName = "";
+            fixingTime = 0;
 
         }
 
@@ -107,7 +111,14 @@ namespace humanlab.ViewModels
             var grids = await gridRepository.GetGridsAsync();
             AllGrids = new List<GridChecked>();
             grids.OrderByDescending(g => g.GridName.Length).ToList();
-            grids.ForEach(g => AllGrids.Add(new GridChecked(g, false)));
+            int index = 1;
+            grids.ForEach(g => {
+
+                AllGrids.Add(new GridChecked(g, false, index));
+                index += 1;
+         
+                }
+            );
             
 
         }
@@ -117,6 +128,11 @@ namespace humanlab.ViewModels
         {
             get => buttonText;
             set => SetProperty(ref buttonText, value, "ButtonText");
+        }
+        public double FixingTime
+        {
+            get => fixingTime;
+            set => SetProperty(ref fixingTime, value, "FixingTime");
         }
 
         public bool IsEmptyGridsMessageShowing
@@ -189,6 +205,8 @@ namespace humanlab.ViewModels
             }
 
         }
+
+
 
         public ObservableCollection<GridChecked> SelectedGridsSource
         {
@@ -386,7 +404,29 @@ namespace humanlab.ViewModels
             RefreshSelectionSearchedGrid();
         }
 
+        public void updateIndexOfItems()
+        {
+            foreach (GridChecked item in SelectedGridsSource)
+            {
+                int currentIndex = SelectedGridsSource.IndexOf(item) + 1;
+                if (item.IndexInListView != currentIndex)
+                {
+                    item.IndexInListView = currentIndex;
+                    Debug.WriteLine("nom " + item.Grid.GridName + "  => index =" + item.IndexInListView);
+                }
+            }
+        }
+        public void listView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)=> updateIndexOfItems();
 
+        public void timeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            Slider slider = sender as Slider;
+            if (slider != null && FixingTime != slider.Value)
+            {
+                FixingTime = slider.Value;
+                Debug.WriteLine("fix time " + FixingTime);
 
+            }
+        }
     }
 }

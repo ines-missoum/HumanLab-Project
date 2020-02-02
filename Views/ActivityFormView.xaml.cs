@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -27,9 +28,5 @@ namespace humanlab.Views
             this.InitializeComponent();
         }
 
-        private void timeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-
-        }
     }
 }
