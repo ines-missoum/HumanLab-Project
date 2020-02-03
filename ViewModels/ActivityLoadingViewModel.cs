@@ -48,8 +48,9 @@ namespace humanlab.ViewModels
         {
             gridRepository = new GridRepository();
             Elements = new List<ElementOfActivity>();
+            ClickImage = new DelegateCommand<object>(ClickOnImage);
             //retrieve list of elements
-            GetElementsOfGrid(9);
+            GetElementsOfGrid(1);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
@@ -263,17 +264,18 @@ namespace humanlab.ViewModels
         ///MOUSE
         private void ClickOnImage(object args)
         {
+            Debug.WriteLine("click");
             Image img = args as Image;
             ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
             BitmapImage source = img.Source as BitmapImage;
 
             if (current.IsNotAnimated)
             {
-                Stop(source, current);
+                Play(source, current);
             }
             else
             {
-                Play(source, current);
+                Stop(source, current);
             }
         }
 

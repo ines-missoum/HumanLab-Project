@@ -20,7 +20,7 @@ namespace humanlab.Helpers.Models
         public double MarginLeft { get; set; }
         public double MarginTop { get; set; }
         public Element Element { get; set; }
-        public DelegateCommand<object> ClickImage { get; set; }
+        private DelegateCommand<object> clickImage;
 
         public ElementOfActivity(Element element, double marginLeft, double marginTop, double height, double width)
         {
@@ -43,6 +43,12 @@ namespace humanlab.Helpers.Models
         {
             get => isNotAnimated;
             set => SetProperty(ref isNotAnimated, value, "IsNotAnimated");
+        }
+
+        public DelegateCommand<object> ClickImage
+        {
+            get => clickImage;
+            set => SetProperty(ref clickImage, value, "ClickImage");
         }
 
     }

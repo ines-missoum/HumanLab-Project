@@ -36,7 +36,7 @@
                      Width="{x:Bind Width}"     
                      Height="20"/>
 
-                        <Button Command="{Binding ClickImage}"
+                        <Button Command="{x:Bind ClickImage, Mode=TwoWay}"
                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
                      x:Name="clickButton"
                      Height="{x:Bind Height}" 

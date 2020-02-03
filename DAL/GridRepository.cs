@@ -66,7 +66,7 @@ namespace humanlab.DAL
                 catch (Exception e)
                 {
                     Debug.WriteLine("Error");
-                    return null;
+                    return new List<ElementOfActivity>();
                 }
             }
         }
