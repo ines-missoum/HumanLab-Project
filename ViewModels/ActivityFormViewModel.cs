@@ -259,6 +259,8 @@ namespace humanlab.ViewModels
                     ActivityName = activityName,
                     FixingTime = Convert.ToInt32(FixingTime)
                 };
+
+                // Save Activity in db
                 activityRepository.SaveActivityAsync(newActivity, SelectedGridsSource);
 
                 MessageDialog messageDialog = new MessageDialog(successMessage);
