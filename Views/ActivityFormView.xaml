@@ -1,0 +1,187 @@
+﻿<Page
+    x:Class="humanlab.Views.ActivityFormView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:humanlab.ViewModels"
+    xmlns:local="using:humanlab.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:m1="using:humanlab.Helpers.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <!--This Page contains two views in one to handle all the activity form. The different views are displayed by managing the visibility of each one -->
+
+    <Page.DataContext>
+        <vm:ActivityFormViewModel x:Name="activity" />
+    </Page.DataContext>
+
+    <Page.Resources>
+        <!--gridView design-->
+        <DataTemplate x:Key="ImageGalleryDataTemplate" x:DataType="m1:GridChecked">
+            <GridViewItem Background="LightGray">
+                <Grid  >
+                    <StackPanel Orientation="Vertical" Margin="16" >
+                        <TextBlock Text="{x:Bind Grid.GridName}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </GridViewItem>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="ImageGalleryPanelTemplate">
+            <ItemsWrapGrid  Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+
+        <!--listView design-->
+        <DataTemplate x:Key="ListViewTemplate" x:DataType="m1:GridChecked">
+            <ListViewItem >
+                <StackPanel Orientation="Horizontal">
+                    <Grid Background="LightGreen" >
+                        <TextBlock Text="{x:Bind IndexInListView}" FontSize="23" TextAlignment="Center" Width="32" Height="32"/>
+                    </Grid>
+                    <TextBlock Margin="8,0,0,0" Text="{x:Bind Grid.GridName}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ListViewItem>
+        </DataTemplate>
+
+    </Page.Resources>
+
+    <!--PRINCIPAL VIEW-->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock  Grid.Row="0" Grid.Column="0"
+                    Text="Nom de l'activité" 
+                    Style="{StaticResource BaseTextBlockStyle}" 
+                    HorizontalAlignment="Left"
+                    Margin="24,28,10,25"/>
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Margin="20,24,0,20" 
+                 MaxLength="32" 
+                 Width="400" 
+                 TextChanged="{x:Bind activity.TextBox_TextChanged}"
+                 HorizontalAlignment="Left" />
+
+
+        <TextBlock  Grid.Row="1" Grid.Column="0"
+                    Text="Temps d'une grille (sec)" 
+                    Style="{StaticResource BaseTextBlockStyle}" 
+                    HorizontalAlignment="Left"
+                    Margin="24,28,10,25"/>
+        <!-- 3 sec à 5 min -->
+        <Slider Grid.Row="1" Grid.Column="1" x:Name="timeSlider" 
+                        ValueChanged="{x:Bind activity.timeSlider_ValueChanged}"
+                        Maximum="60" 
+                        Width="400" 
+                        Margin="20,24,0,20" 
+                        TickPlacement="TopLeft"
+                        TickFrequency="10"
+                        Value=""
+                        HorizontalAlignment="Left"/>
+
+
+        <TextBlock  Grid.Row="2" Grid.Column="0"
+                    Text="Grilles" 
+                    Style="{StaticResource BaseTextBlockStyle}" 
+                    HorizontalAlignment="Left"
+                    Margin="24,28,10,25"/>
+
+        <StackPanel Grid.Row="2" Grid.Column="1" Margin="20,24,0,20" Orientation="Vertical">
+            <Button Margin="0,0,0,20" 
+                    Content="{x:Bind activity.ButtonText, Mode=TwoWay}" 
+                    Width="120" 
+                    FontSize="18"
+                    Command="{x:Bind activity.ChoosePopUpVisibility}"/>
+
+            <TextBlock Text="Veuillez sélectionner au moins une grille." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       Visibility="{x:Bind activity.IsEmptyGridsMessageShowing, Mode=OneWay}"
+                       HorizontalAlignment="Left" />
+            <ListView   ItemsSource="{x:Bind activity.SelectedGridsSource, Mode=TwoWay}"
+                        SelectionMode="None"
+                            MaxHeight="300"
+                            x:Name="listView"
+                            ItemTemplate="{StaticResource ListViewTemplate}"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        CanReorderItems="True"
+                        CanDragItems="True"
+                        AllowDrop="True"
+                         DragItemsCompleted="{x:Bind activity.listView_DragItemsCompleted}"
+
+                       >
+            </ListView>
+
+
+
+            <Button  Margin="0,12,0,0" Background="LimeGreen" Foreground="White" 
+                     FontSize="18" FontWeight="SemiBold"
+                     Command="{x:Bind activity.SaveActivityDelegate}"
+                     Visibility="{x:Bind activity.IsSaveButtonShowing, Mode=OneWay}" Width="120">
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Enregistrer"/>
+                </StackPanel>
+
+            </Button>
+
+        </StackPanel>
+
+        <!-- OTHER VIEW : SELECTION OF EXISTING ELEMENTS -->
+        <Grid Margin="5" Background="White" Grid.Row="0"
+               Grid.Column="0"
+               Grid.ColumnSpan="2"
+               Grid.RowSpan="3" 
+               Visibility="{x:Bind activity.IsChooseGridsOpened, Mode=OneWay}">
+
+            <StackPanel Orientation="Vertical" Margin="20,24,0,20">
+
+                <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
+                    <AutoSuggestBox  QueryIcon="Find" 
+                                     PlaceholderText="Nom..." 
+                                     Header="Recherche par nom"
+                                     TextChanged="{x:Bind activity.AutoSuggestBox_TextChanged}"
+                                     />
+                </StackPanel>
+
+                <TextBlock Text="Grilles disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
+
+                <TextBlock Text="Aucune grille ne correspond à la recherche." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind activity.IsEmptySearchMessageShowing, Mode=OneWay}"/>
+                <GridView SelectionMode="Multiple"  
+                                    Loading="{x:Bind activity.GridView1_Loading}"
+                                    ItemsSource="{x:Bind activity.SearchedGrids, Mode=TwoWay}"
+                                    MaxHeight="300" 
+                                    SelectionChanged="{x:Bind activity.GridView1_SelectionChanged}"
+                                    ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
+                                    ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
+                </GridView>
+
+                <TextBlock Text="Grilles sélectionnées" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20,0,0"/>
+                <GridView SelectionMode="Multiple" 
+                                    Loading="{x:Bind activity.GridView2_Loading}"
+                                    ItemsSource="{x:Bind activity.SelectedGrids, Mode=TwoWay}" 
+                                    SizeChanged="{x:Bind activity.GridView2_SizeChanged}"
+                                    MaxHeight="300" 
+                                    SelectionChanged="{x:Bind activity.GridView2_SelectionChanged}"
+                                    ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
+                                    ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
+                </GridView>
+
+                <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" 
+                         FontSize="18" FontWeight="SemiBold" Command="{x:Bind activity.ChoosePopUpVisibility}"/>
+
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using humanlab.Helpers.Models;
 using humanlab.Models;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace humanlab.DAL
 {
@@ -39,6 +40,27 @@ namespace humanlab.DAL
                 }
             }
         }
-    }
 
+        public async Task<List<Grid>> GetGridsAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Grids.Select(g => new Grid { 
+                        GridName = g.GridName, 
+                        GridId = g.GridId, 
+                        GridElements = g.GridElements
+                    })
+                        .ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
+
+    }
 }

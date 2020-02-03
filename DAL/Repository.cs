@@ -19,12 +19,17 @@ namespace humanlab.DAL
 
             var categorie2 = new Category();
             categorie2.CategoryName = "Loisir";
+            var categorie3 = new Category();
+            categorie3.CategoryName = "Couleur";
+
+            var categorie4 = new Category();
+            categorie4.CategoryName = "Dessin animé";
 
             using (var db = new ApplicationDbContext())
             {
-               
-                db.Add(categorie1);
-                db.Add(categorie2);
+
+                // db.Add(categorie1);
+     
                 db.SaveChanges();
             }
 
