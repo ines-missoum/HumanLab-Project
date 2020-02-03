@@ -219,14 +219,8 @@ namespace humanlab.ViewModels
         public bool FromSelectionChanged2
         {
             get => fromSelectionChanged2;
-            set
-            {
-                if (value != fromSelectionChanged2)
-                {
-                    fromSelectionChanged2 = value;
-                    OnPropertyChanged("FromSelectionChanged2");
-                }
-            }
+            set => SetProperty(ref fromSelectionChanged2, value, "FromSelectionChanged2");
+
         }
         /*** METHODS ***/
 
