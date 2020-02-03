@@ -19,44 +19,47 @@
         <!--converter to retrieve image path-->
         <h:ImageNameToImageUriConverter x:Key="ImageNameToImageUriConverter"></h:ImageNameToImageUriConverter>
     </Page.Resources>
-    
+
     <Grid >
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <GridView  ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}">
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="m:ElementOfActivity">
-                        <StackPanel  VerticalAlignment="Center" Margin="50" Height="430" Width="430">
-                            <ProgressBar 
+        <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="m:ElementOfActivity">
+                    <Canvas >
+                        <StackPanel Orientation="Vertical"  
+                                    Canvas.Top="{x:Bind MarginTop, Mode=TwoWay}"
+                                    Canvas.Left="{x:Bind MarginLeft, Mode=TwoWay}">
+                        <ProgressBar 
                      Value="{x:Bind FocusTime, Mode=TwoWay}" 
                      Maximum="{x:Bind MaxFocusTime}" 
                      Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
-                     Margin="0,12" 
+                     Margin="0,0,0,4"
+                     Width="{x:Bind Width}"     
                      Height="20"/>
-                            
-                            <Button Command="{Binding ClickImage}"
+
+                        <Button Command="{Binding ClickImage}"
                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
                      x:Name="clickButton"
-                     Height="325" 
-                     Width="430"                    
+                     Height="{x:Bind Height}" 
+                     Width="{x:Bind Width}"  
+                          
                 >
-                                <Button.Content>
-                                    <Image Tag="{Binding Element.ElementId}" Stretch="Fill">
-                                        <Image.Source>
-                                            <BitmapImage 
+                            <Button.Content>
+                                <Image Tag="{Binding Element.ElementId}" Stretch="Fill">
+                                    <Image.Source>
+                                        <BitmapImage 
                                                 UriSource="{Binding Element.Image, Converter={StaticResource ImageNameToImageUriConverter}}"
                                                 AutoPlay="False" 
                                             />
-                                        </Image.Source>
-                                    </Image>
-                                </Button.Content>
+                                    </Image.Source>
+                                </Image>
+                            </Button.Content>
 
-                            </Button>
+                        </Button>
                         </StackPanel>
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
-
-        </StackPanel>
+                    </Canvas>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <Canvas x:Name="gazePositionCanvas">
             <Ellipse 

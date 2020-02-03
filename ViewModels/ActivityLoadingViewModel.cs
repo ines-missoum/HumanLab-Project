@@ -49,7 +49,7 @@ namespace humanlab.ViewModels
             gridRepository = new GridRepository();
             Elements = new List<ElementOfActivity>();
             //retrieve list of elements
-            GetElementsOfGrid(1);
+            GetElementsOfGrid(9);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
@@ -66,12 +66,13 @@ namespace humanlab.ViewModels
 
         private async void GetElementsOfGrid(int gridId)
         {
-            List<Element> dbElements = await gridRepository.GetAllGridElements(gridId);
+            List<ElementOfActivity> dbElements = await gridRepository.GetAllGridElements(gridId);
+            dbElements.ForEach(e => {
+                e.MaxFocusTime = MaxFocusTime;
+                e.ClickImage = ClickImage;
+                });
 
-            List<ElementOfActivity> viewElements = new List<ElementOfActivity>();
-            dbElements.ForEach(e=> viewElements.Add(new ElementOfActivity(e,MaxFocusTime,ClickImage)));
-
-            Elements = viewElements;
+            Elements = dbElements;
 
         }
 
