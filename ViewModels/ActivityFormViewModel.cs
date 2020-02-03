@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Diagnostics;
 using Windows.UI.Xaml.Controls.Primitives;
+using humanlab.Models;
 
 namespace humanlab.ViewModels
 {
@@ -231,6 +232,7 @@ namespace humanlab.ViewModels
         private async void SaveActivityIfAllowed()
         {
             string errorMessage = null;
+            string successMessage = "Votre activité " + activityName + " a été sauvegardée avec succès.";
 
             if (activityName.Equals(""))
                 errorMessage = "Veuillez entrer un nom d'activité pour poursuivre.";
@@ -251,7 +253,19 @@ namespace humanlab.ViewModels
             }
             else
             {
-                //SAVE => TODO
+                //Create new activity from activity form data 
+                Activity newActivity = new Activity
+                {
+                    ActivityName = activityName,
+                    FixingTime = Convert.ToInt32(FixingTime)
+                };
+                activityRepository.SaveActivityAsync(newActivity, SelectedGridsSource);
+
+                MessageDialog messageDialog = new MessageDialog(successMessage);
+                // display the message dialog after having saved the activity
+                await messageDialog.ShowAsync();
+
+
             }
 
         }
@@ -424,7 +438,6 @@ namespace humanlab.ViewModels
             if (slider != null && FixingTime != slider.Value)
             {
                 FixingTime = slider.Value;
-                Debug.WriteLine("fix time " + FixingTime);
 
             }
         }
