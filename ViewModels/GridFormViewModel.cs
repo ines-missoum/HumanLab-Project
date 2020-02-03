@@ -178,113 +178,56 @@ namespace humanlab.ViewModels
         public string ButtonText
         {
             get => buttonText;
-            set
-            {
-                if (value != buttonText)
-                {
-                    buttonText = value;
-                    OnPropertyChanged("ButtonText");
-                }
-            }
+            set => SetProperty(ref buttonText, value, "ButtonText");
         }
 
         public ScrollViewer ScrollView
         {
             get => scrollView;
-            set
-            {
-                if (value != scrollView)
-                {
-                    scrollView = value;
-                    OnPropertyChanged("ScrollView");
-                }
-            }
+            set => SetProperty(ref scrollView, value, "ScrollView");
+
         }
 
         public ItemsControl ItemsControl
         {
             get => itemsControl;
-            set
-            {
-                if (value != itemsControl)
-                {
-                    itemsControl = value;
-                    OnPropertyChanged("ItemsControl");
-                }
-            }
+            set => SetProperty(ref itemsControl, value, "ItemsControl");
+
         }
         public bool FromSelectionChanged2
         {
             get => fromSelectionChanged2;
-            set
-            {
-                if (value != fromSelectionChanged2)
-                {
-                    fromSelectionChanged2 = value;
-                    OnPropertyChanged("FromSelectionChanged2");
-                }
-            }
+            set => SetProperty(ref fromSelectionChanged2, value, "FromSelectionChanged2");
+
         }
 
         public bool IsPositionsSet
         {
             get => isPositionsSet;
-            set
-            {
-                if (value != isPositionsSet)
-                {
-                    isPositionsSet = value;
-                    OnPropertyChanged("IsPositionsSet");
-                }
-            }
+            set => SetProperty(ref isPositionsSet, value, "IsPositionsSet");
+
         }
         public bool IsEmptyElementMessageShowing
         {
             get => isEmptyElementMessageShowing;
-            set
-            {
-                if (value != isEmptyElementMessageShowing)
-                {
-                    isEmptyElementMessageShowing = value;
-                    OnPropertyChanged("IsEmptyElementMessageShowing");
-                }
-            }
+            set => SetProperty(ref isEmptyElementMessageShowing, value, "IsEmptyElementMessageShowing");
+
         }
         public bool IsEmptySearchMessageShowing
         {
             get => isEmptySearchMessageShowing;
-            set
-            {
-                if (value != isEmptySearchMessageShowing)
-                {
-                    isEmptySearchMessageShowing = value;
-                    OnPropertyChanged("IsEmptySearchMessageShowing");
-                }
-            }
+            set => SetProperty(ref isEmptySearchMessageShowing, value, "IsEmptySearchMessageShowing");
+
         }
         public bool IsNextButtonShowing
         {
             get => isNextButtonShowing;
-            set
-            {
-                if (value != isNextButtonShowing)
-                {
-                    isNextButtonShowing = value;
-                    OnPropertyChanged("IsNextButtonShowing");
-                }
-            }
+            set => SetProperty(ref isNextButtonShowing, value, "IsNextButtonShowing");
         }
         public bool IsOrganizeElementsOpened
         {
             get => isOrganizeElementsOpened;
-            set
-            {
-                if (value != isOrganizeElementsOpened)
-                {
-                    isOrganizeElementsOpened = value;
-                    OnPropertyChanged("IsOrganizeElementsOpened");
-                }
-            }
+            set => SetProperty(ref isOrganizeElementsOpened, value, "IsOrganizeElementsOpened");
         }
         public bool IsChooseElementsOpened
         {
@@ -313,63 +256,32 @@ namespace humanlab.ViewModels
         public List<string> Categories
         {
             get => categories;
-            set
-            {
-                if (value != categories)
-                {
-                    categories = value;
-                    OnPropertyChanged("Categories");
-                }
-            }
+            set => SetProperty(ref categories, value, "Categories");
         }
         public ElementPlaced ElementTest
         {
             get => elementTest;
-            set
-            {
-                if (value != elementTest)
-                {
-                    elementTest = value;
-                    OnPropertyChanged("ElementTest");
-                }
-            }
+            set => SetProperty(ref elementTest, value, "ElementTest");
+
         }
 
         public List<ElementChecked> AllElements
         {
             get => allElements;
-            set
-            {
-                if (value != allElements)
-                {
-                    allElements = value;
-                    OnPropertyChanged("AllElements");
-                }
-            }
+            set => SetProperty(ref allElements, value, "AllElements");
+
         }
         public List<ElementChecked> SearchedElements
         {
             get => searchedElements;
-            set
-            {
-                if (value != searchedElements)
-                {
-                    searchedElements = value;
-                    OnPropertyChanged("SearchedElements");
-                }
-            }
+            set => SetProperty(ref searchedElements, value, "SearchedElements");
+
         }
         public List<ElementChecked> SelectedElements
         {
             get => selectedElements;
-            set
-            {
-                if (value != selectedElements)
-                {
-                    selectedElements = value;
-                    OnPropertyChanged("SelectedElements");
-                }
-            }
+            set => SetProperty(ref selectedElements, value, "SelectedElements");
+
         }
 
         /// <summary>
@@ -685,14 +597,8 @@ namespace humanlab.ViewModels
         public List<ElementPlaced> ElementsPlaced
         {
             get => elementsPlaced;
-            set
-            {
-                if (value != elementsPlaced)
-                {
-                    elementsPlaced = value;
-                    OnPropertyChanged("ElementsPlaced");
-                }
-            }
+            set => SetProperty(ref elementsPlaced, value, "ElementsPlaced");
+
         }
 
         public void Image_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
