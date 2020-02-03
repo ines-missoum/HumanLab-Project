@@ -35,7 +35,6 @@ namespace humanlab.ViewModels
         //attributes of organize elements view
         private bool isOrganizeElementsOpened;
         public DelegateCommand OrganizePopUpVisibility { get; set; }
-        private double marginWindow_ScrollViewer;
 
         private ScrollViewer scrollView;
         private ItemsControl itemsControl;
@@ -48,6 +47,7 @@ namespace humanlab.ViewModels
         private string buttonText;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyElementMessageShowing;
+        private bool fromSelectionChanged2;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -103,6 +103,7 @@ namespace humanlab.ViewModels
             //no search has began
             searching = false;
 
+            fromSelectionChanged2 = false;
             IsNextButtonShowing = false;
             isEmptySearchMessageShowing = false;
             isEmptyElementMessageShowing = true;
@@ -114,7 +115,6 @@ namespace humanlab.ViewModels
             gridName = "";
 
             //scrollview attributes
-            this.marginWindow_ScrollViewer = 0;
             this.elementsPlaced = new List<ElementPlaced>();
             this.scrollView = new ScrollViewer();
             this.itemsControl = new ItemsControl();
@@ -128,7 +128,6 @@ namespace humanlab.ViewModels
             IsOrganizeElementsOpened = false;
             ElementsPlaced = new List<ElementPlaced>();
 
-            
         }
 
         private bool CanSaveGridPlacement()
@@ -179,101 +178,56 @@ namespace humanlab.ViewModels
         public string ButtonText
         {
             get => buttonText;
-            set
-            {
-                if (value != buttonText)
-                {
-                    buttonText = value;
-                    OnPropertyChanged("ButtonText");
-                }
-            }
+            set => SetProperty(ref buttonText, value, "ButtonText");
         }
 
         public ScrollViewer ScrollView
         {
             get => scrollView;
-            set
-            {
-                if (value != scrollView)
-                {
-                    scrollView = value;
-                    OnPropertyChanged("ScrollView");
-                }
-            }
+            set => SetProperty(ref scrollView, value, "ScrollView");
+
         }
 
         public ItemsControl ItemsControl
         {
             get => itemsControl;
-            set
-            {
-                if (value != itemsControl)
-                {
-                    itemsControl = value;
-                    OnPropertyChanged("ItemsControl");
-                }
-            }
+            set => SetProperty(ref itemsControl, value, "ItemsControl");
+
+        }
+        public bool FromSelectionChanged2
+        {
+            get => fromSelectionChanged2;
+            set => SetProperty(ref fromSelectionChanged2, value, "FromSelectionChanged2");
+
         }
 
         public bool IsPositionsSet
         {
             get => isPositionsSet;
-            set
-            {
-                if (value != isPositionsSet)
-                {
-                    isPositionsSet = value;
-                    OnPropertyChanged("IsPositionsSet");
-                }
-            }
+            set => SetProperty(ref isPositionsSet, value, "IsPositionsSet");
+
         }
         public bool IsEmptyElementMessageShowing
         {
             get => isEmptyElementMessageShowing;
-            set
-            {
-                if (value != isEmptyElementMessageShowing)
-                {
-                    isEmptyElementMessageShowing = value;
-                    OnPropertyChanged("IsEmptyElementMessageShowing");
-                }
-            }
+            set => SetProperty(ref isEmptyElementMessageShowing, value, "IsEmptyElementMessageShowing");
+
         }
         public bool IsEmptySearchMessageShowing
         {
             get => isEmptySearchMessageShowing;
-            set
-            {
-                if (value != isEmptySearchMessageShowing)
-                {
-                    isEmptySearchMessageShowing = value;
-                    OnPropertyChanged("IsEmptySearchMessageShowing");
-                }
-            }
+            set => SetProperty(ref isEmptySearchMessageShowing, value, "IsEmptySearchMessageShowing");
+
         }
         public bool IsNextButtonShowing
         {
             get => isNextButtonShowing;
-            set
-            {
-                if (value != isNextButtonShowing)
-                {
-                    isNextButtonShowing = value;
-                    OnPropertyChanged("IsNextButtonShowing");
-                }
-            }
+            set => SetProperty(ref isNextButtonShowing, value, "IsNextButtonShowing");
         }
         public bool IsOrganizeElementsOpened
         {
             get => isOrganizeElementsOpened;
-            set
-            {
-                if (value != isOrganizeElementsOpened)
-                {
-                    isOrganizeElementsOpened = value;
-                    OnPropertyChanged("IsOrganizeElementsOpened");
-                }
-            }
+            set => SetProperty(ref isOrganizeElementsOpened, value, "IsOrganizeElementsOpened");
         }
         public bool IsChooseElementsOpened
         {
@@ -302,63 +256,32 @@ namespace humanlab.ViewModels
         public List<string> Categories
         {
             get => categories;
-            set
-            {
-                if (value != categories)
-                {
-                    categories = value;
-                    OnPropertyChanged("Categories");
-                }
-            }
+            set => SetProperty(ref categories, value, "Categories");
         }
         public ElementPlaced ElementTest
         {
             get => elementTest;
-            set
-            {
-                if (value != elementTest)
-                {
-                    elementTest = value;
-                    OnPropertyChanged("ElementTest");
-                }
-            }
+            set => SetProperty(ref elementTest, value, "ElementTest");
+
         }
 
         public List<ElementChecked> AllElements
         {
             get => allElements;
-            set
-            {
-                if (value != allElements)
-                {
-                    allElements = value;
-                    OnPropertyChanged("AllElements");
-                }
-            }
+            set => SetProperty(ref allElements, value, "AllElements");
+
         }
         public List<ElementChecked> SearchedElements
         {
             get => searchedElements;
-            set
-            {
-                if (value != searchedElements)
-                {
-                    searchedElements = value;
-                    OnPropertyChanged("SearchedElements");
-                }
-            }
+            set => SetProperty(ref searchedElements, value, "SearchedElements");
+
         }
         public List<ElementChecked> SelectedElements
         {
             get => selectedElements;
-            set
-            {
-                if (value != selectedElements)
-                {
-                    selectedElements = value;
-                    OnPropertyChanged("SelectedElements");
-                }
-            }
+            set => SetProperty(ref selectedElements, value, "SelectedElements");
+
         }
 
         /// <summary>
@@ -438,7 +361,7 @@ namespace humanlab.ViewModels
             selectionChangedFirstGridView = true;
             if (!searching)
             {
-                List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
+                List <ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
 
                 if (e.AddedItems.Count() > 0)
                 {
@@ -457,8 +380,9 @@ namespace humanlab.ViewModels
                     {
                         ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
                         updatedList.Remove(removedItem);
-                        removedItem.IsSelected = false;
+                        
                         SelectedElements = updatedList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
+                        removedItem.IsSelected = false;
                     }
 
                 }
@@ -487,11 +411,22 @@ namespace humanlab.ViewModels
         {
             GridView gridview = sender as GridView;
 
-            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1)
+            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1 && !FromSelectionChanged2)
             {
+                FromSelectionChanged2 = true;
                 ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
+
                 if (SelectedElements.Contains(removedItem))
                     searchedGridView.SelectedItems.Remove(removedItem);
+                if (!searchedGridView.SelectedItems.Contains(removedItem))
+                {
+                    removedItem.IsSelected = false;
+                    List<ElementChecked> transitionList = new List<ElementChecked>(SelectedElements);
+                    transitionList.Remove(removedItem);
+                    SelectedElements = transitionList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
+                    FromSelectionChanged2 = false;
+
+                }
             }
             //because all the elements are automatically unselected
             gridview.SelectAll();
@@ -606,7 +541,6 @@ namespace humanlab.ViewModels
                 itemsControl.UpdateLayout();
                 UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
 
-
                 // Add to each element their own delegate method manipulationDelta
                 element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
                 element.ManipulationStarted += new ManipulationStartedEventHandler(Image_ManipulationStarted);
@@ -665,14 +599,8 @@ namespace humanlab.ViewModels
         public List<ElementPlaced> ElementsPlaced
         {
             get => elementsPlaced;
-            set
-            {
-                if (value != elementsPlaced)
-                {
-                    elementsPlaced = value;
-                    OnPropertyChanged("ElementsPlaced");
-                }
-            }
+            set => SetProperty(ref elementsPlaced, value, "ElementsPlaced");
+
         }
 
         public void Image_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
