@@ -32,8 +32,8 @@ namespace humanlab.DAL
                     {
                         Element = dbElement,
                         Grid = grid,
-                        Xposition = Convert.ToInt32(ep.PositionX),
-                        Yposition = Convert.ToInt32(ep.PositionY)
+                        Xposition = Convert.ToInt32(ep.XPosition),
+                        Yposition = Convert.ToInt32(ep.YPosition)
                     };
                     db.GridElements.Add(newGridElement);
                     db.SaveChanges();
