@@ -200,7 +200,6 @@
                     <ItemsControl ItemsSource="{x:Bind grid.ElementsPlaced, Mode=TwoWay}" 
                                   ItemTemplate="{StaticResource ScrollViewTemplate}"
                                   Loaded="{x:Bind grid.ItemsControl_Loaded}"
-                                  
                                   />
                  
                 </ScrollViewer>

@@ -36,7 +36,7 @@
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
                     <Grid Background="LightGreen" >
-                        <TextBlock Text="{x:Bind IndexInListView}" FontSize="23" TextAlignment="Center" Width="32" Height="32"/>
+                        <TextBlock Text="{x:Bind IndexInListView, Mode=TwoWay}" FontSize="23" TextAlignment="Center" Width="32" Height="32"/>
                     </Grid>
                     <TextBlock Margin="8,0,0,0" Text="{x:Bind Grid.GridName}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </StackPanel>

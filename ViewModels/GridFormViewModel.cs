@@ -35,7 +35,6 @@ namespace humanlab.ViewModels
         //attributes of organize elements view
         private bool isOrganizeElementsOpened;
         public DelegateCommand OrganizePopUpVisibility { get; set; }
-        private double marginWindow_ScrollViewer;
 
         private ScrollViewer scrollView;
         private ItemsControl itemsControl;
@@ -48,6 +47,7 @@ namespace humanlab.ViewModels
         private string buttonText;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyElementMessageShowing;
+        private bool fromSelectionChanged2;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -103,6 +103,7 @@ namespace humanlab.ViewModels
             //no search has began
             searching = false;
 
+            fromSelectionChanged2 = false;
             IsNextButtonShowing = false;
             isEmptySearchMessageShowing = false;
             isEmptyElementMessageShowing = true;
@@ -114,7 +115,6 @@ namespace humanlab.ViewModels
             gridName = "";
 
             //scrollview attributes
-            this.marginWindow_ScrollViewer = 0;
             this.elementsPlaced = new List<ElementPlaced>();
             this.scrollView = new ScrollViewer();
             this.itemsControl = new ItemsControl();
@@ -127,7 +127,6 @@ namespace humanlab.ViewModels
         {
             IsOrganizeElementsOpened = false;
             ElementsPlaced = new List<ElementPlaced>();
-            Debug.WriteLine("itc clear source" + ItemsControl.Items.Count());
             
         }
 
@@ -211,6 +210,18 @@ namespace humanlab.ViewModels
                 {
                     itemsControl = value;
                     OnPropertyChanged("ItemsControl");
+                }
+            }
+        }
+        public bool FromSelectionChanged2
+        {
+            get => fromSelectionChanged2;
+            set
+            {
+                if (value != fromSelectionChanged2)
+                {
+                    fromSelectionChanged2 = value;
+                    OnPropertyChanged("FromSelectionChanged2");
                 }
             }
         }
@@ -405,7 +416,6 @@ namespace humanlab.ViewModels
                 }
                 ElementsPlaced = listBis;
                 IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
-                Debug.WriteLine("items in itc  " + ItemsControl.Items.Count);
                 AddDelegatesToItems(ItemsControl);
                 SetInitialWidthToElements();
             }
@@ -438,7 +448,7 @@ namespace humanlab.ViewModels
             selectionChangedFirstGridView = true;
             if (!searching)
             {
-                List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
+                List <ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
 
                 if (e.AddedItems.Count() > 0)
                 {
@@ -457,8 +467,9 @@ namespace humanlab.ViewModels
                     {
                         ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
                         updatedList.Remove(removedItem);
-                        removedItem.IsSelected = false;
+                        
                         SelectedElements = updatedList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
+                        removedItem.IsSelected = false;
                     }
 
                 }
@@ -487,11 +498,22 @@ namespace humanlab.ViewModels
         {
             GridView gridview = sender as GridView;
 
-            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1)
+            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1 && !FromSelectionChanged2)
             {
+                FromSelectionChanged2 = true;
                 ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
+
                 if (SelectedElements.Contains(removedItem))
                     searchedGridView.SelectedItems.Remove(removedItem);
+                if (!searchedGridView.SelectedItems.Contains(removedItem))
+                {
+                    removedItem.IsSelected = false;
+                    List<ElementChecked> transitionList = new List<ElementChecked>(SelectedElements);
+                    transitionList.Remove(removedItem);
+                    SelectedElements = transitionList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
+                    FromSelectionChanged2 = false;
+
+                }
             }
             //because all the elements are automatically unselected
             gridview.SelectAll();
@@ -596,18 +618,15 @@ namespace humanlab.ViewModels
 
         public void AddDelegatesToItems(ItemsControl itemsControl)
         {
-            Debug.WriteLine("add delegate ok");
             var items = itemsControl.Items;
 
             foreach (var item in items)
             {
-                Debug.WriteLine("item $$$" + item.ToString());
                 // Retrieve all UIElements (images) from the DataTemplate 
                 // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
                 itemsControl.UpdateLayout();
                 UIElement element = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromItem(item);
 
-                Debug.WriteLine("element " + element);
                 // Add to each element their own delegate method manipulationDelta
                 element.ManipulationDelta += new ManipulationDeltaEventHandler(Image_ManipulationDelta);
                 element.ManipulationStarted += new ManipulationStartedEventHandler(Image_ManipulationStarted);
@@ -671,7 +690,6 @@ namespace humanlab.ViewModels
                 if (value != elementsPlaced)
                 {
                     elementsPlaced = value;
-                    Debug.WriteLine("PChanged");
                     OnPropertyChanged("ElementsPlaced");
                 }
             }
@@ -732,18 +750,15 @@ namespace humanlab.ViewModels
             {
                 current.PositionY += yAdjustment * (1 / ScrollView.ZoomFactor);
             }
-            Debug.WriteLine(" Avant le set true" + IsPositionsSet);
 
             IsPositionsSet = true;
             SaveGridPlacementCommand.RaiseCanExecuteChanged();
 
-            Debug.WriteLine(" Avant le set true" + IsPositionsSet);
         }
 
 
         public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            Debug.WriteLine("Je suis bien là ;)");
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
 

@@ -39,6 +39,7 @@ namespace humanlab.ViewModels
         /*** PRIVATE ATTRIBUTES ***/
 
         // attributes linked to the management of the selection in the choose elements view :
+        private bool fromSelectionChanged2;
 
         /// <summary>
         /// Allows to know if a research is happening in the choose elements view
@@ -215,7 +216,18 @@ namespace humanlab.ViewModels
             set => SetProperty(ref selectedGridsSource, value, "SelectedGridsSource");
 
         }
-
+        public bool FromSelectionChanged2
+        {
+            get => fromSelectionChanged2;
+            set
+            {
+                if (value != fromSelectionChanged2)
+                {
+                    fromSelectionChanged2 = value;
+                    OnPropertyChanged("FromSelectionChanged2");
+                }
+            }
+        }
         /*** METHODS ***/
 
         /// <summary>
@@ -347,11 +359,24 @@ namespace humanlab.ViewModels
         {
             GridView gridview = sender as GridView;
 
-            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1)
+            if (!selectionChangedFirstGridView && e.RemovedItems.Count() == 1 && !FromSelectionChanged2)
             {
+                FromSelectionChanged2 = true;
                 GridChecked removedItem = e.RemovedItems.First() as GridChecked;
                 if (SelectedGrids.Contains(removedItem))
                     searchedGridView.SelectedItems.Remove(removedItem);
+
+                if (!searchedGridView.SelectedItems.Contains(removedItem))
+                {
+                    Debug.WriteLine(" ici");
+
+                    removedItem.IsSelected = false;
+                    List<GridChecked> transitionList = new List<GridChecked>(SelectedGrids);
+                    transitionList.Remove(removedItem);
+                    SelectedGrids = transitionList.OrderByDescending(gc => gc.Grid.GridName.Length).ToList();
+                    FromSelectionChanged2 = false;
+
+                }
             }
             //because all the elements are automatically unselected
             gridview.SelectAll();
