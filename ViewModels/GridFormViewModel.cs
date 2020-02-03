@@ -504,12 +504,12 @@ namespace humanlab.ViewModels
             List<ElementChecked> newSearchedCat = new List<ElementChecked>(AllElements);
             if (searchCategory.Equals("Tout"))
                 //then we search only by names
-                SearchedElements = newSearchedCat.Where(e => e.Element.ElementName.Contains(searchText))
+                SearchedElements = newSearchedCat.Where(e => e.Element.ElementName.ToUpper().Contains(searchText.ToUpper()))
                                                .OrderByDescending(e => e.Element.ElementName.Length)
                                                .ToList();
             else
                 //else we search by name (not strict => just checking if the name contains the search) AND by category
-                SearchedElements = newSearchedCat.Where(e => e.Element.Category.CategoryName.Equals(searchCategory) && e.Element.ElementName.Contains(searchText))
+                SearchedElements = newSearchedCat.Where(e => e.Element.Category.CategoryName.Equals(searchCategory) && e.Element.ElementName.ToUpper().Contains(searchText.ToUpper()))
                                                    .OrderByDescending(e => e.Element.ElementName.Length)
                                                    .ToList();
 

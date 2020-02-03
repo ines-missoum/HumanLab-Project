@@ -431,7 +431,7 @@ namespace humanlab.ViewModels
         private void Search()
         {
             List<GridChecked> newSearchedCat = new List<GridChecked>(AllGrids);
-            SearchedGrids = newSearchedCat.Where(e => e.Grid.GridName.Contains(searchText))
+            SearchedGrids = newSearchedCat.Where(e => e.Grid.GridName.ToUpper().Contains(searchText.ToUpper()))
                                            .OrderByDescending(e => e.Grid.GridName.Length)
                                            .ToList();
 
