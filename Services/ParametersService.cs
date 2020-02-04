@@ -15,9 +15,10 @@ namespace humanlab.Services
     {
         public static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
-        public static void SaveManual()
+        public static void SaveManual(string mode)
         {
             localSettings.Values["isAutomatic"] = false;
+            localSettings.Values["mode"] = mode;
         }
 
         public static void SaveAutomatic(double gridTime, string mode)

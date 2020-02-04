@@ -133,7 +133,7 @@ namespace humanlab.ViewModels
                 }
                 else
                 {
-                    ParametersService.SaveManual();
+                    ParametersService.SaveManual(SelectedMode);
                 }
                 // Create the message dialog and set its content
                 messageDialog = new MessageDialog("Vos modifications ont été sauvegardées avec succès.");
