@@ -74,5 +74,20 @@ namespace humanlab.DAL
             }
         }
 
+        public async Task<List<ActivityGrids>> GetGridsOfActivity(int idActivity)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.ActivityGrids.Select(ag => ag).Where(ag=> ag.ActivityId == idActivity).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
     }
 }

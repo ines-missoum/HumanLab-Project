@@ -59,23 +59,24 @@ namespace humanlab.ViewModels
 
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
-
-            listGridIds = new List<(int GridOrder, int GridId)>{
+            listGridIds = new List<(int GridOrder, int GridId)>();
+          
+            /*listGridIds = new List<(int GridOrder, int GridId)>{
                           (1, 2),
                           (2, 1),
                           (4, 3),
                           (3, 4)
              };
 
-            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1); ;
+            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1); 
             //retrieve list of elements
-            GetElementsOfGrid(currentGrid.GridId);
+            GetElementsOfGrid(currentGrid.GridId);*/
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
-            
+
             MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
@@ -358,18 +359,40 @@ namespace humanlab.ViewModels
 
         public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            OpenActivity();
+           
+            GridView gv = sender as GridView;
+            Activity selected = gv.SelectedItem as Activity;
+            Debug.WriteLine(selected.ActivityId);
+            OpenActivity(selected);
         }
 
-        public void OpenActivity()
+        public void OpenActivity(Activity activity)
         {
             IsActivityLoading = true;
+            MaxFocusTime = activity.FixingTime;
+            GetAllGridsOfLoadingActivity(activity.ActivityId);
+
             TobiiSetUpService.StartGazeDeviceWatcher();
+
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;
             navView.IsPaneOpen = false;
             navView.IsPaneToggleButtonVisible = false;
 
+            NextGrid.RaiseCanExecuteChanged();
+            PreviousGrid.RaiseCanExecuteChanged();
+
+        }
+
+        private async void GetAllGridsOfLoadingActivity(int idActivity)
+        {
+            List<ActivityGrids> grids = await activityRepository.GetGridsOfActivity(idActivity);
+            listGridIds = new List<(int GridOrder, int GridId)>();
+            grids.ForEach(g => listGridIds.Add( (g.Order, g.GridId) ));
+
+            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1);
+            //retrieve list of elements
+            GetElementsOfGrid(currentGrid.GridId);
         }
 
         public void CloseActivity()
