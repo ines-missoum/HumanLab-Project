@@ -61,16 +61,6 @@ namespace humanlab.ViewModels
             ClickImage = new DelegateCommand<object>(ClickOnImage);
             listGridIds = new List<(int GridOrder, int GridId)>();
           
-            /*listGridIds = new List<(int GridOrder, int GridId)>{
-                          (1, 2),
-                          (2, 1),
-                          (4, 3),
-                          (3, 4)
-             };
-
-            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1); 
-            //retrieve list of elements
-            GetElementsOfGrid(currentGrid.GridId);*/
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
 
@@ -164,42 +154,46 @@ namespace humanlab.ViewModels
         /// <param name="e">Event args for the gaze moved event</param>
         private void GazeMoved(GazeInputSourcePreview sender, GazeMovedPreviewEventArgs args)
         {
-            // Update the position of the ellipse corresponding to gaze point.
-            if (args.CurrentPoint.EyeGazePosition != null)
+            if (TobiiSetUpService.IsActiveDevice())
             {
-                double gazePointX = args.CurrentPoint.EyeGazePosition.Value.X;
-                double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
-
-                //20 = width height !!!! to change corresponding to xaml
-                //24 = taille de la progress bar (margin comprises)
-                double ellipseLeft = gazePointX - (20 / 2.0f);
-                double ellipseTop = gazePointY - (20 / 2.0f) - 24;
-
-                // Translate transform for moving gaze ellipse.
-                TranslateTransform translateEllipse = new TranslateTransform
+                // Update the position of the ellipse corresponding to gaze point.
+                if (args.CurrentPoint.EyeGazePosition != null)
                 {
-                    X = ellipseLeft,
-                    Y = ellipseTop
-                };
+                    double gazePointX = args.CurrentPoint.EyeGazePosition.Value.X;
+                    double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
 
-                Transform = translateEllipse;
+                    //20 = width height !!!! to change corresponding to xaml
+                    //24 = taille de la progress bar (margin comprises)
+                    double ellipseLeft = gazePointX - (20 / 2.0f);
+                    double ellipseTop = gazePointY - (20 / 2.0f) - 24;
 
-                // The gaze point screen location.
-                Point gazePoint = new Point(gazePointX, gazePointY);
+                    // Translate transform for moving gaze ellipse.
+                    TranslateTransform translateEllipse = new TranslateTransform
+                    {
+                        X = ellipseLeft,
+                        Y = ellipseTop
+                    };
 
-                // Basic hit test to determine if gaze point is on progress bar.
-                Image img = TobiiSetUpService.CurrentFocusImage as Image;
-                bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
-                if (img != null & !hitRadialProgressBar)
-                {
-                    ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
-                    current.FocusTime = 0;
+                    Transform = translateEllipse;
+
+                    // The gaze point screen location.
+                    Point gazePoint = new Point(gazePointX, gazePointY);
+
+                    // Basic hit test to determine if gaze point is on progress bar.
+                    Image img = TobiiSetUpService.CurrentFocusImage as Image;
+                    bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
+                    if (img != null & !hitRadialProgressBar)
+                    {
+                        ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
+                        current.FocusTime = 0;
+                    }
+
+
+                    // Mark the event handled.
+                    args.Handled = true;
                 }
-
-
-                // Mark the event handled.
-                args.Handled = true;
             }
+            
         }
 
 
@@ -403,8 +397,7 @@ namespace humanlab.ViewModels
             navView.IsPaneVisible = true;
             navView.IsPaneToggleButtonVisible = true;
             IsActivityLoading = false;
-            Debug.WriteLine("close");
-            //TobiiSetUpService = null;
+            TobiiSetUpService.RemoveDevice();
         }
 
 

@@ -78,6 +78,15 @@ namespace humanlab.Services
             }
         }
 
+        public void RemoveDevice()
+        {
+            deviceCounter--;
+        }
+
+        public bool IsActiveDevice()
+        {
+            return deviceCounter > 0;
+        }
         /// <summary>
         /// Eye-tracking device connected (added, or available when watcher is initialized).
         /// </summary>
