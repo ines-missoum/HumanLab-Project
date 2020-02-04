@@ -183,12 +183,12 @@
 
         <!-- OTHER VIEW :CHOOOSE THE ORGANIZATION OF THE ELEMENTS-->
 
-        <Grid Margin="5" Grid.Row="0" Name="organizationGrid"
+        <Grid Margin="5" Grid.Row="0" Name="organizationGrid" Background="White"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
                Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" >
-            <Grid>
+            <Grid Margin="0,44,0,0">
 
                 <ScrollViewer x:Name="scrollview"
                               Background="LightGray"
@@ -208,7 +208,7 @@
             </Grid>
 
         </Grid>
-        <StackPanel Orientation="Vertical" >
+        <StackPanel Orientation="Vertical" Margin="0,44,0,0">
         <Button x:Name="SaveButton"
             Background="LimeGreen" 
                     Content="Enregistrer" 

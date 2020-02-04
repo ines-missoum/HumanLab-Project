@@ -21,7 +21,16 @@
     </Page.Resources>
 
     <Grid >
-        <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}">
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Button Width="48" Height="32" Margin="8" Background="LightGreen" Foreground="White" FontWeight="ExtraBold">
+                <SymbolIcon Symbol="Back" />
+            </Button>
+            <Button Width="48" Height="32" Margin="8" Background="LightGreen" Foreground="White" FontWeight="ExtraBold">
+                <SymbolIcon Symbol="Forward" />
+            </Button>
+        </StackPanel>
+        <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}" Margin="0,44,0,0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="m:ElementOfActivity">
                     <Canvas >

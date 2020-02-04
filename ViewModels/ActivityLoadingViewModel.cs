@@ -50,7 +50,7 @@ namespace humanlab.ViewModels
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
             //retrieve list of elements
-            GetElementsOfGrid(10);
+            GetElementsOfGrid(12);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
