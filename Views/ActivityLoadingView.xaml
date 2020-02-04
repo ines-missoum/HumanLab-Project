@@ -50,7 +50,9 @@
         </Grid>
         
         <!--ACTIVITY LOADING-->
-        <Grid Visibility="{x:Bind tobii.IsActivityLoading, Mode=OneWay}" Background="White">
+        <Grid Visibility="{x:Bind tobii.IsActivityLoading, Mode=OneWay}" 
+              SizeChanged="{x:Bind tobii.Grid_SizeChanged}"
+              Background="White">
             <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                 <Button Width="72" Height="32" Margin="8" 

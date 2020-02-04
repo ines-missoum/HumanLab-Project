@@ -26,10 +26,10 @@ namespace humanlab.Services
         }
 
         //public delegate void TickDelegate(object sender, object args);
-        private TypedEventHandler<GazeInputSourcePreview, GazeMovedPreviewEventArgs> GazeMovedHandler { get; }
-        private TypedEventHandler<GazeInputSourcePreview, GazeExitedPreviewEventArgs> GazeExitedHandler { get; }
-        private TypedEventHandler<GazeInputSourcePreview, GazeEnteredPreviewEventArgs> GazeEnteredHandler { get; }
-        private EventHandler<object> TickHandler { get; }
+        private TypedEventHandler<GazeInputSourcePreview, GazeMovedPreviewEventArgs> GazeMovedHandler { get; set; }
+        private TypedEventHandler<GazeInputSourcePreview, GazeExitedPreviewEventArgs> GazeExitedHandler { get; set; }
+        private TypedEventHandler<GazeInputSourcePreview, GazeEnteredPreviewEventArgs> GazeEnteredHandler { get; set; }
+        private EventHandler<object> TickHandler { get; set; }
 
         public UIElement CurrentFocusImage { get; set; }
         /// <summary>
@@ -73,6 +73,7 @@ namespace humanlab.Services
                 gazeDeviceWatcher.Added += this.DeviceAdded;
                 gazeDeviceWatcher.Updated += this.DeviceUpdated;
                 gazeDeviceWatcher.Removed += this.DeviceRemoved;
+
                 gazeDeviceWatcher.Start();
             }
         }

@@ -19,6 +19,7 @@ using Windows.Storage;
 using humanlab.DAL;
 using humanlab.Models;
 using System.Threading.Tasks;
+using humanlab.Views;
 
 namespace humanlab.ViewModels
 {
@@ -74,7 +75,6 @@ namespace humanlab.ViewModels
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
-            TobiiSetUpService.StartGazeDeviceWatcher();
             
             MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
@@ -141,6 +141,7 @@ namespace humanlab.ViewModels
         private void GazeEntered(GazeInputSourcePreview sender, GazeEnteredPreviewEventArgs args)
         {
             args.Handled = true;
+
         }
 
         /// <summary>
@@ -363,11 +364,33 @@ namespace humanlab.ViewModels
         public void OpenActivity()
         {
             IsActivityLoading = true;
+            TobiiSetUpService.StartGazeDeviceWatcher();
+            NavigationView navView = GetNavigationView();
+            navView.IsPaneVisible = false;
+            navView.IsPaneOpen = false;
+            navView.IsPaneToggleButtonVisible = false;
+
         }
 
         public void CloseActivity()
         {
+
+            TobiiSetUpService.StartGazeDeviceWatcher();
+            NavigationView navView = GetNavigationView();
+            navView.IsPaneVisible = true;
+            navView.IsPaneToggleButtonVisible = true;
             IsActivityLoading = false;
+            Debug.WriteLine("close");
+            //TobiiSetUpService = null;
         }
+
+
+
+        public void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            NavigationView navView = GetNavigationView();
+            navView.IsPaneOpen = false;
+        }
+
     }
 }
