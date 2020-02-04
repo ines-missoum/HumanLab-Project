@@ -12,6 +12,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using humanlab.Models;
+using System.Threading.Tasks;
+using humanlab.Views;
+using humanlab.Services;
 
 namespace humanlab.ViewModels
 {
@@ -137,7 +140,6 @@ namespace humanlab.ViewModels
 
         private async void SaveGridPlacementAsync()
         {
-            MessageDialog messageDialog= new MessageDialog("Une erreur s'est produite");
 
             Models.Grid newGrid = new Models.Grid
             {
@@ -145,18 +147,18 @@ namespace humanlab.ViewModels
                 ElementsHeight = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor,
                 ElementsWidth = (ScrollView.ViewportWidth / 2) * ScrollView.ZoomFactor,
             };
-            try {
-                 gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
-                 messageDialog = new MessageDialog("Votre grille " + gridName + " a été sauvegardée avec succès.");
+            try
+            {
+                gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
+                DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadGridFormView);
+
             }
             catch
             {
-                Debug.WriteLine(" Erreur ");
+                DisplayMessagesService.showErrorMessage();
             }
-            finally {
-                await messageDialog.ShowAsync(); }
-
         }
+
 
         /// <summary>
         /// Method that retrieve all the elements from the database and save them as ElementChecked (that has in addition a IsSelected attribute to handle the selection in the grid view)
@@ -312,9 +314,7 @@ namespace humanlab.ViewModels
             //we show error if there is one
             if (errorMessage != null)
             {
-                MessageDialog messageDialog = new MessageDialog(errorMessage);
-                // display the message dialog with the proper error 
-                await messageDialog.ShowAsync();
+                DisplayMessagesService.showPersonalizedMessage(errorMessage);
             }
             else {
                 List<ElementPlaced> listBis = new List<ElementPlaced>(ElementsPlaced);
@@ -504,12 +504,12 @@ namespace humanlab.ViewModels
             List<ElementChecked> newSearchedCat = new List<ElementChecked>(AllElements);
             if (searchCategory.Equals("Tout"))
                 //then we search only by names
-                SearchedElements = newSearchedCat.Where(e => e.Element.ElementName.Contains(searchText))
+                SearchedElements = newSearchedCat.Where(e => e.Element.ElementName.ToUpper().Contains(searchText.ToUpper()))
                                                .OrderByDescending(e => e.Element.ElementName.Length)
                                                .ToList();
             else
                 //else we search by name (not strict => just checking if the name contains the search) AND by category
-                SearchedElements = newSearchedCat.Where(e => e.Element.Category.CategoryName.Equals(searchCategory) && e.Element.ElementName.Contains(searchText))
+                SearchedElements = newSearchedCat.Where(e => e.Element.Category.CategoryName.Equals(searchCategory) && e.Element.ElementName.ToUpper().Contains(searchText.ToUpper()))
                                                    .OrderByDescending(e => e.Element.ElementName.Length)
                                                    .ToList();
 
@@ -796,6 +796,17 @@ namespace humanlab.ViewModels
                 float initialZoomFactor = 0.7F;
                 ScrollView.ChangeView(0, 0, initialZoomFactor);
             }
+        }
+
+        public void ReloadGridFormView()
+        {
+            var navigationView = GetNavigationView();
+            var child = navigationView.Content as Frame;
+            child.SourcePageType = typeof(BlankPage1);
+            child.SourcePageType = typeof(GridFormView);
+            Debug.WriteLine("child" + child);
+            
+            
         }
     }
 }

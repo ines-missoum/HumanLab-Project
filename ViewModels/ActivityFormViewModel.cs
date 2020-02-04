@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Controls;
 using System.Diagnostics;
 using Windows.UI.Xaml.Controls.Primitives;
 using humanlab.Models;
+using humanlab.Services;
+using humanlab.Views;
 
 namespace humanlab.ViewModels
 {
@@ -253,9 +255,7 @@ namespace humanlab.ViewModels
             //we show error if there is one
             if (errorMessage != null)
             {
-                MessageDialog messageDialog = new MessageDialog(errorMessage);
-                // display the message dialog with the proper error 
-                await messageDialog.ShowAsync();
+                DisplayMessagesService.showPersonalizedMessage(errorMessage);
             }
             else
             {
@@ -269,15 +269,22 @@ namespace humanlab.ViewModels
                 // Save Activity in db
                 activityRepository.SaveActivityAsync(newActivity, SelectedGridsSource);
 
-                MessageDialog messageDialog = new MessageDialog(successMessage);
-                // display the message dialog after having saved the activity
-                await messageDialog.ShowAsync();
-
+                DisplayMessagesService.showSuccessMessage("activité", activityName, ReloadActivityFormView);
 
             }
 
         }
+        public void ReloadActivityFormView()
+        {
+            // Here's the navigationView 
+            var navigationView = GetNavigationView();
+            var child = navigationView.Content as Frame;
+            child.SourcePageType = typeof(BlankPage1);
+            child.SourcePageType = typeof(ActivityFormView);
+            Debug.WriteLine("child" + child);
 
+
+        }
         /*** METHODS THAT DEALS WITH GRIDVIEW SELECTION ISSUES IN THE CHOOSE GRID VIEW***/
 
         /// <summary>
@@ -431,7 +438,7 @@ namespace humanlab.ViewModels
         private void Search()
         {
             List<GridChecked> newSearchedCat = new List<GridChecked>(AllGrids);
-            SearchedGrids = newSearchedCat.Where(e => e.Grid.GridName.Contains(searchText))
+            SearchedGrids = newSearchedCat.Where(e => e.Grid.GridName.ToUpper().Contains(searchText.ToUpper()))
                                            .OrderByDescending(e => e.Grid.GridName.Length)
                                            .ToList();
 
