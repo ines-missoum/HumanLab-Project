@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Controls;
 using System.Diagnostics;
 using Windows.UI.Xaml.Controls.Primitives;
 using humanlab.Models;
+using humanlab.Services;
+using humanlab.Views;
 
 namespace humanlab.ViewModels
 {
@@ -253,9 +255,7 @@ namespace humanlab.ViewModels
             //we show error if there is one
             if (errorMessage != null)
             {
-                MessageDialog messageDialog = new MessageDialog(errorMessage);
-                // display the message dialog with the proper error 
-                await messageDialog.ShowAsync();
+                DisplayMessagesService.showPersonalizedMessage(errorMessage);
             }
             else
             {
@@ -269,15 +269,29 @@ namespace humanlab.ViewModels
                 // Save Activity in db
                 activityRepository.SaveActivityAsync(newActivity, SelectedGridsSource);
 
-                MessageDialog messageDialog = new MessageDialog(successMessage);
-                // display the message dialog after having saved the activity
-                await messageDialog.ShowAsync();
-
+                DisplayMessagesService.showSuccessMessage("activité", activityName, ReloadActivityFormView);
 
             }
 
         }
+        public void ReloadActivityFormView()
+        {
+            // Get the current Window  main content
+            var page = Window.Current.Content as Frame;
+            var mainpage = page.Content as MainPage;
 
+            // Get first Child
+            var grid = mainpage.Content as Windows.UI.Xaml.Controls.Grid;
+
+            // Here's the navigationView 
+            var navigationView = grid.Children.First() as NavigationView;
+            var child = navigationView.Content as Frame;
+            child.SourcePageType = typeof(BlankPage1);
+            child.SourcePageType = typeof(ActivityFormView);
+            Debug.WriteLine("child" + child);
+
+
+        }
         /*** METHODS THAT DEALS WITH GRIDVIEW SELECTION ISSUES IN THE CHOOSE GRID VIEW***/
 
         /// <summary>

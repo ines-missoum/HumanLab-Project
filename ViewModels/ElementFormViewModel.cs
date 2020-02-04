@@ -18,6 +18,8 @@ using Windows.UI.Popups;
 using Windows.ApplicationModel;
 using System.Diagnostics;
 using Windows.Media.Playback;
+using humanlab.Views;
+using humanlab.Services;
 
 namespace humanlab.ViewModels
 {
@@ -492,7 +494,7 @@ namespace humanlab.ViewModels
 
         private async void SaveElementAsync()
         {
-            MessageDialog messageDialog;
+
             if (Check_FormValidation())
             {
                 //Saving element in db
@@ -500,13 +502,32 @@ namespace humanlab.ViewModels
                 repository.SaveElementAsync(model, SelectedCategory);
 
                 // Success popup
-                messageDialog = new MessageDialog("Votre element " + ElementName + " a été sauvegardé avec succès.");
+                DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
 
             }
             else { // Je met une alert
-                messageDialog = new MessageDialog("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
+                DisplayMessagesService.showPersonalizedMessage("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
             }
-            await messageDialog.ShowAsync();
+ 
+        }
+
+        public void ReloadElementFormView()
+        {
+            // Get the current Window  main content
+            var page = Window.Current.Content as Frame;
+            var mainpage = page.Content as MainPage;
+
+            // Get first Child
+            var grid = mainpage.Content as Windows.UI.Xaml.Controls.Grid;
+
+            // Here's the navigationView 
+            var navigationView = grid.Children.First() as NavigationView;
+            var child = navigationView.Content as Frame;
+            child.SourcePageType = typeof(BlankPage1);
+            child.SourcePageType = typeof(ElementFormView);
+            Debug.WriteLine("child" + child);
+
+
         }
     }
 }

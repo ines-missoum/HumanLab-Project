@@ -124,7 +124,7 @@ namespace humanlab.ViewModels
         /// </summary>
         private async void SaveSettingsAsync()
         {
-            MessageDialog messageDialog;
+
             try
             {
                 if (IsAutoChecked)
@@ -136,15 +136,13 @@ namespace humanlab.ViewModels
                     ParametersService.SaveManual();
                 }
                 // Create the message dialog and set its content
-                messageDialog = new MessageDialog("Vos modifications ont été sauvegardées avec succès.");
+                DisplayMessagesService.showPersonalizedMessage("Vos modifications ont été sauvegardées avec succès.");
 
             }
             catch
             {
-                messageDialog = new MessageDialog("Une erreur s'est produite lors de la sauvegarde. Veuillez réessayer.");
+                DisplayMessagesService.showErrorMessage();
             }
-            // Show the message dialog
-            await messageDialog.ShowAsync();
 
         }
 

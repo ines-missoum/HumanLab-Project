@@ -140,7 +140,6 @@ namespace humanlab.ViewModels
 
         private async void SaveGridPlacementAsync()
         {
-            MessageDialog messageDialog = new MessageDialog("Une erreur s'est produite");
 
             Models.Grid newGrid = new Models.Grid
             {
@@ -151,7 +150,7 @@ namespace humanlab.ViewModels
             try
             {
                 gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
-                DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadView);
+                DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadGridFormView);
 
             }
             catch
@@ -160,18 +159,6 @@ namespace humanlab.ViewModels
             }
         }
 
-        public async void showSuccessMessage()
-        {
-            ContentDialog cd = new ContentDialog
-            {
-                Title = "Enregistrement de votre grille",
-                Content = "Votre grille " + gridName + " a été sauvegardée avec succès.",
-                CloseButtonCommand = new DelegateCommand(ReloadView),
-                CloseButtonText = "Fermer",
-
-            };
-            await cd.ShowAsync();
-        }
 
         /// <summary>
         /// Method that retrieve all the elements from the database and save them as ElementChecked (that has in addition a IsSelected attribute to handle the selection in the grid view)
@@ -327,9 +314,7 @@ namespace humanlab.ViewModels
             //we show error if there is one
             if (errorMessage != null)
             {
-                MessageDialog messageDialog = new MessageDialog(errorMessage);
-                // display the message dialog with the proper error 
-                await messageDialog.ShowAsync();
+                DisplayMessagesService.showPersonalizedMessage(errorMessage);
             }
             else {
                 List<ElementPlaced> listBis = new List<ElementPlaced>(ElementsPlaced);
@@ -813,7 +798,7 @@ namespace humanlab.ViewModels
             }
         }
 
-        public void ReloadView()
+        public void ReloadGridFormView()
         {
             // Get the current Window  main content
             var page = Window.Current.Content as Frame;

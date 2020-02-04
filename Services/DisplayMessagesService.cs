@@ -31,5 +31,11 @@ namespace humanlab.Services
             MessageDialog errorMessageDialog = new MessageDialog("Une erreur s'est produite lors de l'enregistrement, Veuillez réessayer");
             await errorMessageDialog.ShowAsync();
         }
+
+        public async static void showPersonalizedMessage(string message)
+        {
+            MessageDialog messageDialog = new MessageDialog(message);
+            await messageDialog.ShowAsync();
+        }
     }
 }
