@@ -513,15 +513,8 @@ namespace humanlab.ViewModels
 
         public void ReloadElementFormView()
         {
-            // Get the current Window  main content
-            var page = Window.Current.Content as Frame;
-            var mainpage = page.Content as MainPage;
-
-            // Get first Child
-            var grid = mainpage.Content as Windows.UI.Xaml.Controls.Grid;
-
             // Here's the navigationView 
-            var navigationView = grid.Children.First() as NavigationView;
+            var navigationView = GetNavigationView();
             var child = navigationView.Content as Frame;
             child.SourcePageType = typeof(BlankPage1);
             child.SourcePageType = typeof(ElementFormView);
@@ -529,6 +522,7 @@ namespace humanlab.ViewModels
 
 
         }
+
     }
 }
  
