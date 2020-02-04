@@ -50,7 +50,7 @@ namespace humanlab.ViewModels
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
             //retrieve list of elements
-            GetElementsOfGrid(2);
+            GetElementsOfGrid(10);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
@@ -159,9 +159,9 @@ namespace humanlab.ViewModels
                 double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
 
                 //20 = width height !!!! to change corresponding to xaml
-                //32 = taille de la progress bar (margin comprises)
+                //24 = taille de la progress bar (margin comprises)
                 double ellipseLeft = gazePointX - (20 / 2.0f);
-                double ellipseTop = gazePointY - (20 / 2.0f) - 32;
+                double ellipseTop = gazePointY - (20 / 2.0f) - 24;
 
                 // Translate transform for moving gaze ellipse.
                 TranslateTransform translateEllipse = new TranslateTransform

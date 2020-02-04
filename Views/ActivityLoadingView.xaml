@@ -68,7 +68,7 @@
                     Fill="Black" 
                     Opacity="0.5" 
                     Visibility="Visible"
-                RenderTransform="{x:Bind tobii.Transform}"
+                RenderTransform="{x:Bind tobii.Transform, Mode=TwoWay}"
                 >
             </Ellipse>
         </Canvas>
