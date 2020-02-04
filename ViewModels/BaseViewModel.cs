@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace humanlab.ViewModels
 {
@@ -37,6 +39,20 @@ namespace humanlab.ViewModels
             OnPropertyChanged(propertyName);
 
             return true;
+        }
+
+        public NavigationView GetNavigationView()
+        {
+            // Get the current Window  main content
+            var page = Window.Current.Content as Frame;
+            var mainpage = page.Content as MainPage;
+
+            // Get first Child
+            var grid = mainpage.Content as Windows.UI.Xaml.Controls.Grid;
+
+            // Here's the navigationView 
+            var navigationView = grid.Children.First() as NavigationView;
+            return navigationView;
         }
     }
 }

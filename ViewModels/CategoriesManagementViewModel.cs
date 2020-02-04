@@ -1,6 +1,7 @@
 ﻿using humanlab.DAL;
 using humanlab.Helpers.Models;
 using humanlab.Models;
+using humanlab.Services;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
@@ -193,19 +194,16 @@ namespace humanlab.ViewModels
             bool wellSaved = repository.SaveCategoryAsync(newCategory);
 
             //we display the message when process ends and update the view
-            MessageDialog messageDialog;
             if (wellSaved)
             {
                 AddCategoryToDbCategories(newCategory);
                 UpdateCategoriesForView();
-                messageDialog = new MessageDialog("La catégorie " + NewCategoryName + " a été créée avec succès.");
+                DisplayMessagesService.showPersonalizedMessage("La catégorie " + NewCategoryName + " a été créée avec succès.");
+
                 NewCategoryName = "";
             }
             else
-                messageDialog = new MessageDialog("Echec de la création de la catégorie " + NewCategoryName + ".");
-
-            await messageDialog.ShowAsync();
-
+                DisplayMessagesService.showPersonalizedMessage("Echec de la création de la catégorie " + NewCategoryName + ".");
         }
 
         /// <summary>
@@ -289,18 +287,14 @@ namespace humanlab.ViewModels
             bool wellSaved = repository.SaveCategoryAsync(newCategory);
 
             //we display the message when process ends and update the view
-            MessageDialog messageDialog;
             if (wellSaved)
             {
-                messageDialog = new MessageDialog("La catégorie " + SelectedCategory.Category.CategoryName + " a été renommée par " + UpdatedCategoryName + ".");
+                DisplayMessagesService.showPersonalizedMessage("La catégorie " + SelectedCategory.Category.CategoryName + " a été renommée par " + UpdatedCategoryName + ".");
                 SelectedCategory.Category.CategoryName = UpdatedCategoryName;
                 UpdateCategoriesForView();
             }
             else
-                messageDialog = new MessageDialog("Echec de la modification de la catégorie " + SelectedCategory.Category.CategoryName + ".");
-
-            await messageDialog.ShowAsync();
-
+                DisplayMessagesService.showPersonalizedMessage("Echec de la modification de la catégorie " + SelectedCategory.Category.CategoryName + ".");
         }
     }
 }

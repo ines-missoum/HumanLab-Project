@@ -55,13 +55,13 @@ namespace humanlab.ViewModels
             ClickImage = new DelegateCommand<object>(ClickOnImage);
 
             listGridIds = new List<(int GridOrder, int GridId)>{
-                          (1, 12),
-                          (2, 2),
-                          (4, 1),
-                          (3, 10)
+                          (1, 2),
+                          (2, 1),
+                          (4, 3),
+                          (3, 4)
              };
 
-            currentGrid = listGridIds.First();
+            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1); ;
             //retrieve list of elements
             GetElementsOfGrid(currentGrid.GridId);
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);

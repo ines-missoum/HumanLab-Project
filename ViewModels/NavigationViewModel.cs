@@ -82,6 +82,7 @@ namespace humanlab.ViewModels
                             this.ContentFrame = typeof(ActivityLoadingView);
                             break;
                         case "Nouvelle activité":
+                            this.ContentFrame = typeof(ActivityFormView);
                             break;
                         case "Toutes les grilles":
                             break;

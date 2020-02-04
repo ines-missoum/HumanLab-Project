@@ -57,7 +57,7 @@ namespace humanlab.DAL
                     List<ElementOfActivity> allGridElements = new List<ElementOfActivity>();
                     foreach (GridElements gridElement in grid.GridElements)
                     {
-                        allGridElements.Add(new ElementOfActivity(gridElement.Element,gridElement.Xposition, gridElement.Yposition,grid.ElementsHeight,grid.ElementsWidth));
+                        allGridElements.Add(new ElementOfActivity(gridElement.Element, gridElement.Xposition, gridElement.Yposition, grid.ElementsHeight, grid.ElementsWidth));
                     }
 
                     return allGridElements;
@@ -70,6 +70,30 @@ namespace humanlab.DAL
                 }
             }
         }
-    }
 
+
+
+        public async Task<List<Grid>> GetGridsAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Grids.Select(g => new Grid
+                    {
+                        GridName = g.GridName,
+                        GridId = g.GridId,
+                        GridElements = g.GridElements
+                    })
+                        .ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
+
+    }
 }
