@@ -42,8 +42,8 @@ namespace humanlab.ViewModels
         //repository
         private GridRepository gridRepository;
 
-        private List<int> listGridIds;
-        private int currentGridId;
+        private List<(int GridOrder, int GridId)> listGridIds;
+        private (int GridOrder, int GridId) currentGrid;
         public DelegateCommand NextGrid { get; set; }
         public DelegateCommand PreviousGrid { get; set; }
         /*** CONSTRUCTOR ***/
@@ -54,10 +54,16 @@ namespace humanlab.ViewModels
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
 
-            listGridIds = new List<int> { 12, 2, 10, 1 };
-            currentGridId = listGridIds.First();
+            listGridIds = new List<(int GridOrder, int GridId)>{
+                          (1, 12),
+                          (2, 2),
+                          (4, 1),
+                          (3, 10)
+             };
+
+            currentGrid = listGridIds.First();
             //retrieve list of elements
-            GetElementsOfGrid(currentGridId);
+            GetElementsOfGrid(currentGrid.GridId);
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
 
@@ -77,10 +83,11 @@ namespace humanlab.ViewModels
         private async void GetElementsOfGrid(int gridId)
         {
             List<ElementOfActivity> dbElements = await gridRepository.GetAllGridElements(gridId);
-            dbElements.ForEach(e => {
+            dbElements.ForEach(e =>
+            {
                 e.MaxFocusTime = MaxFocusTime;
                 e.ClickImage = ClickImage;
-                });
+            });
 
             Elements = dbElements;
 
@@ -238,7 +245,7 @@ namespace humanlab.ViewModels
             if (current.Element.Audio != "")
             {
                 playingSound = new MediaPlayer();
-                playingSound.Source = MediaSource.CreateFromUri(new Uri(path+current.Element.Audio));
+                playingSound.Source = MediaSource.CreateFromUri(new Uri(path + current.Element.Audio));
                 playingSound.Play();
             }
             else
@@ -288,7 +295,7 @@ namespace humanlab.ViewModels
         }
 
         //NAVIGATION GRID
-        
+
         /// <summary>
         /// Checks if the next button should be allowed
         /// </summary>
@@ -296,7 +303,7 @@ namespace humanlab.ViewModels
         private bool CanClickOnNext()
         {
             return (ParametersService.IsAutomatic() && ParametersService.GetMode().ToUpper().Equals("BOUCLE"))
-                || currentGridId!=listGridIds.Last();
+                || currentGrid.GridOrder < listGridIds.Count;
         }
         /// <summary>
         /// Checks if the previous button should be allowed
@@ -305,15 +312,23 @@ namespace humanlab.ViewModels
         private bool CanClickOnPrevious()
         {
             return (ParametersService.IsAutomatic() && ParametersService.GetMode().ToUpper().Equals("BOUCLE"))
-                || currentGridId != listGridIds.First();
+                || currentGrid.GridOrder > 1;
         }
 
         private void ClickOnNext()
         {
+            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == currentGrid.GridOrder + 1);
+            GetElementsOfGrid(currentGrid.GridId);
+            NextGrid.RaiseCanExecuteChanged();
+            PreviousGrid.RaiseCanExecuteChanged();
         }
 
         private void ClickOnPrevious()
         {
+            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == currentGrid.GridOrder - 1);
+            GetElementsOfGrid(currentGrid.GridId);
+            NextGrid.RaiseCanExecuteChanged();
+            PreviousGrid.RaiseCanExecuteChanged();
         }
     }
 }
