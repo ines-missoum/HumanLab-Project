@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using humanlab.Models;
 using System.Threading.Tasks;
 using humanlab.Views;
+using humanlab.Services;
 
 namespace humanlab.ViewModels
 {
@@ -150,14 +151,12 @@ namespace humanlab.ViewModels
             try
             {
                 gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
-                showSuccessMessage();
+                DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadView);
 
             }
             catch
             {
-                Debug.WriteLine(" Erreur ");
-                MessageDialog errorMessageDialog = new MessageDialog("Une erreur s'est produite, merci de réessayer");
-                await errorMessageDialog.ShowAsync();
+                DisplayMessagesService.showErrorMessage();
             }
         }
 
@@ -167,7 +166,7 @@ namespace humanlab.ViewModels
             {
                 Title = "Enregistrement de votre grille",
                 Content = "Votre grille " + gridName + " a été sauvegardée avec succès.",
-                CloseButtonCommand = new DelegateCommand(GetNavigationView),
+                CloseButtonCommand = new DelegateCommand(ReloadView),
                 CloseButtonText = "Fermer",
 
             };
@@ -814,7 +813,7 @@ namespace humanlab.ViewModels
             }
         }
 
-        public void GetNavigationView()
+        public void ReloadView()
         {
             // Get the current Window  main content
             var page = Window.Current.Content as Frame;
