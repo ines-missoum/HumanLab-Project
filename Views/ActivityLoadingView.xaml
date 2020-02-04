@@ -23,10 +23,15 @@
     <Grid >
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top">
-            <Button Width="48" Height="32" Margin="8" Background="LightGreen" Foreground="White" FontWeight="ExtraBold">
+            <Button Width="48" Height="32" Margin="8" 
+                    Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
+                    Command="{x:Bind tobii.PreviousGrid}">
                 <SymbolIcon Symbol="Back" />
             </Button>
-            <Button Width="48" Height="32" Margin="8" Background="LightGreen" Foreground="White" FontWeight="ExtraBold">
+            
+            <Button Width="48" Height="32" Margin="8" 
+                    Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
+                    Command="{x:Bind tobii.NextGrid}">
                 <SymbolIcon Symbol="Forward" />
             </Button>
         </StackPanel>

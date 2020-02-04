@@ -42,6 +42,10 @@ namespace humanlab.ViewModels
         //repository
         private GridRepository gridRepository;
 
+        private List<int> listGridIds;
+        private int currentGridId;
+        public DelegateCommand NextGrid { get; set; }
+        public DelegateCommand PreviousGrid { get; set; }
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -49,8 +53,13 @@ namespace humanlab.ViewModels
             gridRepository = new GridRepository();
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
+
+            listGridIds = new List<int> { 12, 2, 10, 1 };
+            currentGridId = listGridIds.First();
             //retrieve list of elements
-            GetElementsOfGrid(12);
+            GetElementsOfGrid(currentGridId);
+            NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
+            PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
@@ -261,7 +270,7 @@ namespace humanlab.ViewModels
             }
         }
 
-        ///MOUSE
+        //MOUSE
         private void ClickOnImage(object args)
         {
             Image img = args as Image;
@@ -278,5 +287,33 @@ namespace humanlab.ViewModels
             }
         }
 
+        //NAVIGATION GRID
+        
+        /// <summary>
+        /// Checks if the next button should be allowed
+        /// </summary>
+        /// <returns>Returns true if the mode is loop or if this is note the last grid, else false</returns>
+        private bool CanClickOnNext()
+        {
+            return (ParametersService.IsAutomatic() && ParametersService.GetMode().ToUpper().Equals("BOUCLE"))
+                || currentGridId!=listGridIds.Last();
+        }
+        /// <summary>
+        /// Checks if the previous button should be allowed
+        /// </summary>
+        /// <returns>Returns true if the mode is loop or if this is note the first grid, else false</returns>
+        private bool CanClickOnPrevious()
+        {
+            return (ParametersService.IsAutomatic() && ParametersService.GetMode().ToUpper().Equals("BOUCLE"))
+                || currentGridId != listGridIds.First();
+        }
+
+        private void ClickOnNext()
+        {
+        }
+
+        private void ClickOnPrevious()
+        {
+        }
     }
 }
