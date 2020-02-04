@@ -302,8 +302,8 @@ namespace humanlab.ViewModels
         /// <returns>Returns true if the mode is loop or if this is note the last grid, else false</returns>
         private bool CanClickOnNext()
         {
-            return (ParametersService.IsAutomatic() && ParametersService.GetMode().ToUpper().Equals("BOUCLE"))
-                || currentGrid.GridOrder < listGridIds.Count;
+            return ParametersService.GetMode().ToLower().Equals("boucle")
+                || ParametersService.GetMode().ToLower().Equals("ordonné") && currentGrid.GridOrder < listGridIds.Count;
         }
         /// <summary>
         /// Checks if the previous button should be allowed
@@ -311,24 +311,53 @@ namespace humanlab.ViewModels
         /// <returns>Returns true if the mode is loop or if this is note the first grid, else false</returns>
         private bool CanClickOnPrevious()
         {
-            return (ParametersService.IsAutomatic() && ParametersService.GetMode().ToUpper().Equals("BOUCLE"))
-                || currentGrid.GridOrder > 1;
+            return ParametersService.GetMode().ToLower().Equals("boucle")
+                || ParametersService.GetMode().ToLower().Equals("ordonné") && currentGrid.GridOrder > 1;
         }
 
         private void ClickOnNext()
         {
-            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == currentGrid.GridOrder + 1);
+            ChangeCurrentGrid(getGridOrderToDisplay(true));
+        }
+
+        private void ClickOnPrevious()
+        {
+            ChangeCurrentGrid(getGridOrderToDisplay(false));
+        }
+
+        private void ChangeCurrentGrid(int newGridOrder)
+        {
+            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == newGridOrder);
             GetElementsOfGrid(currentGrid.GridId);
             NextGrid.RaiseCanExecuteChanged();
             PreviousGrid.RaiseCanExecuteChanged();
         }
 
-        private void ClickOnPrevious()
+        private int getGridOrderToDisplay(bool nextGridWanted)
         {
-            currentGrid = listGridIds.Find(tuple => tuple.GridOrder == currentGrid.GridOrder - 1);
-            GetElementsOfGrid(currentGrid.GridId);
-            NextGrid.RaiseCanExecuteChanged();
-            PreviousGrid.RaiseCanExecuteChanged();
+            string mode = ParametersService.GetMode().ToLower();
+
+            int gridOrder;
+            //default case == ordered
+            if (nextGridWanted)
+                gridOrder = currentGrid.GridOrder + 1;
+            else
+                gridOrder = currentGrid.GridOrder - 1;
+
+            switch (mode)
+            {
+                case "boucle":
+                    //we check if the limits are reached
+                    if (gridOrder > listGridIds.Count)
+                        gridOrder = 1;
+                    else if (gridOrder < 1)
+                        gridOrder = listGridIds.Count;
+                    break;
+                case "aléatoire":
+                    break;
+            }
+            Debug.WriteLine(gridOrder);
+            return gridOrder;
         }
     }
 }
