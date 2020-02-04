@@ -8,6 +8,7 @@
     xmlns:vm="using:humanlab.ViewModels"
     xmlns:m="using:humanlab.Helpers.Models"
     xmlns:h="using:humanlab.Helpers.Converters"
+    xmlns:models="using:humanlab.Models"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -20,29 +21,55 @@
         <h:ImageNameToImageUriConverter x:Key="ImageNameToImageUriConverter"></h:ImageNameToImageUriConverter>
     </Page.Resources>
 
-    <Grid >
-        <StackPanel Orientation="Horizontal" 
+    <Grid>
+        <!--ALL ACTIVITIES-->
+        <Grid >
+            <Grid Margin="10,15,0,10" >
+                <GridView ItemsSource="{x:Bind tobii.AllActivities}" SelectionMode="Single">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Activity">
+                            <GridViewItem Background="LightGray" Margin="8" >
+                                <Grid  >
+                                    <StackPanel Orientation="Vertical" Margin="20" >
+                                        <TextBlock Text="{x:Bind ActivityName}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GridViewItem>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </Grid>
+        </Grid>
+        
+        <!--ACTIVITY LOADING-->
+        <Grid Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top">
-            <Button Width="48" Height="32" Margin="8" 
+                <Button Width="48" Height="32" Margin="8" 
                     Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
                     Command="{x:Bind tobii.PreviousGrid}">
-                <SymbolIcon Symbol="Back" />
-            </Button>
-            
-            <Button Width="48" Height="32" Margin="8" 
+                    <SymbolIcon Symbol="Back" />
+                </Button>
+
+                <Button Width="48" Height="32" Margin="8" 
                     Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
                     Command="{x:Bind tobii.NextGrid}">
-                <SymbolIcon Symbol="Forward" />
-            </Button>
-        </StackPanel>
-        <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}" Margin="0,44,0,0">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="m:ElementOfActivity">
-                    <Canvas >
-                        <StackPanel Orientation="Vertical"  
+                    <SymbolIcon Symbol="Forward" />
+                </Button>
+            </StackPanel>
+            <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}" Margin="0,44,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="m:ElementOfActivity">
+                        <Canvas >
+                            <StackPanel Orientation="Vertical"  
                                     Canvas.Top="{x:Bind MarginTop, Mode=TwoWay}"
                                     Canvas.Left="{x:Bind MarginLeft, Mode=TwoWay}">
-                        <ProgressBar 
+                                <ProgressBar 
                      Value="{x:Bind FocusTime, Mode=TwoWay}" 
                      Maximum="{x:Bind MaxFocusTime}" 
                      Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
@@ -50,33 +77,33 @@
                      Width="{x:Bind Width}"     
                      Height="20"/>
 
-                        <Button Command="{x:Bind ClickImage, Mode=TwoWay}"
+                                <Button Command="{x:Bind ClickImage, Mode=TwoWay}"
                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
                      x:Name="clickButton"
                      Height="{x:Bind Height}" 
                      Width="{x:Bind Width}"  
                           
                 >
-                            <Button.Content>
-                                <Image Tag="{Binding Element.ElementId}" Stretch="Fill">
-                                    <Image.Source>
-                                        <BitmapImage 
+                                    <Button.Content>
+                                        <Image Tag="{Binding Element.ElementId}" Stretch="Fill">
+                                            <Image.Source>
+                                                <BitmapImage 
                                                 UriSource="{Binding Element.Image, Converter={StaticResource ImageNameToImageUriConverter}}"
                                                 AutoPlay="False" 
                                             />
-                                    </Image.Source>
-                                </Image>
-                            </Button.Content>
+                                            </Image.Source>
+                                        </Image>
+                                    </Button.Content>
 
-                        </Button>
-                        </StackPanel>
-                    </Canvas>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                </Button>
+                            </StackPanel>
+                        </Canvas>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-        <Canvas x:Name="gazePositionCanvas">
-            <Ellipse 
+            <Canvas x:Name="gazePositionCanvas">
+                <Ellipse 
                     x:Name="eyeGazePositionEllipse"
                     Width="20" Height="20"
                     Fill="Black" 
@@ -84,7 +111,8 @@
                     Visibility="Visible"
                 RenderTransform="{x:Bind tobii.Transform, Mode=TwoWay}"
                 >
-            </Ellipse>
-        </Canvas>
+                </Ellipse>
+            </Canvas>
+        </Grid>
     </Grid>
 </Page>

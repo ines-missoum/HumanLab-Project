@@ -41,6 +41,9 @@ namespace humanlab.ViewModels
 
         //repository
         private GridRepository gridRepository;
+        private ActivityRepository activityRepository;
+
+        public List<Activity> AllActivities { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
         private (int GridOrder, int GridId) currentGrid;
@@ -51,6 +54,9 @@ namespace humanlab.ViewModels
         public ActivityLoadingViewModel()
         {
             gridRepository = new GridRepository();
+            activityRepository = new ActivityRepository();
+            GetAllActivitiesAsync();
+
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
 
@@ -78,6 +84,12 @@ namespace humanlab.ViewModels
             playingSpeech = null;
 
 
+        }
+
+        private async void GetAllActivitiesAsync()
+        {
+            var activities = await activityRepository.GetActivitiesAsync();
+            AllActivities = activities.OrderByDescending(e => e.ActivityName.Length).ToList();
         }
 
         private async void GetElementsOfGrid(int gridId)
