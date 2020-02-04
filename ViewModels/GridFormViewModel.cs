@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using humanlab.Models;
 using System.Threading.Tasks;
+using humanlab.Views;
 
 namespace humanlab.ViewModels
 {
@@ -138,7 +139,7 @@ namespace humanlab.ViewModels
 
         private async void SaveGridPlacementAsync()
         {
-            MessageDialog messageDialog= new MessageDialog("Une erreur s'est produite");
+            MessageDialog messageDialog = new MessageDialog("Une erreur s'est produite");
 
             Models.Grid newGrid = new Models.Grid
             {
@@ -146,18 +147,31 @@ namespace humanlab.ViewModels
                 ElementsHeight = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor,
                 ElementsWidth = (ScrollView.ViewportWidth / 2) * ScrollView.ZoomFactor,
             };
-            try {
-                 gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
-                 messageDialog = new MessageDialog("Votre grille " + gridName + " a été sauvegardée avec succès.");
-                 
+            try
+            {
+                gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
+                showSuccessMessage();
+
             }
             catch
             {
                 Debug.WriteLine(" Erreur ");
+                MessageDialog errorMessageDialog = new MessageDialog("Une erreur s'est produite, merci de réessayer");
+                await errorMessageDialog.ShowAsync();
             }
-            finally {
-                await messageDialog.ShowAsync(); }
+        }
 
+        public async void showSuccessMessage()
+        {
+            ContentDialog cd = new ContentDialog
+            {
+                Title = "Enregistrement de votre grille",
+                Content = "Votre grille " + gridName + " a été sauvegardée avec succès.",
+                CloseButtonCommand = new DelegateCommand(GetNavigationView),
+                CloseButtonText = "Fermer",
+
+            };
+            await cd.ShowAsync();
         }
 
         /// <summary>
@@ -800,7 +814,7 @@ namespace humanlab.ViewModels
             }
         }
 
-        public void GetNavigationView(object sender, RoutedEventArgs e)
+        public void GetNavigationView()
         {
             // Get the current Window  main content
             var page = Window.Current.Content as Frame;
@@ -811,6 +825,11 @@ namespace humanlab.ViewModels
 
             // Here's the navigationView 
             var navigationView = grid.Children.First() as NavigationView;
+            var child = navigationView.Content as Frame;
+            child.SourcePageType = typeof(BlankPage1);
+            child.SourcePageType = typeof(GridFormView);
+            Debug.WriteLine("child" + child);
+            
             
         }
     }
