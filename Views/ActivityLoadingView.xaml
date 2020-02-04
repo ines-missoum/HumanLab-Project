@@ -25,7 +25,10 @@
         <!--ALL ACTIVITIES-->
         <Grid >
             <Grid Margin="10,15,0,10" >
-                <GridView ItemsSource="{x:Bind tobii.AllActivities}" SelectionMode="Single">
+                <GridView ItemsSource="{x:Bind tobii.AllActivities}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                          SelectionChanged="{x:Bind tobii.GridView_SelectionChanged}"
+                          SelectionMode="Single">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="models:Activity">
                             <GridViewItem Background="LightGray" Margin="8" >
@@ -47,9 +50,13 @@
         </Grid>
         
         <!--ACTIVITY LOADING-->
-        <Grid Visibility="Collapsed">
+        <Grid Visibility="{x:Bind tobii.IsActivityLoading, Mode=OneWay}" Background="White">
             <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Width="72" Height="32" Margin="8" 
+                    Background="Black" Foreground="White" FontWeight="Bold"
+                    Content="Fermer"
+                    Command="{x:Bind tobii.CloseActivityDelegate}"/>
                 <Button Width="48" Height="32" Margin="8" 
                     Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
                     Command="{x:Bind tobii.PreviousGrid}">
@@ -62,6 +69,7 @@
                     <SymbolIcon Symbol="Forward" />
                 </Button>
             </StackPanel>
+
             <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}" Margin="0,44,0,0">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="m:ElementOfActivity">
@@ -109,7 +117,7 @@
                     Fill="Black" 
                     Opacity="0.5" 
                     Visibility="Visible"
-                RenderTransform="{x:Bind tobii.Transform, Mode=TwoWay}"
+                    RenderTransform="{x:Bind tobii.Transform, Mode=TwoWay}"
                 >
                 </Ellipse>
             </Canvas>

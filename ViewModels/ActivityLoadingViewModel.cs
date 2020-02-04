@@ -28,10 +28,6 @@ namespace humanlab.ViewModels
         /*** ATTRIBUTS ***/
         private List<ElementOfActivity> elements;
         private double maxFocusTime;
-        private double focusTime1;
-        private bool isNotAnimated1;
-        private double focusTime2;
-        private bool isNotAnimated2;
         private Transform transform;
         public DelegateCommand<object> ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
@@ -44,6 +40,9 @@ namespace humanlab.ViewModels
         private ActivityRepository activityRepository;
 
         public List<Activity> AllActivities { get; set; }
+
+        private bool isActivityLoading;
+        public DelegateCommand CloseActivityDelegate { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
         private (int GridOrder, int GridId) currentGrid;
@@ -76,9 +75,10 @@ namespace humanlab.ViewModels
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
             TobiiSetUpService.StartGazeDeviceWatcher();
-            //FocusTime = 0;
+            
             MaxFocusTime = 5; //en sec
-            //IsNotAnimated = true;
+            IsActivityLoading = false;
+            CloseActivityDelegate = new DelegateCommand(CloseActivity);
 
             playingSound = null;
             playingSpeech = null;
@@ -113,40 +113,22 @@ namespace humanlab.ViewModels
             set => SetProperty(ref elements, value, "Elements");
         }
 
-        public bool IsNotAnimated1
-        {
-            get => isNotAnimated1;
-            set => SetProperty(ref isNotAnimated1, value, "IsNotAnimated1");
-        }
-
-        public bool IsNotAnimated2
-        {
-            get => isNotAnimated2;
-            set => SetProperty(ref isNotAnimated2, value, "IsNotAnimated2");
-        }
-
         public double MaxFocusTime
         {
             get => maxFocusTime;
             set => SetProperty(ref maxFocusTime, value, "MaxFocusTime");
         }
 
-        public double FocusTime1
-        {
-            get => focusTime1;
-            set => SetProperty(ref focusTime1, value, "FocusTime1");
-        }
-
-        public double FocusTime2
-        {
-            get => focusTime2;
-            set => SetProperty(ref focusTime2, value, "FocusTime2");
-        }
-
         public Transform Transform
         {
             get => transform;
             set => SetProperty(ref transform, value, "Transform");
+        }
+
+        public bool IsActivityLoading
+        {
+            get => isActivityLoading;
+            set => SetProperty(ref isActivityLoading, value, "IsActivityLoading");
         }
 
         /*** METHODS ***/
@@ -370,6 +352,22 @@ namespace humanlab.ViewModels
             }
             Debug.WriteLine(gridOrder);
             return gridOrder;
+        }
+
+
+        public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            OpenActivity();
+        }
+
+        public void OpenActivity()
+        {
+            IsActivityLoading = true;
+        }
+
+        public void CloseActivity()
+        {
+            IsActivityLoading = false;
         }
     }
 }
