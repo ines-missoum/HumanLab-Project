@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using humanlab.Models;
+using System.Threading.Tasks;
 
 namespace humanlab.ViewModels
 {
@@ -148,6 +149,7 @@ namespace humanlab.ViewModels
             try {
                  gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
                  messageDialog = new MessageDialog("Votre grille " + gridName + " a été sauvegardée avec succès.");
+                 
             }
             catch
             {
@@ -796,6 +798,20 @@ namespace humanlab.ViewModels
                 float initialZoomFactor = 0.7F;
                 ScrollView.ChangeView(0, 0, initialZoomFactor);
             }
+        }
+
+        public void GetNavigationView(object sender, RoutedEventArgs e)
+        {
+            // Get the current Window  main content
+            var page = Window.Current.Content as Frame;
+            var mainpage = page.Content as MainPage;
+
+            // Get first Child
+            var grid = mainpage.Content as Windows.UI.Xaml.Controls.Grid;
+
+            // Here's the navigationView 
+            var navigationView = grid.Children.First() as NavigationView;
+            
         }
     }
 }

@@ -23,7 +23,10 @@
                 IsBackButtonVisible="Collapsed"
                 IsTabStop="False"
                 Foreground="{x:Bind navigation.ColorNav, Mode=TwoWay}"
-                Header="{x:Bind navigation.Title, Mode=TwoWay}" >
+                Header="{x:Bind navigation.Title, Mode=TwoWay}"
+                
+            IsPaneOpen="False"
+            IsPaneToggleButtonVisible="False">
             <NavigationView.MenuItems >
                 <NavigationViewItemHeader Content="Activité" />
                 <NavigationViewItem Content="Lancer une activité" Icon="Play" />
