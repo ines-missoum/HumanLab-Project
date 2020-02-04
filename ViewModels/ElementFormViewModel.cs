@@ -45,8 +45,8 @@ namespace humanlab.ViewModels
         //*** Media ***//
         private MediaSource audioSource;
         private BitmapImage image = new BitmapImage();
-        private string[] authorizedPictureType = { "jpeg", "png", "jpg","gif"};
-        private string[] authorizedAudioType = { "mp4", "mp3","wav"};
+        private string[] authorizedPictureType = { "jpeg", "png", "jpg", "gif" };
+        private string[] authorizedAudioType = { "mp4", "mp3", "wav" };
         //play/stop button
         private MediaPlayer playingSound;
         private string buttonIcon;
@@ -89,7 +89,7 @@ namespace humanlab.ViewModels
             {
                 return !ElementSpeach.Equals("");
             }
-            
+
         }
 
         private async void Play()
@@ -113,7 +113,7 @@ namespace humanlab.ViewModels
                     playingSound = null;
                     ButtonIcon = "Play";
                     Debug.WriteLine("NOT playing end");
-                } 
+                }
             }
             else
             {
@@ -134,7 +134,10 @@ namespace humanlab.ViewModels
             set => SetProperty(ref buttonIcon, value, "ButtonIcon");
         }
 
-        private async void GetCategoriesAsync() => Categories = await repository.GetCategoriesNamesAsync();
+        private async void GetCategoriesAsync(){
+        var categorieNames = await repository.GetCategoriesNamesAsync();
+            Categories = categorieNames.OrderBy(c => c).ToList();
+    }
         private async void GetElementsAsync() => Elements = await repository.GetElementsNamesAsync();
 
         public Dictionary<string, string> InitializeColorDictionnary()

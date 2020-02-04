@@ -24,9 +24,11 @@ namespace humanlab
             optionsBuilder.UseSqlite("Data Source=Humanlab.db");
             base.OnConfiguring(optionsBuilder);
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+           // modelBuilder.Entity<Category>().HasData(new Category { CategoryName = "" });
             modelBuilder.Entity<GridElements>()
                 .HasKey(t => new { t.GridId, t.ElementId });
 

@@ -21,8 +21,8 @@
 
     <Grid>
 
-        <StackPanel Orientation="Vertical" Margin="10,15,0,10" >
-            <GridView ItemsSource="{x:Bind vm.AllElements}" SelectionMode="None">
+        <Grid Margin="10,15,0,10" >
+            <GridView ItemsSource="{x:Bind vm.AllElements}" SelectionMode="None" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <GridView.ItemTemplate>
                     <DataTemplate x:Name="ImageTextDataTemplate"  x:DataType="x:String">
                         <StackPanel Margin="12" >
@@ -41,6 +41,6 @@
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
             </GridView>
-        </StackPanel>
+        </Grid>
     </Grid>
 </Page>

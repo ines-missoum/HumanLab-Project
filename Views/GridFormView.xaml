@@ -19,7 +19,7 @@
     <Page.Resources>
         <!--gridView design-->
         <DataTemplate x:Key="ImageGalleryDataTemplate" x:DataType="m1:ElementChecked">
-            <GridViewItem >
+            <GridViewItem>
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <Image Source="{x:Bind Element.Image, Converter={StaticResource ImageNameToImagePathConverter}}" Height="100" Width="100" Stretch="Fill"/>
@@ -131,7 +131,7 @@
                Grid.RowSpan="3" 
                Visibility="{x:Bind grid.IsChooseElementsOpened, Mode=OneWay}">
 
-            <StackPanel Orientation="Vertical" Margin="20,24,0,20">
+            <StackPanel Orientation="Vertical" Margin="20,0,0,20">
 
                 <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
                     <AutoSuggestBox  QueryIcon="Find" 
@@ -159,7 +159,7 @@
                 <GridView SelectionMode="Multiple"  
                                     Loading="{x:Bind grid.GridView1_Loading}"
                                     ItemsSource="{x:Bind grid.SearchedElements, Mode=TwoWay}"
-                                    MaxHeight="300" 
+                                    MaxHeight="250" 
                                     SelectionChanged="{x:Bind grid.GridView1_SelectionChanged}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
@@ -170,7 +170,7 @@
                                     Loading="{x:Bind grid.GridView2_Loading}"
                                     ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}" 
                                     SizeChanged="{x:Bind grid.GridView2_SizeChanged}"
-                                    MaxHeight="300" 
+                                    MaxHeight="123" 
                                     SelectionChanged="{x:Bind grid.GridView2_SelectionChanged}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
