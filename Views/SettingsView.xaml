@@ -17,13 +17,21 @@
         <StackPanel Margin="12">
 
             <TextBlock Text="Défilement des grilles"
-                Style="{StaticResource SubtitleTextBlockStyle}" /> 
+                Style="{StaticResource SubtitleTextBlockStyle}" />
+            <ComboBox Margin="0,24,0,0" Header="Mode : " 
+                          Width="300"
+                          SelectedItem="{Binding SelectedMode}"
+                          SelectionChanged="{x:Bind settings.ComboBox_SelectionChanged}">
+                <x:String>Ordonné</x:String>
+                <x:String>Boucle</x:String>
+                <x:String>Aléatoire</x:String>
+            </ComboBox>
             <ToggleSwitch x:Name="ToggleSwitch1" 
                           Margin="0,24,0,0"
                           IsOn="{x:Bind settings.IsAutoChecked, Mode=TwoWay}"
                           OffContent="Manuel" 
                           OnContent="Automatique"/>
-            
+
             <StackPanel Margin="72,24,0,0" 
                         Visibility="{x:Bind settings.IsAutoChecked, Mode=OneWay}">
                 <!-- 3 sec à 5 min -->
@@ -36,16 +44,7 @@
                         TickFrequency="3600"
                         Value="{Binding GridTime}"
                         HorizontalAlignment="Left"/>
-                <ComboBox Header="Mode : " 
-                          Width="300"
-                          SelectedItem="{Binding SelectedMode}"
-                          SelectionChanged="{x:Bind settings.ComboBox_SelectionChanged}">
-                    <x:String>Ordonné</x:String>
-                    <x:String>Boucle</x:String>
-                    <x:String>Aléatoire</x:String>
-                </ComboBox>
             </StackPanel>
-
             <Button Command="{Binding SaveSettingsCommand}"
                     Margin="0,48,0,0" 
                     Background="{Binding ColorButton}">Sauvegarder</Button>

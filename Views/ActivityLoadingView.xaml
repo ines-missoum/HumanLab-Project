@@ -1,0 +1,128 @@
+﻿<Page
+    x:Class="humanlab.Views.ActivityLoadingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:humanlab.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:humanlab.ViewModels"
+    xmlns:m="using:humanlab.Helpers.Models"
+    xmlns:h="using:humanlab.Helpers.Converters"
+    xmlns:models="using:humanlab.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <vm:ActivityLoadingViewModel x:Name="tobii"/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <!--converter to retrieve image path-->
+        <h:ImageNameToImageUriConverter x:Key="ImageNameToImageUriConverter"></h:ImageNameToImageUriConverter>
+    </Page.Resources>
+
+    <Grid>
+        <!--ALL ACTIVITIES-->
+        <Grid >
+            <Grid Margin="10,15,0,10" >
+                <GridView ItemsSource="{x:Bind tobii.AllActivities}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                          SelectionChanged="{x:Bind tobii.GridView_SelectionChanged}"
+                          SelectionMode="Single">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Activity">
+                            <GridViewItem Background="LightGray" Margin="8" >
+                                <Grid  >
+                                    <StackPanel Orientation="Vertical" Margin="20" >
+                                        <TextBlock Text="{x:Bind ActivityName}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GridViewItem>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </Grid>
+        </Grid>
+        
+        <!--ACTIVITY LOADING-->
+        <Grid Visibility="{x:Bind tobii.IsActivityLoading, Mode=OneWay}" 
+              SizeChanged="{x:Bind tobii.Grid_SizeChanged}"
+              Background="White">
+            <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Width="72" Height="32" Margin="8" 
+                    Background="Black" Foreground="White" FontWeight="Bold"
+                    Content="Fermer"
+                    Command="{x:Bind tobii.CloseActivityDelegate}"/>
+                <Button Width="48" Height="32" Margin="8" 
+                    Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
+                    Command="{x:Bind tobii.PreviousGrid}">
+                    <SymbolIcon Symbol="Back" />
+                </Button>
+
+                <Button Width="48" Height="32" Margin="8" 
+                    Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
+                    Command="{x:Bind tobii.NextGrid}">
+                    <SymbolIcon Symbol="Forward" />
+                </Button>
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{x:Bind tobii.Elements, Mode=TwoWay}" Margin="0,44,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="m:ElementOfActivity">
+                        <Canvas >
+                            <StackPanel Orientation="Vertical"  
+                                    Canvas.Top="{x:Bind MarginTop, Mode=TwoWay}"
+                                    Canvas.Left="{x:Bind MarginLeft, Mode=TwoWay}">
+                                <ProgressBar 
+                     Value="{x:Bind FocusTime, Mode=TwoWay}" 
+                     Maximum="{x:Bind MaxFocusTime}" 
+                     Visibility="{Binding IsNotAnimated, Mode=TwoWay}"
+                     Margin="0,0,0,4"
+                     Width="{x:Bind Width}"     
+                     Height="20"/>
+
+                                <Button Command="{x:Bind ClickImage, Mode=TwoWay}"
+                     CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}"
+                     x:Name="clickButton"
+                     Height="{x:Bind Height}" 
+                     Width="{x:Bind Width}"  
+                          
+                >
+                                    <Button.Content>
+                                        <Image Tag="{Binding Element.ElementId}" Stretch="Fill">
+                                            <Image.Source>
+                                                <BitmapImage 
+                                                UriSource="{Binding Element.Image, Converter={StaticResource ImageNameToImageUriConverter}}"
+                                                AutoPlay="False" 
+                                            />
+                                            </Image.Source>
+                                        </Image>
+                                    </Button.Content>
+
+                                </Button>
+                            </StackPanel>
+                        </Canvas>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Canvas x:Name="gazePositionCanvas">
+                <Ellipse 
+                    x:Name="eyeGazePositionEllipse"
+                    Width="20" Height="20"
+                    Fill="Black" 
+                    Opacity="0.5" 
+                    Visibility="Visible"
+                    RenderTransform="{x:Bind tobii.Transform, Mode=TwoWay}"
+                >
+                </Ellipse>
+            </Canvas>
+        </Grid>
+    </Grid>
+</Page>

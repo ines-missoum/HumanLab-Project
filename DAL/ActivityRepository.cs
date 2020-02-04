@@ -58,5 +58,36 @@ namespace humanlab.DAL
                 }
             }
         }
+
+        public async Task<List<Activity>> GetActivitiesAsync()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.Activities.Select(a => new Activity { ActivityId = a.ActivityId, ActivityName = a.ActivityName, FixingTime = a.FixingTime }).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<List<ActivityGrids>> GetGridsOfActivity(int idActivity)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return await db.ActivityGrids.Select(ag => ag).Where(ag=> ag.ActivityId == idActivity).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+
     }
 }

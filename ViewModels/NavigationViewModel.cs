@@ -10,7 +10,7 @@ namespace humanlab.ViewModels
     {
         public NavigationViewModel()
         {
-            contentFrame = typeof(AllActivitiesView);
+            contentFrame = typeof(ActivityLoadingView);
             title = "Lancer une activité";
             ColorNav = ColorTheme;
         }
@@ -79,7 +79,7 @@ namespace humanlab.ViewModels
                     {
                         
                         case "Lancer une activité":
-                            this.ContentFrame = typeof(AllActivitiesView);
+                            this.ContentFrame = typeof(ActivityLoadingView);
                             break;
                         case "Nouvelle activité":
                             this.ContentFrame = typeof(ActivityFormView);

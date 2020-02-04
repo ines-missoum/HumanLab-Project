@@ -20,9 +20,13 @@ namespace humanlab.Helpers.Converters
 
                 return image;
             }
-                
+
             else
+            {
+                Debug.WriteLine("Impossible to load");
                 return "";
+            }
+               
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
