@@ -36,7 +36,7 @@ namespace humanlab.ViewModels
         private MediaPlayer playingSound;
         private MediaElement playingSpeech;
 
-        //repository
+        //repositoryies => responsible for retrieving data in db
         private GridRepository gridRepository;
         private ActivityRepository activityRepository;
 
@@ -49,6 +49,8 @@ namespace humanlab.ViewModels
         private (int GridOrder, int GridId) currentGrid;
         public DelegateCommand NextGrid { get; set; }
         public DelegateCommand PreviousGrid { get; set; }
+
+        private (BitmapImage source, ElementOfActivity element) activatedElement;
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -60,7 +62,7 @@ namespace humanlab.ViewModels
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
             listGridIds = new List<(int GridOrder, int GridId)>();
-          
+
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
 
@@ -73,6 +75,7 @@ namespace humanlab.ViewModels
 
             playingSound = null;
             playingSpeech = null;
+            activatedElement = (null, null);
 
 
         }
@@ -159,13 +162,16 @@ namespace humanlab.ViewModels
                 // Update the position of the ellipse corresponding to gaze point.
                 if (args.CurrentPoint.EyeGazePosition != null)
                 {
+                    // we retrieve the position of the gaze
                     double gazePointX = args.CurrentPoint.EyeGazePosition.Value.X;
                     double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
 
-                    //20 = width height !!!! to change corresponding to xaml
-                    //24 = taille de la progress bar (margin comprises)
-                    double ellipseLeft = gazePointX - (20 / 2.0f);
-                    double ellipseTop = gazePointY - (20 / 2.0f) - 24;
+                    // xaml data => to change if the xaml changes
+                    int eyesEllipseSize = 20;
+                    int progressBarSize = 24; //(margin included)
+
+                    double ellipseLeft = gazePointX - (eyesEllipseSize / 2.0f);
+                    double ellipseTop = gazePointY - (eyesEllipseSize / 2.0f) - progressBarSize;
 
                     // Translate transform for moving gaze ellipse.
                     TranslateTransform translateEllipse = new TranslateTransform
@@ -179,21 +185,20 @@ namespace humanlab.ViewModels
                     // The gaze point screen location.
                     Point gazePoint = new Point(gazePointX, gazePointY);
 
-                    // Basic hit test to determine if gaze point is on progress bar.
+                    // Basic hit test to determine if gaze point is on image.
                     Image img = TobiiSetUpService.CurrentFocusImage as Image;
-                    bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
-                    if (img != null & !hitRadialProgressBar)
+                    bool hitImage = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
+                    if (img != null & !hitImage)
                     {
                         ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
                         current.FocusTime = 0;
                     }
 
-
                     // Mark the event handled.
                     args.Handled = true;
                 }
             }
-            
+
         }
 
 
@@ -217,10 +222,9 @@ namespace humanlab.ViewModels
                 // If progress bar reaches maximum value, reset and relocate.
                 if (current.FocusTime >= MaxFocusTime)//nb de sec
                 {
-                    // Ensure the gaze timer restarts on new progress bar location.
+                    // we animate the element and reset all needed values
                     TobiiSetUpService.StopTimer();
                     current.FocusTime = 0;
-
                     Play(source, current);
                 }
             }
@@ -230,6 +234,11 @@ namespace humanlab.ViewModels
         private async void Play(BitmapImage source, ElementOfActivity current)
         {
             string path = "ms-appx:///Assets/";
+
+            //if an element is already playing we stop it
+            if (this.activatedElement != (null, null))
+                Stop(this.activatedElement.source, this.activatedElement.element);
+
             source.Play();
             current.IsNotAnimated = false;
             if (current.Element.Audio != "")
@@ -247,19 +256,22 @@ namespace humanlab.ViewModels
                 playingSpeech.Play();
             }
 
+            //we save the new playing element
+            this.activatedElement = (source, current);
+
         }
 
         private void Stop(BitmapImage source, ElementOfActivity current)
         {
             source.Stop();
             current.IsNotAnimated = true;
-            if (current.Element.Audio != "")
+            if (current.Element.Audio != "" && playingSound != null)
             {
                 playingSound.Pause();
                 playingSound.Source = null;
                 playingSound = null;
             }
-            else
+            else if (playingSpeech != null)
             {
                 playingSpeech.Stop();
                 playingSpeech.Source = null;
@@ -272,6 +284,7 @@ namespace humanlab.ViewModels
         {
             Image img = args as Image;
             ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
+            current.FocusTime = 0;
             BitmapImage source = img.Source as BitmapImage;
 
             if (current.IsNotAnimated)
@@ -280,6 +293,8 @@ namespace humanlab.ViewModels
             }
             else
             {
+                //else we stop the only running element
+                this.activatedElement = (null, null);
                 Stop(source, current);
             }
         }
@@ -352,7 +367,7 @@ namespace humanlab.ViewModels
 
         public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-           
+
             GridView gv = sender as GridView;
             Activity selected = gv.SelectedItem as Activity;
             OpenActivity(selected);
@@ -379,7 +394,7 @@ namespace humanlab.ViewModels
         {
             List<ActivityGrids> grids = await activityRepository.GetGridsOfActivity(idActivity);
             listGridIds = new List<(int GridOrder, int GridId)>();
-            grids.ForEach(g => listGridIds.Add( (g.Order, g.GridId) ));
+            grids.ForEach(g => listGridIds.Add((g.Order, g.GridId)));
 
             currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1);
             //retrieve list of elements
