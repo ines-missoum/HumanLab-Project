@@ -410,6 +410,10 @@ namespace humanlab.ViewModels
             navView.IsPaneToggleButtonVisible = true;
             IsActivityLoading = false;
             TobiiSetUpService.RemoveDevice();
+
+            //if an element is playing we stop it
+            if (this.activatedElement != (null, null))
+                Stop(this.activatedElement.source, this.activatedElement.element);
         }
 
 
