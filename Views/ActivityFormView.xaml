@@ -71,7 +71,7 @@
 
 
         <TextBlock  Grid.Row="1" Grid.Column="0"
-                    Text="Temps d'une grille (sec)" 
+                    Text="Temps de fixation (sec)" 
                     Style="{StaticResource BaseTextBlockStyle}" 
                     HorizontalAlignment="Left"
                     Margin="24,28,10,25"/>
@@ -133,14 +133,14 @@
 
         </StackPanel>
 
-        <!-- OTHER VIEW : SELECTION OF EXISTING ELEMENTS -->
+    <!-- OTHER VIEW : SELECTION OF EXISTING ELEMENTS -->
 
         <Grid Margin="5" Background="White" Grid.Row="0"
                Grid.Column="0"
                Grid.ColumnSpan="2"
                Grid.RowSpan="3" 
                Visibility="{x:Bind activity.IsChooseGridsOpened, Mode=OneWay}"
-               />
+               >
         <StackPanel Orientation="Vertical" Margin="20,24,0,20">
 
             <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
@@ -185,5 +185,5 @@
         </StackPanel>
 
       </Grid>
-
+    </Grid>
 </Page>
