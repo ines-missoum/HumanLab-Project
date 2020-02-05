@@ -328,7 +328,8 @@ namespace humanlab.ViewModels
                 }
                 ElementsPlaced = listBis;
                 IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
-
+                NavigationView nv = GetNavigationView();
+                nv.IsPaneOpen = false;
                 AddDelegatesToItems(ItemsControl);
                 SetInitialWidthToElements();
             }
