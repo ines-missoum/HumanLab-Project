@@ -232,6 +232,7 @@ namespace humanlab.ViewModels
         private void ChangeChoosePopUpVisibility()
         {
             IsChooseGridsOpened = !IsChooseGridsOpened;
+            updateIndexOfItems();
         }
 
         /// <summary>
@@ -281,9 +282,6 @@ namespace humanlab.ViewModels
             var child = navigationView.Content as Frame;
             child.SourcePageType = typeof(BlankPage1);
             child.SourcePageType = typeof(ActivityFormView);
-            Debug.WriteLine("child" + child);
-
-
         }
         /*** METHODS THAT DEALS WITH GRIDVIEW SELECTION ISSUES IN THE CHOOSE GRID VIEW***/
 
@@ -369,8 +367,6 @@ namespace humanlab.ViewModels
 
                 if (!searchedGridView.SelectedItems.Contains(removedItem))
                 {
-                    Debug.WriteLine(" ici");
-
                     removedItem.IsSelected = false;
                     List<GridChecked> transitionList = new List<GridChecked>(SelectedGrids);
                     transitionList.Remove(removedItem);
@@ -454,7 +450,6 @@ namespace humanlab.ViewModels
                 if (item.IndexInListView != currentIndex)
                 {
                     item.IndexInListView = currentIndex;
-                    Debug.WriteLine("nom " + item.Grid.GridName + "  => index =" + item.IndexInListView);
                 }
             }
         }

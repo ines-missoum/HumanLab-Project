@@ -65,7 +65,7 @@ namespace humanlab.DAL
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Error");
+                    Debug.WriteLine("Error to retrieve grids");
                     return new List<ElementOfActivity>();
                 }
             }
