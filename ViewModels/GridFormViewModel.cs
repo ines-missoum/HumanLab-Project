@@ -329,7 +329,6 @@ namespace humanlab.ViewModels
                 ElementsPlaced = listBis;
                 IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
                 NavigationView nv = GetNavigationView();
-                nv.IsPaneOpen = false; NavigationView nv = GetNavigationView();
                 nv.IsPaneOpen = false;
                 AddDelegatesToItems(ItemsControl);
                 SetInitialWidthToElements();
@@ -553,8 +552,8 @@ namespace humanlab.ViewModels
 
         public void SetInitialWidthToElements()
         {
-            double initialWidth = ScrollView.ViewportWidth / 2;
-            double initialHeigth = ScrollView.ViewportHeight / 2;
+            double initialWidth = ScrollView.ViewportHeight / 7;
+            double initialHeigth = ScrollView.ViewportHeight/7;
             {
                 // Set UIElements object width/heigth
                 foreach (ElementPlaced ep in ElementsPlaced)
@@ -562,7 +561,7 @@ namespace humanlab.ViewModels
 
                     ep.WidthString = initialWidth.ToString();
                     ep.HeigthString = initialHeigth.ToString();
-
+          
                     OnPropertyChanged("WidthString");
                     OnPropertyChanged("HeigthString");
 
@@ -723,7 +722,7 @@ namespace humanlab.ViewModels
 
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
-
+            Debug.WriteLine("4444444444444");
             
             var child = VisualTreeHelper.GetChild(scrollView,0);
             var nb1 = VisualTreeHelper.GetChild(child,0);
@@ -776,28 +775,12 @@ namespace humanlab.ViewModels
         public void Scrollview_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ScrollViewer scrollViewer = sender as ScrollViewer;
-
+            Debug.WriteLine("ffff");
             // Set Scrollviewer size
             ScrollView = scrollViewer;
-
-            // Get UIElements initial size in function of Scrollviewer size
-            double initialWidth = ScrollView.ViewportWidth / 2;
-            double initialHeigth = ScrollView.ViewportHeight / 2;
-            {
-                // Set UIElements object width/heigth
-                foreach (ElementPlaced ep in ElementsPlaced)
-                {
-
-                    ep.WidthString = initialWidth.ToString();
-                    ep.HeigthString = initialHeigth.ToString();
-
-                    OnPropertyChanged("WidthString");
-                    OnPropertyChanged("HeigthString");
-
-                }
-                float initialZoomFactor = 0.7F;
-                ScrollView.ChangeView(0, 0, initialZoomFactor);
-            }
+            SetInitialWidthToElements();
+            NavigationView navigationView = GetNavigationView();
+            navigationView.IsPaneOpen = false;
         }
 
         public void ReloadGridFormView()
