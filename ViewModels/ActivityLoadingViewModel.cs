@@ -67,7 +67,7 @@ namespace humanlab.ViewModels
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
 
-            MaxFocusTime = 0.45; //en sec
+            MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
 
@@ -346,7 +346,6 @@ namespace humanlab.ViewModels
                 case "aléatoire":
                     break;
             }
-            Debug.WriteLine(gridOrder);
             return gridOrder;
         }
 
@@ -356,16 +355,14 @@ namespace humanlab.ViewModels
            
             GridView gv = sender as GridView;
             Activity selected = gv.SelectedItem as Activity;
-            Debug.WriteLine(selected.ActivityId);
             OpenActivity(selected);
         }
 
         public void OpenActivity(Activity activity)
         {
             IsActivityLoading = true;
-           // MaxFocusTime = activity.FixingTime;
+            MaxFocusTime = activity.FixingTime;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
-
             TobiiSetUpService.StartGazeDeviceWatcher();
 
             NavigationView navView = GetNavigationView();
