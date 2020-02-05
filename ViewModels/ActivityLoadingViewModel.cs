@@ -43,6 +43,7 @@ namespace humanlab.ViewModels
         public List<Activity> AllActivities { get; set; }
 
         private bool isActivityLoading;
+        private bool openActivityAlreadyCalled;
         public DelegateCommand CloseActivityDelegate { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
@@ -71,6 +72,7 @@ namespace humanlab.ViewModels
 
             MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
+            openActivityAlreadyCalled = false;
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
 
             playingSound = null;
@@ -125,6 +127,11 @@ namespace humanlab.ViewModels
             set => SetProperty(ref isActivityLoading, value, "IsActivityLoading");
         }
 
+        public bool OpenActivityAlreadyCalled
+        {
+            get => openActivityAlreadyCalled;
+            set => SetProperty(ref openActivityAlreadyCalled, value, "OpenActivityAlreadyCalled");
+        }
         /*** METHODS ***/
 
         /// <summary>
@@ -368,9 +375,16 @@ namespace humanlab.ViewModels
         public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            GridView gv = sender as GridView;
-            Activity selected = gv.SelectedItem as Activity;
-            OpenActivity(selected);
+            //     Debug.WriteLine(" selected " + gv.SelectedItems.First()); 
+            if (!OpenActivityAlreadyCalled) {
+                GridView gv = sender as GridView;
+                Activity selected = gv.SelectedItem as Activity;
+                Debug.WriteLine(" selected " + selected);
+                OpenActivityAlreadyCalled = true;
+                Debug.WriteLine(" here ");
+                OpenActivity(selected); 
+                gv.SelectedItem = null; 
+            }
         }
 
         public void OpenActivity(Activity activity)
@@ -410,6 +424,7 @@ namespace humanlab.ViewModels
             navView.IsPaneToggleButtonVisible = true;
             IsActivityLoading = false;
             TobiiSetUpService.RemoveDevice();
+            OpenActivityAlreadyCalled = false;
 
             //if an element is playing we stop it
             if (this.activatedElement != (null, null))
