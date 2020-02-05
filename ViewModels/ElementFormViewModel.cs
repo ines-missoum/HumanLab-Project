@@ -478,6 +478,7 @@ namespace humanlab.ViewModels
             if (IsToggleChecked) {
                 audioFileName = SelectedAudio.Name;
                SaveFileInFolder(SelectedAudio);
+               SaveFileInFolder(SelectedPicture);
             }
             else {
                 speachText = ElementSpeach;
