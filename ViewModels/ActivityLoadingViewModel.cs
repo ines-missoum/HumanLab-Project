@@ -70,7 +70,7 @@ namespace humanlab.ViewModels
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
 
-            MaxFocusTime = 5; //en sec
+            MaxFocusTime = 3; //en sec
             IsActivityLoading = false;
             openActivityAlreadyCalled = false;
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
@@ -224,7 +224,7 @@ namespace humanlab.ViewModels
                 BitmapImage source = img.Source as BitmapImage;
 
                 // Increment progress bar.
-                current.FocusTime += 0.02; //because the method is called each 20ms
+                current.FocusTime += 0.025; //because the method is called each 25ms
 
                 // If progress bar reaches maximum value, reset and relocate.
                 if (current.FocusTime >= MaxFocusTime)//nb de sec
@@ -390,7 +390,7 @@ namespace humanlab.ViewModels
         public void OpenActivity(Activity activity)
         {
             IsActivityLoading = true;
-            MaxFocusTime = activity.FixingTime;
+            //MaxFocusTime = activity.FixingTime;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             TobiiSetUpService.StartGazeDeviceWatcher();
 
