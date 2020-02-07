@@ -125,7 +125,7 @@ namespace humanlab.ViewModels
                 Activity activity = navigationViewModel.parameterToPass as Activity;
                 ActivityToModify = activity;
                 navigationViewModel.Title = "Modification de l'activité " + ActivityToModify.ActivityName;
-                ButtonText = "Voir";
+                ButtonText = "Modifier";
                 IsEmptyGridsMessageShowing = false;
                 IsSaveButtonShowing = true;
                 activityName = ActivityToModify.ActivityName;
@@ -225,7 +225,7 @@ namespace humanlab.ViewModels
                     OnPropertyChanged("IsChooseGridsOpened");
                     if (SelectedGrids.Count() > 0)
                     {
-                        ButtonText = "Voir";
+                        ButtonText = "Modifier";
                         IsSaveButtonShowing = true;
                         IsEmptyGridsMessageShowing = false;
                     }
