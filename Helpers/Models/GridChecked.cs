@@ -1,5 +1,6 @@
 ﻿using humanlab.Models;
 using humanlab.ViewModels;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,14 @@ namespace humanlab.Helpers.Models
         public bool IsSelected { get; set; }
 
         public int indexInListView;
+        public DelegateCommand<object> ShowPreviewDelegate { get; set; }
 
-        public GridChecked(Grid grid, bool isSelected, int index)
+        public GridChecked(Grid grid, bool isSelected, int index, DelegateCommand<object> showPreviewDelegate)
         {
             Grid = grid;
             IsSelected = isSelected;
             indexInListView = index;
+            ShowPreviewDelegate = showPreviewDelegate;
         }
 
         public int IndexInListView

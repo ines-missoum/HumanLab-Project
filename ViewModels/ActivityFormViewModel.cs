@@ -33,6 +33,18 @@ namespace humanlab.ViewModels
         public DelegateCommand ChoosePopUpVisibility { get; set; }
         public DelegateCommand SaveOrUpdateActivityDelegate { get; set; }
 
+        //attributs that handles the grid preview
+        public DelegateCommand<object> ShowPreviewDelegate { get; set; }
+        public DelegateCommand ClosePreviewDelegate { get; set; }
+
+        /// <summary>
+        /// Handle the visibility grid preview
+        /// </summary>
+        private bool isGridPreviewShowing;
+
+        private List<ElementOfActivity> elements;
+
+
         //attributes linked to dynamic messages in front
         private bool isSaveButtonShowing;
         private string buttonText;
@@ -78,6 +90,13 @@ namespace humanlab.ViewModels
             gridRepository = new GridRepository();
             activityRepository = new ActivityRepository();
 
+            //attributs that handles the preview
+            ShowPreviewDelegate = new DelegateCommand<object>(ShowGridPreview);
+            ClosePreviewDelegate = new DelegateCommand(CloseGridPreview);
+            IsGridPreviewShowing = false;
+            Elements = new List<ElementOfActivity>();
+
+
             //initialisation of al the lists
             InitialiseAllGrids();
             SearchedGrids = new List<GridChecked>(AllGrids.OrderByDescending(e => e.Grid.GridName.Length));
@@ -87,7 +106,7 @@ namespace humanlab.ViewModels
             //the views are not displayed at the the beginning
             isChooseGridsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
-            SaveOrUpdateActivityDelegate= new DelegateCommand(SaveOrUpdateActivityIfAllowed);
+            SaveOrUpdateActivityDelegate = new DelegateCommand(SaveOrUpdateActivityIfAllowed);
 
             //no search has began
             searching = false;
@@ -119,9 +138,9 @@ namespace humanlab.ViewModels
             Frame child = navigation.Content as Frame;
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
 
-            if (navigationViewModel.parameterToPass!= null)
+            if (navigationViewModel.parameterToPass != null)
             {
-                
+
                 Activity activity = navigationViewModel.parameterToPass as Activity;
                 ActivityToModify = activity;
                 navigationViewModel.Title = "Modification de l'activité " + ActivityToModify.ActivityName;
@@ -130,7 +149,7 @@ namespace humanlab.ViewModels
                 IsSaveButtonShowing = true;
                 activityName = ActivityToModify.ActivityName;
                 List<ActivityGrids> activityGridsId = await activityRepository.GetGridsOfActivity(ActivityToModify.ActivityId);
-                List<int> gridsId= activityGridsId.Select(ag => ag.GridId).ToList();
+                List<int> gridsId = activityGridsId.Select(ag => ag.GridId).ToList();
                 InitialiseAllGrids();
                 SearchedGrids.ForEach(g =>
                 {
@@ -158,19 +177,31 @@ namespace humanlab.ViewModels
             AllGrids = new List<GridChecked>();
             grids.OrderByDescending(g => g.GridName.Length).ToList();
             int index = 1;
-            grids.ForEach(g => {
+            grids.ForEach(g =>
+            {
 
-                AllGrids.Add(new GridChecked(g, false, index));
+                AllGrids.Add(new GridChecked(g, false, index, ShowPreviewDelegate));
                 index += 1;
-         
-                }
+
+            }
             );
-            
+
 
         }
 
         /*** GETTERS AND SETTERS FOR PUBLIC ATTRIBUTES ***/
 
+        public List<ElementOfActivity> Elements
+        {
+            get => elements;
+            set => SetProperty(ref elements, value, "Elements");
+        }
+
+        public bool IsGridPreviewShowing
+        {
+            get => isGridPreviewShowing;
+            set => SetProperty(ref isGridPreviewShowing, value, "IsGridPreviewShowing");
+        }
         public Activity ActivityToModify
         {
             get => activityToModify;
@@ -254,7 +285,8 @@ namespace humanlab.ViewModels
         public List<GridChecked> SelectedGrids
         {
             get => selectedGrids;
-            set {
+            set
+            {
                 if (value != selectedGrids)
                 {
                     selectedGrids = value;
@@ -311,8 +343,9 @@ namespace humanlab.ViewModels
                 Debug.WriteLine("Act==name" + activityName.Equals(ActivityToModify.ActivityName));
                 Debug.WriteLine("contains" + activitiesNames.Contains(activityName));
 
-                if (activitiesNames.Contains(activityName) && !activityName.Equals(ActivityToModify.ActivityName)) {
-                    errorMessage = "Une autre activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre."; 
+                if (activitiesNames.Contains(activityName) && !activityName.Equals(ActivityToModify.ActivityName))
+                {
+                    errorMessage = "Une autre activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
 
             }
@@ -564,7 +597,7 @@ namespace humanlab.ViewModels
                 }
             }
         }
-        public void listView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)=> updateIndexOfItems();
+        public void listView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args) => updateIndexOfItems();
 
         public void timeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
@@ -574,6 +607,72 @@ namespace humanlab.ViewModels
                 FixingTime = slider.Value;
 
             }
+        }
+
+        //METHODS LINKED TO THE GRID PREVIEW
+        /// <summary>
+        /// This method is called to show the grid preview
+        /// </summary>
+        /// <param name="grid">the grid to show</param>
+        public void ShowGridPreview(object gridParameter)
+        {
+            var grid = gridParameter as Models.Grid;
+            //we retrieve the elements of the grid to show
+            GetElementsOfGrid(grid.GridId);
+            //we show the preview
+            IsGridPreviewShowing = true;
+            //we close the menu to have the preview in all screen
+            NavigationView navView = GetNavigationView();
+            navView.IsPaneVisible = false;
+            navView.IsPaneOpen = false;
+            navView.IsPaneToggleButtonVisible = false;
+            //we change the title
+            Frame child = navView.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.Title = "Aperçu de la grille "+ grid.GridName;
+        }
+
+        /// <summary>
+        /// This method retrieves all the elements of a specific grid
+        /// </summary>
+        /// <param name="gridId">the id of the specific grid</param>
+        private async void GetElementsOfGrid(int gridId)
+        {
+            List<ElementOfActivity> dbElements = await gridRepository.GetAllGridElements(gridId);
+            Elements = dbElements;
+        }
+
+        /// <summary>
+        /// This methods is called when we close the grid preview
+        /// </summary>
+        public void CloseGridPreview()
+        {
+            //we open back the menu
+            NavigationView navView = GetNavigationView();
+            navView.IsPaneVisible = true;
+            navView.IsPaneToggleButtonVisible = true;
+            //we change the title
+            Frame child = navView.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            if (ActivityToModify == null)
+                navigationViewModel.Title = "Nouvelle activité";
+            else
+                navigationViewModel.Title = "Modification de l'activité " + ActivityToModify.ActivityName;
+            //we call the preview
+            IsGridPreviewShowing = false;
+            //we reset the needed values
+            Elements = new List<ElementOfActivity>();
+        }
+
+        /// <summary>
+        /// This is called when the size of the window change. This close the menu that is open by default when the screen is bigger.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            NavigationView navView = GetNavigationView();
+            navView.IsPaneOpen = false;
         }
     }
 }
