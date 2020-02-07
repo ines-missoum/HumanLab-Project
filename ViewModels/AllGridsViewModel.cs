@@ -119,6 +119,10 @@ namespace humanlab.ViewModels
             navView.IsPaneVisible = false;
             navView.IsPaneOpen = false;
             navView.IsPaneToggleButtonVisible = false;
+            //we change the title of the page
+            Frame child = navView.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.Title = "Aperçu de la grille " + grid.GridName;
         }
 
         /// <summary>
@@ -140,6 +144,10 @@ namespace humanlab.ViewModels
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = true;
             navView.IsPaneToggleButtonVisible = true;
+            //we change the title of the page
+            Frame child = navView.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.Title = "Toutes les grilles";
             //we call the preview
             IsGridPreviewShowing = false;
             //we reset the needed values
