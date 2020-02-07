@@ -21,6 +21,21 @@
     </Page.Resources>
     <!--ALL GRIDS-->
     <Grid>
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,100">
+            <Button Width="170" Height="35" Margin="8" 
+                    Background="DeepSkyBlue" Foreground="White" FontWeight="Bold"
+                    Command="{x:Bind grids.ChangeEditMode}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind grids.EditButton, Mode=TwoWay}"   />
+                    <SymbolIcon Symbol="Edit" Margin="8,0,0,0"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,10,100">
+            <TextBlock Text="Cliquer sur un élément pour pouvoir le modifier/supprimer" Margin="12" Visibility="{x:Bind grids.IsEditModeActivated, Mode=OneWay}" />
+        </StackPanel>
         <Grid Margin="10,50,0,10" >
 
             <GridView ItemsSource="{x:Bind grids.AllGrids}"

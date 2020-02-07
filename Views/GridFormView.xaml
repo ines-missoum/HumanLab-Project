@@ -64,7 +64,7 @@
     </Page.Resources>
 
     <!--PRINCIPAL VIEW-->
-    <Grid>
+    <Grid Loading="{x:Bind grid.PrepareEditModeAsync}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -83,6 +83,7 @@
                  Margin="20,24,0,20" 
                  MaxLength="32" 
                  Width="400" 
+                 Text="{x:Bind grid.GridName,Mode=TwoWay}"
                  TextChanged="{x:Bind grid.TextBox_TextChanged}"
                  HorizontalAlignment="Left" />
         <TextBlock  Grid.Row="1" Grid.Column="0"
