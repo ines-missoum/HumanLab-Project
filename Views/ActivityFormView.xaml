@@ -76,9 +76,11 @@
                     Style="{StaticResource BaseTextBlockStyle}" 
                     HorizontalAlignment="Left"
                     Margin="24,28,10,25"/>
-        <!-- 3 sec à 5 min -->
-        <Slider Grid.Row="1" Grid.Column="1" x:Name="timeSlider" 
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+            <!-- 1 sec à 1 min -->
+            <Slider  x:Name="timeSlider" 
                         ValueChanged="{x:Bind activity.timeSlider_ValueChanged}"
+                        Minimum="1"
                         Maximum="60" 
                         Width="400" 
                         Margin="20,24,0,20" 
@@ -87,7 +89,8 @@
                         Value="{x:Bind activity.ActivityToModify.FixingTime, Mode=TwoWay}"
                         HorizontalAlignment="Left"/>
 
-
+            <TextBlock  Text="{x:Bind activity.FixingTime, Mode=TwoWay}" FontWeight="Bold" VerticalAlignment="Center" FontSize="20" Margin="12,0,0,0"/>
+        </StackPanel>
         <TextBlock  Grid.Row="2" Grid.Column="0"
                     Text="Grilles" 
                     Style="{StaticResource BaseTextBlockStyle}" 
@@ -134,7 +137,7 @@
 
         </StackPanel>
 
-    <!-- OTHER VIEW : SELECTION OF EXISTING ELEMENTS -->
+        <!-- OTHER VIEW : SELECTION OF EXISTING ELEMENTS -->
 
         <Grid Margin="5" Background="White" Grid.Row="0"
                Grid.Column="0"
@@ -142,35 +145,35 @@
                Grid.RowSpan="3" 
                Visibility="{x:Bind activity.IsChooseGridsOpened, Mode=OneWay}"
                >
-        <StackPanel Orientation="Vertical" Margin="20,24,0,20">
+            <StackPanel Orientation="Vertical" Margin="20,24,0,20">
 
-            <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
-                <AutoSuggestBox  QueryIcon="Find" 
+                <StackPanel Orientation="Horizontal" Margin="0,24,0,20">
+                    <AutoSuggestBox  QueryIcon="Find" 
                                      PlaceholderText="Nom..." 
                                      Header="Recherche par nom"
                                      TextChanged="{x:Bind activity.AutoSuggestBox_TextChanged}"
                                      />
-            </StackPanel>
+                </StackPanel>
 
-            <TextBlock Text="Grilles disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
+                <TextBlock Text="Grilles disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
 
-            <TextBlock Text="Aucune grille ne correspond à la recherche." 
+                <TextBlock Text="Aucune grille ne correspond à la recherche." 
                        Style="{StaticResource BodyTextBlockStyle}"
                        HorizontalAlignment="Left" 
                        Foreground="Black"
                        Margin="50,0,0,0"
                        Visibility="{x:Bind activity.IsEmptySearchMessageShowing, Mode=OneWay}"/>
-            <GridView SelectionMode="Multiple"  
+                <GridView SelectionMode="Multiple"  
                                     Loading="{x:Bind activity.GridView1_Loading}"
                                     ItemsSource="{x:Bind activity.SearchedGrids, Mode=TwoWay}"
                                     MaxHeight="300" 
                                     SelectionChanged="{x:Bind activity.GridView1_SelectionChanged}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
-            </GridView>
+                </GridView>
 
-            <TextBlock Text="Grilles sélectionnées" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20,0,0"/>
-            <GridView SelectionMode="Multiple" 
+                <TextBlock Text="Grilles sélectionnées" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20,0,0"/>
+                <GridView SelectionMode="Multiple" 
                                     Loading="{x:Bind activity.GridView2_Loading}"
                                     ItemsSource="{x:Bind activity.SelectedGrids, Mode=TwoWay}" 
                                     SizeChanged="{x:Bind activity.GridView2_SizeChanged}"
@@ -178,13 +181,13 @@
                                     SelectionChanged="{x:Bind activity.GridView2_SelectionChanged}"
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
-            </GridView>
+                </GridView>
 
-            <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" 
+                <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" 
                          FontSize="18" FontWeight="SemiBold" Command="{x:Bind activity.ChoosePopUpVisibility}"/>
 
-        </StackPanel>
+            </StackPanel>
 
-      </Grid>
+        </Grid>
     </Grid>
 </Page>

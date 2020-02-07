@@ -32,18 +32,21 @@
                           OffContent="Manuel" 
                           OnContent="Automatique"/>
 
-            <StackPanel Margin="72,24,0,0" 
+            <StackPanel Margin="72,24,0,0" Orientation="Horizontal"
                         Visibility="{x:Bind settings.IsAutoChecked, Mode=OneWay}">
                 <!-- 3 sec à 5 min -->
                 <Slider x:Name="timeSlider" 
                         ValueChanged="{x:Bind settings.Slider_ValueChanged}"
-                        Maximum="18000" 
+                        Minimum="3"
+                        Maximum="300" 
                         Header="Temps d'une grille (sec) : " 
                         Width="300" 
                         TickPlacement="TopLeft"
-                        TickFrequency="3600"
+                        TickFrequency="60"
                         Value="{Binding GridTime}"
                         HorizontalAlignment="Left"/>
+                <TextBlock  Text="{x:Bind settings.GridTime, Mode=TwoWay}" FontWeight="Bold" VerticalAlignment="Center" FontSize="20" Margin="12,0,0,0"/>
+
             </StackPanel>
             <Button Command="{Binding SaveSettingsCommand}"
                     Margin="0,48,0,0" 

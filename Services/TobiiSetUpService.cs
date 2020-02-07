@@ -53,7 +53,7 @@ namespace humanlab.Services
         private int deviceCounter = 0;
 
         /// <summary>
-        /// Timer for gaze focus on RadialProgressBar.
+        /// Timer for gaze focus on image.
         /// </summary>
         DispatcherTimer TimerGaze { get; } = new DispatcherTimer();
 
@@ -147,7 +147,7 @@ namespace humanlab.Services
             // If eye-tracking device is ready, declare event handlers and start tracking.
             if (IsSupportedDevice(gazeDevice))
             {
-                TimerGaze.Interval = new TimeSpan(0, 0, 0, 0, 20); //20ms
+                TimerGaze.Interval = new TimeSpan(0, 0, 0, 0, 25); //25ms
                 TimerGaze.Tick += this.TickHandler;
 
                 // This must be called from the UI thread.

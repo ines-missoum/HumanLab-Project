@@ -36,22 +36,28 @@ namespace humanlab.ViewModels
         private MediaPlayer playingSound;
         private MediaElement playingSpeech;
 
-        //repository
+        //repositoryies => responsible for retrieving data in db
         private GridRepository gridRepository;
         private ActivityRepository activityRepository;
 
         public List<Activity> AllActivities { get; set; }
 
         private bool isActivityLoading;
+
+        private bool openActivityAlreadyCalled;
         private bool isEditModeActivated;
         private string editButton;
+
         public DelegateCommand CloseActivityDelegate { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
         private (int GridOrder, int GridId) currentGrid;
         public DelegateCommand NextGrid { get; set; }
         public DelegateCommand PreviousGrid { get; set; }
+
+        private (BitmapImage source, ElementOfActivity element) activatedElement;
         public DelegateCommand ChangeEditMode { get; set; }
+
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -63,7 +69,7 @@ namespace humanlab.ViewModels
             Elements = new List<ElementOfActivity>();
             ClickImage = new DelegateCommand<object>(ClickOnImage);
             listGridIds = new List<(int GridOrder, int GridId)>();
-          
+
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
             ChangeEditMode = new DelegateCommand(SetEditMode);
@@ -73,12 +79,16 @@ namespace humanlab.ViewModels
 
             MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
+
+            openActivityAlreadyCalled = false;
             IsEditModeActivated = false;
             EditButton = "Modifier";
+
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
 
             playingSound = null;
             playingSpeech = null;
+            activatedElement = (null, null);
 
 
         }
@@ -128,6 +138,12 @@ namespace humanlab.ViewModels
             set => SetProperty(ref isActivityLoading, value, "IsActivityLoading");
         }
 
+        public bool OpenActivityAlreadyCalled
+        {
+            get => openActivityAlreadyCalled;
+            set => SetProperty(ref openActivityAlreadyCalled, value, "OpenActivityAlreadyCalled");
+        }
+
         public bool IsEditModeActivated
         {
             get => isEditModeActivated;
@@ -139,6 +155,7 @@ namespace humanlab.ViewModels
             get => editButton;
             set => SetProperty(ref editButton, value, "EditButton");
         }
+
         /*** METHODS ***/
 
         /// <summary>
@@ -176,13 +193,16 @@ namespace humanlab.ViewModels
                 // Update the position of the ellipse corresponding to gaze point.
                 if (args.CurrentPoint.EyeGazePosition != null)
                 {
+                    // we retrieve the position of the gaze
                     double gazePointX = args.CurrentPoint.EyeGazePosition.Value.X;
                     double gazePointY = args.CurrentPoint.EyeGazePosition.Value.Y;
 
-                    //20 = width height !!!! to change corresponding to xaml
-                    //24 = taille de la progress bar (margin comprises)
-                    double ellipseLeft = gazePointX - (20 / 2.0f);
-                    double ellipseTop = gazePointY - (20 / 2.0f) - 24;
+                    // xaml data => to change if the xaml changes
+                    int eyesEllipseSize = 20;
+                    int progressBarSize = 24; //(margin included)
+
+                    double ellipseLeft = gazePointX - (eyesEllipseSize / 2.0f);
+                    double ellipseTop = gazePointY - (eyesEllipseSize / 2.0f) - progressBarSize;
 
                     // Translate transform for moving gaze ellipse.
                     TranslateTransform translateEllipse = new TranslateTransform
@@ -196,21 +216,20 @@ namespace humanlab.ViewModels
                     // The gaze point screen location.
                     Point gazePoint = new Point(gazePointX, gazePointY);
 
-                    // Basic hit test to determine if gaze point is on progress bar.
+                    // Basic hit test to determine if gaze point is on image.
                     Image img = TobiiSetUpService.CurrentFocusImage as Image;
-                    bool hitRadialProgressBar = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
-                    if (img != null & !hitRadialProgressBar)
+                    bool hitImage = TobiiSetUpService.DoesElementContainPoint(gazePoint, null);
+                    if (img != null & !hitImage)
                     {
                         ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
                         current.FocusTime = 0;
                     }
 
-
                     // Mark the event handled.
                     args.Handled = true;
                 }
             }
-            
+
         }
 
 
@@ -229,15 +248,14 @@ namespace humanlab.ViewModels
                 BitmapImage source = img.Source as BitmapImage;
 
                 // Increment progress bar.
-                current.FocusTime += 0.02; //because the method is called each 20ms
+                current.FocusTime += 0.025; //because the method is called each 25ms
 
                 // If progress bar reaches maximum value, reset and relocate.
                 if (current.FocusTime >= MaxFocusTime)//nb de sec
                 {
-                    // Ensure the gaze timer restarts on new progress bar location.
+                    // we animate the element and reset all needed values
                     TobiiSetUpService.StopTimer();
                     current.FocusTime = 0;
-
                     Play(source, current);
                 }
             }
@@ -247,6 +265,11 @@ namespace humanlab.ViewModels
         private async void Play(BitmapImage source, ElementOfActivity current)
         {
             string path = "ms-appx:///Assets/";
+
+            //if an element is already playing we stop it
+            if (this.activatedElement != (null, null))
+                Stop(this.activatedElement.source, this.activatedElement.element);
+
             source.Play();
             current.IsNotAnimated = false;
             if (current.Element.Audio != "")
@@ -264,19 +287,30 @@ namespace humanlab.ViewModels
                 playingSpeech.Play();
             }
 
+            //we save the new playing element
+            this.activatedElement = (source, current);
+
         }
+
+
+
+
+
+
+
+
 
         private void Stop(BitmapImage source, ElementOfActivity current)
         {
             source.Stop();
             current.IsNotAnimated = true;
-            if (current.Element.Audio != "")
+            if (current.Element.Audio != "" && playingSound != null)
             {
                 playingSound.Pause();
                 playingSound.Source = null;
                 playingSound = null;
             }
-            else
+            else if (playingSpeech != null)
             {
                 playingSpeech.Stop();
                 playingSpeech.Source = null;
@@ -289,6 +323,7 @@ namespace humanlab.ViewModels
         {
             Image img = args as Image;
             ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
+            current.FocusTime = 0;
             BitmapImage source = img.Source as BitmapImage;
 
             if (current.IsNotAnimated)
@@ -297,6 +332,8 @@ namespace humanlab.ViewModels
             }
             else
             {
+                //else we stop the only running element
+                this.activatedElement = (null, null);
                 Stop(source, current);
             }
         }
@@ -369,24 +406,37 @@ namespace humanlab.ViewModels
 
         public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GridView gv = sender as GridView;
-            Activity selected = gv.SelectedItem as Activity;
-
-            if (!IsEditModeActivated) {
-                OpenActivity(selected);
-            }
-            else
+            // Check if the method is not calling itself
+            if (!OpenActivityAlreadyCalled)
             {
-                NavigationView navigation = GetNavigationView();
-                Frame child = navigation.Content as Frame;
-                NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
-                Object parameter = selected as Object;
-                navigationViewModel.ParameterToPass = parameter;
-                child.SourcePageType = typeof(ActivityFormView);
-            }
-        }
+                GridView gv = sender as GridView;
 
-       
+                //Retrieve the activity we want to Play
+                Activity selected = gv.SelectedItem as Activity;
+                // Signal that we enter into the method once
+                OpenActivityAlreadyCalled = true;
+                // Reset the activity selection
+                gv.SelectedItem = null;
+
+                if (!IsEditModeActivated)
+                {
+                    OpenActivity(selected);
+                }
+                else
+                {
+                    // Redirect toward the modification form
+                    NavigationView navigation = GetNavigationView();
+                    Frame child = navigation.Content as Frame;
+                    NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+                    Object parameter = selected as Object;
+                    // Passing parameter through the navigation viewmodel
+                    navigationViewModel.ParameterToPass = parameter;
+                    // Indicates which form we should open
+                    child.SourcePageType = typeof(ActivityFormView);
+                }
+            }
+
+        }
 
         public void OpenActivity(Activity activity)
         {
@@ -409,7 +459,7 @@ namespace humanlab.ViewModels
         {
             List<ActivityGrids> grids = await activityRepository.GetGridsOfActivity(idActivity);
             listGridIds = new List<(int GridOrder, int GridId)>();
-            grids.ForEach(g => listGridIds.Add( (g.Order, g.GridId) ));
+            grids.ForEach(g => listGridIds.Add((g.Order, g.GridId)));
 
             currentGrid = listGridIds.Find(tuple => tuple.GridOrder == 1);
             //retrieve list of elements
@@ -425,6 +475,11 @@ namespace humanlab.ViewModels
             navView.IsPaneToggleButtonVisible = true;
             IsActivityLoading = false;
             TobiiSetUpService.RemoveDevice();
+            OpenActivityAlreadyCalled = false;
+
+            //if an element is playing we stop it
+            if (this.activatedElement != (null, null))
+                Stop(this.activatedElement.source, this.activatedElement.element);
         }
 
         public void SetEditMode()
