@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:humanlab.ViewModels"
     xmlns:local="using:humanlab.Views"
+    xmlns:h="using:humanlab.Helpers.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:m1="using:humanlab.Helpers.Models"
@@ -21,8 +22,14 @@
         <DataTemplate x:Key="ImageGalleryDataTemplate" x:DataType="m1:GridChecked">
             <GridViewItem Background="LightGray">
                 <Grid  >
-                    <StackPanel Orientation="Vertical" Margin="16" >
+                    <StackPanel Orientation="Vertical" Margin="16,16,16,0" >
                         <TextBlock Text="{x:Bind Grid.GridName}" HorizontalAlignment="Center"/>
+                        <Button Width="40" Height="32" Margin="8" HorizontalAlignment="Center"
+                                Background="Black" Foreground="White" FontWeight="ExtraBold"
+                                Command="{x:Bind ShowPreviewDelegate}"
+                                CommandParameter="{Binding Grid}">
+                            <SymbolIcon Symbol="View" />
+                        </Button>
                     </StackPanel>
                 </Grid>
             </GridViewItem>
@@ -43,6 +50,9 @@
             </ListViewItem>
         </DataTemplate>
 
+        <!--converter to retrieve image path-->
+        <h:ImageNameToImageUriConverter x:Key="ImageNameToImageUriConverter"></h:ImageNameToImageUriConverter>
+        
     </Page.Resources>
 
     <!--PRINCIPAL VIEW-->
@@ -189,5 +199,47 @@
             </StackPanel>
 
         </Grid>
+
+        <!-- PREVIEW -->
+        <Grid Margin="5" Background="White" Grid.Row="0"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Grid.RowSpan="3" 
+              Visibility="{x:Bind activity.IsGridPreviewShowing, Mode=OneWay}" 
+              SizeChanged="{x:Bind activity.Grid_SizeChanged}">
+
+            <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Width="72" Height="32" Margin="8" 
+                    Background="Black" Foreground="White" FontWeight="Bold"
+                    Content="Fermer"
+                    Command="{x:Bind activity.ClosePreviewDelegate}"/>
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{x:Bind activity.Elements, Mode=TwoWay}" Margin="0,44,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="m1:ElementOfActivity">
+                        <Canvas >
+                            <StackPanel Orientation="Vertical"  
+                                    Canvas.Top="{x:Bind MarginTop, Mode=TwoWay}"
+                                    Canvas.Left="{x:Bind MarginLeft, Mode=TwoWay}">
+
+                                <Image Tag="{Binding Element.ElementId}" Stretch="Fill" 
+                                               Height="{x:Bind Height}" Width="{x:Bind Width}" >
+                                    <Image.Source>
+                                        <BitmapImage 
+                                                UriSource="{Binding Element.Image, Converter={StaticResource ImageNameToImageUriConverter}}"
+                                                AutoPlay="False" />
+                                    </Image.Source>
+                                </Image>
+
+                            </StackPanel>
+                        </Canvas>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+        </Grid>
+
     </Grid>
 </Page>
