@@ -43,7 +43,11 @@ namespace humanlab.ViewModels
         public List<Activity> AllActivities { get; set; }
 
         private bool isActivityLoading;
+
         private bool openActivityAlreadyCalled;
+        private bool isEditModeActivated;
+        private string editButton;
+
         public DelegateCommand CloseActivityDelegate { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
@@ -52,6 +56,8 @@ namespace humanlab.ViewModels
         public DelegateCommand PreviousGrid { get; set; }
 
         private (BitmapImage source, ElementOfActivity element) activatedElement;
+        public DelegateCommand ChangeEditMode { get; set; }
+
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -66,13 +72,18 @@ namespace humanlab.ViewModels
 
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
+            ChangeEditMode = new DelegateCommand(SetEditMode);
 
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
 
-            MaxFocusTime = 3; //en sec
+            MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
+
             openActivityAlreadyCalled = false;
+            IsEditModeActivated = false;
+            EditButton = "Modifier";
+
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
 
             playingSound = null;
@@ -132,6 +143,19 @@ namespace humanlab.ViewModels
             get => openActivityAlreadyCalled;
             set => SetProperty(ref openActivityAlreadyCalled, value, "OpenActivityAlreadyCalled");
         }
+
+        public bool IsEditModeActivated
+        {
+            get => isEditModeActivated;
+            set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
+        }
+
+        public string EditButton
+        {
+            get => editButton;
+            set => SetProperty(ref editButton, value, "EditButton");
+        }
+
         /*** METHODS ***/
 
         /// <summary>
@@ -268,6 +292,14 @@ namespace humanlab.ViewModels
 
         }
 
+
+
+
+
+
+
+
+
         private void Stop(BitmapImage source, ElementOfActivity current)
         {
             source.Stop();
@@ -374,23 +406,42 @@ namespace humanlab.ViewModels
 
         public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
-            //     Debug.WriteLine(" selected " + gv.SelectedItems.First()); 
-            if (!OpenActivityAlreadyCalled) {
+            // Check if the method is not calling itself
+            if (!OpenActivityAlreadyCalled)
+            {
                 GridView gv = sender as GridView;
+
+                //Retrieve the activity we want to Play
                 Activity selected = gv.SelectedItem as Activity;
-                Debug.WriteLine(" selected " + selected);
+                // Signal that we enter into the method once
                 OpenActivityAlreadyCalled = true;
-                Debug.WriteLine(" here ");
-                OpenActivity(selected); 
-                gv.SelectedItem = null; 
+                // Reset the activity selection
+                gv.SelectedItem = null;
+
+                if (!IsEditModeActivated)
+                {
+                    OpenActivity(selected);
+                }
+                else
+                {
+                    // Redirect toward the modification form
+                    NavigationView navigation = GetNavigationView();
+                    Frame child = navigation.Content as Frame;
+                    NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+                    Object parameter = selected as Object;
+                    // Passing parameter through the navigation viewmodel
+                    navigationViewModel.ParameterToPass = parameter;
+                    // Indicates which form we should open
+                    child.SourcePageType = typeof(ActivityFormView);
+                }
             }
+
         }
 
         public void OpenActivity(Activity activity)
         {
             IsActivityLoading = true;
-            //MaxFocusTime = activity.FixingTime;
+            MaxFocusTime = activity.FixingTime;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             TobiiSetUpService.StartGazeDeviceWatcher();
 
@@ -431,7 +482,16 @@ namespace humanlab.ViewModels
                 Stop(this.activatedElement.source, this.activatedElement.element);
         }
 
-
+        public void SetEditMode()
+        {
+            IsEditModeActivated = !IsEditModeActivated;
+            if (EditButton.Equals("Modifier"))
+            {
+                EditButton = "Fin Modification";
+            }
+            else EditButton = "Modifier";
+            Debug.WriteLine(" is edit " + IsEditModeActivated);
+        }
 
         public void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {

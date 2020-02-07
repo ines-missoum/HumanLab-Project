@@ -193,7 +193,8 @@
                 <ScrollViewer x:Name="scrollview"
                               Background="LightGray"
                               ZoomMode="Enabled" 
-                              MaxZoomFactor="1.4"
+                              MaxZoomFactor="1.8"
+                              VerticalScrollBarVisibility="Disabled"
                               SizeChanged="{x:Bind grid.Scrollview_SizeChanged}" 
                               ViewChanged="{x:Bind grid.Scrollview_ViewChanged}"
                               >

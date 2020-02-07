@@ -41,6 +41,8 @@ namespace humanlab.ViewModels
         List<string> categories;
         List<string> elements;
         Repository repository;
+        private Element elementToModify;
+
 
         //*** Media ***//
         private MediaSource audioSource;
@@ -51,12 +53,13 @@ namespace humanlab.ViewModels
         private MediaPlayer playingSound;
         private string buttonIcon;
 
+
         //*** Form Validation Controls ***//
         private bool isNotAvailableName;
-        public DelegateCommand SaveElementCommand { get; set; }
+        public DelegateCommand SaveOrUpdateElementCommand { get; set; }
         public DelegateCommand PlayCommand { get; set; }
         public string DefaultColor { get; set; }
-
+        ToggleSwitch toggleSwitch;
         public ElementFormViewModel()
         {
             this.elementName = "";
@@ -65,7 +68,7 @@ namespace humanlab.ViewModels
             this.isToggleChecked = false;
             this.isNotAvailableName = false;
             ElementsBorderBrush = InitializeColorDictionnary();
-            SaveElementCommand = new DelegateCommand(SaveElementAsync);
+            SaveOrUpdateElementCommand = new DelegateCommand(SaveOrUpdateElementAsync);
             PlayCommand = new DelegateCommand(Play, CanPlay);
             DefaultColor = ColorTheme;
             this.repository = new Repository();
@@ -78,6 +81,21 @@ namespace humanlab.ViewModels
             playingSound = null;
             ButtonIcon = "Play";
         }
+        public Element ElementToModify
+        {
+            get => elementToModify;
+            set
+            {
+                if (value != elementToModify)
+                {
+                    elementToModify = value;
+                    OnPropertyChanged("ElementToModify");
+                    ElementName = elementToModify.ElementName;
+
+                }
+            }
+        }
+
 
         bool CanPlay()
         {
@@ -127,7 +145,46 @@ namespace humanlab.ViewModels
             }
 
         }
+        public async void PrepareEditModeAsync(FrameworkElement sender, object args)
+        {
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
 
+            if (navigationViewModel.parameterToPass != null)
+            {
+
+                Element element = navigationViewModel.parameterToPass as Element;
+                ElementToModify = element;
+                navigationViewModel.Title = "Modification de l'élément " + ElementToModify.ElementName;
+                SelectedCategory = element.Category.CategoryName;
+
+                StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/" + ElementToModify.Image.ToString()));
+                SelectedPicture = file;
+                IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
+                await Image.SetSourceAsync(stream);
+                Dictionary_SetValue("SelectedPicture", file.Name);
+                OnPropertyChanged("SelectedPictureBorder");
+       
+
+                if(ElementToModify.SpeachText.Equals(""))
+                {
+
+                    IsToggleChecked = true;
+                    ToggleSwitch.IsOn = true;
+                    StorageFile audio = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/" + ElementToModify.Audio.ToString()));
+                    SelectedAudio = audio;
+                    Dictionary_SetValue("SelectedAudio", file.Name);
+                    OnPropertyChanged("SelectedAudioBorder");
+                    LoadMediaPlayer();
+                    PlayCommand.RaiseCanExecuteChanged();
+                }
+                else
+                {
+                    ElementSpeach = ElementToModify.SpeachText;
+                }
+            }
+        }
         public string ButtonIcon
         {
             get => buttonIcon;
@@ -292,7 +349,7 @@ namespace humanlab.ViewModels
         public BitmapImage Image
         {
             get => image;
-            set => SetProperty(ref image, value, "ImageSource");
+            set => SetProperty(ref image, value, "Image");
         }
 
         public MediaSource AudioSource
@@ -329,6 +386,12 @@ namespace humanlab.ViewModels
                 }
             }
         }
+
+        public ToggleSwitch ToggleSwitch
+        {
+            get => toggleSwitch;
+            set => SetProperty(ref toggleSwitch, value, "ToggleSwitch");
+        }
         public bool IsToggleChecked
         {
             get => isToggleChecked;
@@ -345,6 +408,13 @@ namespace humanlab.ViewModels
                 }
             }
         }
+
+        public void ToggleSwitch1_Loaded(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
+            ToggleSwitch = toggleSwitch;
+        }
+
         public void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
@@ -470,7 +540,7 @@ namespace humanlab.ViewModels
             
         }
 
-        public Element GenerateModel()
+        public Element GenerateModel(int id)
         {
             string audioFileName = "";
             string speachText = "";
@@ -487,6 +557,7 @@ namespace humanlab.ViewModels
 
             Element model = new Element
             {
+                ElementId= id,
                 ElementName = ElementName,
                 SpeachText = speachText,
                 Image = SelectedPicture.Name,
@@ -496,25 +567,44 @@ namespace humanlab.ViewModels
             return model;
         }
 
-        private async void SaveElementAsync()
+        private async void SaveOrUpdateElementAsync()
         {
-
             if (Check_FormValidation())
             {
-                //Saving element in db
-                Element model = GenerateModel();
-                repository.SaveElementAsync(model, SelectedCategory);
+                if (ElementToModify != null)
+                {
+                    //Saving element in db
+                    Element model = GenerateModel(id: ElementToModify.ElementId);
+                    try { repository.UpdateElementAsync(model, SelectedCategory);
+                        DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
+                    }
+                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+                    }
 
-                // Success popup
-                DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
+                }
+                else
+                {
+                    Element model = GenerateModel(-1);
+                    try { repository.SaveElementAsync(model, SelectedCategory);
+                        DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
+                    }
+                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer"); }
+                }
+
 
             }
-            else { // Je met une alert
-                DisplayMessagesService.showPersonalizedMessage("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
-            }
- 
+
+            else DisplayMessagesService.showPersonalizedMessage("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
         }
 
+        public void RedirectToAllElementsPage()
+        {
+            NavigationView nv = GetNavigationView();
+            Frame child = nv.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.ParameterToPass = null;
+            child.SourcePageType = typeof(AllElementsView);
+        }
         public void ReloadElementFormView()
         {
             // Here's the navigationView 

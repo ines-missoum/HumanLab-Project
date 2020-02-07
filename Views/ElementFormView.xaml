@@ -13,7 +13,7 @@
         <vm:ElementFormViewModel x:Name="elementform"/>
     </Page.DataContext>
 
-    <Grid Margin="24">
+    <Grid Margin="24" Loading="{x:Bind elementform.PrepareEditModeAsync}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -59,10 +59,9 @@
                               Width="150" Margin="10,24,0,0"
                               SelectedItem="{Binding SelectedCategory}"
                               SelectionChanged="{x:Bind elementform.ComboBox_SelectionChanged}"
-                              BorderBrush="{x:Bind elementform.SelectedCategoryBorder, Mode=OneWay}" >
+                              BorderBrush="{x:Bind elementform.SelectedCategoryBorder, Mode=OneWay}">
                 </ComboBox>
             </StackPanel>
-
         </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.Column="0"
@@ -92,6 +91,7 @@
                           Margin="0,24,0,0"
                           OffContent="Enonciation vocale" 
                           OnContent="Fichier son" 
+                          Loaded="{x:Bind elementform.ToggleSwitch1_Loaded}"
                           Toggled="{x:Bind elementform.ToggleSwitch_Toggled}"/>
         </StackPanel>
 
@@ -146,7 +146,7 @@
                     FontSize="23" 
                     HorizontalAlignment="Right" 
                     Margin="0,24,0,0"
-                    Command="{Binding SaveElementCommand}"/>
+                    Command="{Binding SaveOrUpdateElementCommand}"/>
         </StackPanel>
         </StackPanel>
     </Grid>

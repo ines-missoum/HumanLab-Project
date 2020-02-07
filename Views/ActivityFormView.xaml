@@ -46,7 +46,7 @@
     </Page.Resources>
 
     <!--PRINCIPAL VIEW-->
-    <Grid>
+    <Grid Loading="{x:Bind activity.PrepareEditModeAsync}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -66,6 +66,7 @@
                  Margin="20,24,0,20" 
                  MaxLength="32" 
                  Width="400" 
+                 Text="{x:Bind activity.ActivityToModify.ActivityName, Mode=TwoWay}"
                  TextChanged="{x:Bind activity.TextBox_TextChanged}"
                  HorizontalAlignment="Left" />
 
@@ -85,7 +86,7 @@
                         Margin="20,24,0,20" 
                         TickPlacement="TopLeft"
                         TickFrequency="10"
-                        Value=""
+                        Value="{x:Bind activity.ActivityToModify.FixingTime, Mode=TwoWay}"
                         HorizontalAlignment="Left"/>
 
             <TextBlock  Text="{x:Bind activity.FixingTime, Mode=TwoWay}" FontWeight="Bold" VerticalAlignment="Center" FontSize="20" Margin="12,0,0,0"/>
@@ -125,7 +126,7 @@
 
             <Button  Margin="0,12,0,0" Background="LimeGreen" Foreground="White" 
                      FontSize="18" FontWeight="SemiBold"
-                     Command="{x:Bind activity.SaveActivityDelegate}"
+                     Command="{x:Bind activity.SaveOrUpdateActivityDelegate }"
                      Visibility="{x:Bind activity.IsSaveButtonShowing, Mode=OneWay}" Width="120">
 
                 <StackPanel Orientation="Horizontal">
