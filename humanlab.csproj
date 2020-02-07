@@ -152,6 +152,7 @@
     <Compile Include="ViewModels\ActivityLoadingViewModel.cs" />
     <Compile Include="ViewModels\ActivityFormViewModel.cs" />
     <Compile Include="ViewModels\AllElementsViewModel.cs" />
+    <Compile Include="ViewModels\AllGridsViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CategoriesManagementViewModel.cs" />
     <Compile Include="ViewModels\GridFormViewModel.cs" />
@@ -161,11 +162,14 @@
     <Compile Include="Views\ActivityFormView.xaml.cs">
       <DependentUpon>ActivityFormView.xaml</DependentUpon>
     </Compile>
-      <Compile Include="Views\ActivityLoadingView.xaml.cs">
-        <DependentUpon>ActivityLoadingView.xaml</DependentUpon>
+    <Compile Include="Views\ActivityLoadingView.xaml.cs">
+      <DependentUpon>ActivityLoadingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AllElementsView.xaml.cs">
       <DependentUpon>AllElementsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AllGridsView.xaml.cs">
+      <DependentUpon>AllGridsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BlankPage1.xaml.cs">
       <DependentUpon>BlankPage1.xaml</DependentUpon>
@@ -218,7 +222,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-      <Page Include="Views\ActivityLoadingView.xaml">
+    <Page Include="Views\ActivityLoadingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AllGridsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
