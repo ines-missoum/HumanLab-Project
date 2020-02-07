@@ -58,7 +58,44 @@ namespace humanlab.DAL
                 }
             }
         }
+        internal void UpdateActivityAsync(Activity updatedActivity, ObservableCollection<GridChecked> selectedGridsSource)
+        {
+            using (var db = new ApplicationDbContext())
+            {
 
+                // 1) Update activity object
+                db.Activities.Update(updatedActivity);
+
+                // 2) Delete Related entities
+                // Retrieve  activitygrid efcore object from db
+                List<ActivityGrids> dbActivityGrids = db.ActivityGrids.Select(ag => ag).Where(ag => ag.ActivityId.Equals(updatedActivity.ActivityId)).ToList();
+                
+                dbActivityGrids.ForEach(dbAg => db.ActivityGrids.Remove(dbAg));
+                db.SaveChanges();
+                //3 Recréer les tables intermediaires
+                // 2) Créer un gridElements: 
+                foreach (GridChecked gc in selectedGridsSource)
+                {
+                    // Retrieve grid efcore object from db
+                    var dbGrid = db.Grids.Select(g => g).Where(g => g.GridName.Equals(gc.Grid.GridName)).FirstOrDefault();
+
+                    // Get index of the grid among all grids
+                    var gridIndex = gc.IndexInListView;
+
+
+                    // Create new related object activityGrids
+                    var newActivityGrid = new ActivityGrids
+                    {
+                        Grid = dbGrid,
+                        Activity = updatedActivity,
+                        Order = gridIndex
+                    };
+
+                    db.ActivityGrids.Add(newActivityGrid);
+                }
+                db.SaveChanges();
+            }
+        }
         public async Task<List<Activity>> GetActivitiesAsync()
         {
             using (var db = new ApplicationDbContext())

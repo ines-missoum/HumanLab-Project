@@ -26,17 +26,19 @@ namespace humanlab.ViewModels
         private List<GridChecked> searchedGrids;
         private ObservableCollection<GridChecked> selectedGridsSource;
         private List<GridChecked> selectedGrids;
+        private Activity activityToModify;
 
         //attributes of choosing elements view
         private bool isChooseGridsOpened;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
-        public DelegateCommand SaveActivityDelegate { get; set; }
+        public DelegateCommand SaveOrUpdateActivityDelegate { get; set; }
 
         //attributes linked to dynamic messages in front
         private bool isSaveButtonShowing;
         private string buttonText;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyGridsMessageShowing;
+
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -82,13 +84,10 @@ namespace humanlab.ViewModels
             SelectedGrids = new List<GridChecked>();
             SelectedGridsSource = new ObservableCollection<GridChecked>();
 
-            //A supprimer just test
-
-
             //the views are not displayed at the the beginning
             isChooseGridsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
-            SaveActivityDelegate = new DelegateCommand(SaveActivityIfAllowed);
+            SaveOrUpdateActivityDelegate= new DelegateCommand(SaveOrUpdateActivityIfAllowed);
 
             //no search has began
             searching = false;
@@ -105,6 +104,54 @@ namespace humanlab.ViewModels
 
         }
 
+        private void SaveOrUpdateActivityIfAllowed()
+        {
+            if (ActivityToModify != null)
+            {
+                UpdateActivityIfAllowed();
+            }
+            else SaveActivityIfAllowed();
+        }
+
+        public async void Grid_Loading(FrameworkElement sender, object args)
+        {
+            Debug.WriteLine("GridLoading");
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+
+            if (navigationViewModel.parameterToPass!= null)
+            {
+                
+                Activity activity = navigationViewModel.parameterToPass as Activity;
+                ActivityToModify = activity;
+                navigationViewModel.Title = "Modification de l'activité " + ActivityToModify.ActivityName;
+                ButtonText = "Voir";
+                IsEmptyGridsMessageShowing = false;
+                IsSaveButtonShowing = true;
+                activityName = ActivityToModify.ActivityName;
+                List<ActivityGrids> activityGridsId = await activityRepository.GetGridsOfActivity(ActivityToModify.ActivityId);
+                List<int> gridsId= activityGridsId.Select(ag => ag.GridId).ToList();
+                InitialiseAllGrids();
+                SearchedGrids.ForEach(g =>
+                {
+                    if (gridsId.Contains(g.Grid.GridId))
+                    {
+
+                        g.IsSelected = true;
+                        SelectedGrids.Add(g);
+                    }
+                });
+
+                SelectedGridsSource = new ObservableCollection<GridChecked>(SelectedGrids);
+                updateIndexOfItems();
+
+            }
+
+
+
+            Debug.WriteLine("GridLoadingEnd");
+        }
         /// <summary>
         /// Method that retrieve all the elements from the database and save them as ElementChecked (that has in addition a IsSelected attribute to handle the selection in the grid view)
         /// It also retrieve all the categories to set the combo box in the view for the search
@@ -128,6 +175,12 @@ namespace humanlab.ViewModels
         }
 
         /*** GETTERS AND SETTERS FOR PUBLIC ATTRIBUTES ***/
+
+        public Activity ActivityToModify
+        {
+            get => activityToModify;
+            set => SetProperty(ref activityToModify, value, "ActivityToModify");
+        }
         public string ButtonText
         {
             get => buttonText;
@@ -168,7 +221,7 @@ namespace humanlab.ViewModels
                     OnPropertyChanged("IsChooseGridsOpened");
                     if (SelectedGrids.Count() > 0)
                     {
-                        ButtonText = "Modifier";
+                        ButtonText = "Voir";
                         IsSaveButtonShowing = true;
                         IsEmptyGridsMessageShowing = false;
                     }
@@ -238,6 +291,57 @@ namespace humanlab.ViewModels
         /// <summary>
         /// Check if the gridName is not empty are already existing. If so, display an error message, else open the organization view
         /// </summary>
+        private async void UpdateActivityIfAllowed()
+        {
+            string errorMessage = null;
+            string successMessage = "Votre activité " + ActivityToModify.ActivityName + " a été modifiée avec succès.";
+
+            if (activityName.Equals(""))
+                errorMessage = "Veuillez entrer un nom d'activité pour poursuivre.";
+            else
+            {
+                //we check if the name is not already taken
+                List<string> activitiesNames = await activityRepository.GetActivityNamesAsync();
+                Debug.WriteLine("activityname " + activityName);
+                Debug.WriteLine("Act" + ActivityToModify.ActivityName);
+                Debug.WriteLine("Act==name" + activityName.Equals(ActivityToModify.ActivityName));
+                Debug.WriteLine("contains" + activitiesNames.Contains(activityName));
+
+                if (activitiesNames.Contains(activityName) && !activityName.Equals(ActivityToModify.ActivityName)) {
+                    errorMessage = "Une autre activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre."; 
+                }
+
+            }
+
+            //we show error if there is one
+            if (errorMessage != null)
+            {
+                DisplayMessagesService.showPersonalizedMessage(errorMessage);
+            }
+            else
+            {
+                //Create new activity from activity form data 
+                Activity modifiedActivity = new Activity
+                {
+                    ActivityId = ActivityToModify.ActivityId,
+                    ActivityName = activityName,
+                    FixingTime = Convert.ToInt32(FixingTime)
+                };
+
+                // Update Activity in db
+                activityRepository.UpdateActivityAsync(modifiedActivity, SelectedGridsSource);
+                DisplayMessagesService.showPersonalizedMessage(successMessage);
+                NavigationView nv = GetNavigationView();
+                Frame child = nv.Content as Frame;
+                NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+                navigationViewModel.ParameterToPass = null;
+                child.SourcePageType = typeof(ActivityLoadingView);
+            }
+
+        }
+        /// <summary>
+        /// Check if the gridName is not empty are already existing. If so, display an error message, else open the organization view
+        /// </summary>
         private async void SaveActivityIfAllowed()
         {
             string errorMessage = null;
@@ -292,9 +396,12 @@ namespace humanlab.ViewModels
         /// <param name="args">arguments</param>
         public void GridView1_Loading(FrameworkElement sender, object args)
         {
+            Debug.WriteLine("Grid view 1 loading");
             GridView gridview1 = sender as GridView;
             searchedGridView = gridview1;
             RefreshSelectionSearchedGrid();
+            Debug.WriteLine("Grid view 1 finish loading");
+
         }
 
         /// <summary>

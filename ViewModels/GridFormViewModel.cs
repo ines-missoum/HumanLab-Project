@@ -788,10 +788,8 @@ namespace humanlab.ViewModels
             var navigationView = GetNavigationView();
             var child = navigationView.Content as Frame;
             child.SourcePageType = typeof(BlankPage1);
-            child.SourcePageType = typeof(GridFormView);
-            Debug.WriteLine("child" + child);
-            
-            
+            child.SourcePageType = typeof(GridFormView);            
+           
         }
     }
 }

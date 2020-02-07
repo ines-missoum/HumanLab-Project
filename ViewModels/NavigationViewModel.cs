@@ -24,6 +24,7 @@ namespace humanlab.ViewModels
         /// the current view title
         /// </summary>
         public String title;
+        public Object parameterToPass;
 
         /*** GETTERS AND SETTERS ***/
         public String Title
@@ -37,6 +38,12 @@ namespace humanlab.ViewModels
             get => contentFrame;
             set => SetProperty(ref contentFrame, value, "ContentFrame");
         }
+        public Object ParameterToPass
+        {
+            get => parameterToPass;
+            set => SetProperty(ref parameterToPass, value, "ParameterToPass");
+        }
+
 
         /*** METHODS ***/
         /// <summary>
@@ -78,7 +85,7 @@ namespace humanlab.ViewModels
                     switch (ItemContent)
                     {
                         
-                        case "Lancer une activité":
+                        case "Toutes les activités":
                             this.ContentFrame = typeof(ActivityLoadingView);
                             break;
                         case "Nouvelle activité":
@@ -100,7 +107,7 @@ namespace humanlab.ViewModels
                             break;
                     }
                 }
-
+                ParameterToPass = null;
             }
         }
     }
