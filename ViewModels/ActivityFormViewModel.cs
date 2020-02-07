@@ -113,9 +113,8 @@ namespace humanlab.ViewModels
             else SaveActivityIfAllowed();
         }
 
-        public async void Grid_Loading(FrameworkElement sender, object args)
+        public async void PrepareEditModeAsync(FrameworkElement sender, object args)
         {
-            Debug.WriteLine("GridLoading");
             NavigationView navigation = GetNavigationView();
             Frame child = navigation.Content as Frame;
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
@@ -147,10 +146,6 @@ namespace humanlab.ViewModels
                 updateIndexOfItems();
 
             }
-
-
-
-            Debug.WriteLine("GridLoadingEnd");
         }
         /// <summary>
         /// Method that retrieve all the elements from the database and save them as ElementChecked (that has in addition a IsSelected attribute to handle the selection in the grid view)
@@ -179,7 +174,16 @@ namespace humanlab.ViewModels
         public Activity ActivityToModify
         {
             get => activityToModify;
-            set => SetProperty(ref activityToModify, value, "ActivityToModify");
+            set
+            {
+                if (value != activityToModify)
+                {
+                    activityToModify = value;
+                    OnPropertyChanged("ActivityToModify");
+                    activityName = activityToModify.ActivityName;
+
+                }
+            }
         }
         public string ButtonText
         {

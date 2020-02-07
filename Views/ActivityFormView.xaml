@@ -46,7 +46,7 @@
     </Page.Resources>
 
     <!--PRINCIPAL VIEW-->
-    <Grid Loading="{x:Bind activity.Grid_Loading}">
+    <Grid Loading="{x:Bind activity.PrepareEditModeAsync}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />

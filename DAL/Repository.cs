@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using humanlab.Helpers.Models;
+using System.Diagnostics;
 
 namespace humanlab.DAL
 {
@@ -54,6 +55,34 @@ namespace humanlab.DAL
             }
         }
 
+        public async void UpdateElementAsync(Element elementToUpdate, string categoryName)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                // Recupere l'element déja en db pour pouvoir le supprimer de la liste d'element de la categorie 
+                Debug.WriteLine(" elem id " + elementToUpdate.ElementId);
+                Debug.WriteLine(" elem id " + elementToUpdate.ElementName);
+
+                Element oldElement = db.Elements.Select(e => e).Where(e => e.ElementId == elementToUpdate.ElementId).FirstOrDefault();
+
+                Debug.WriteLine("old c " + GetCategories(db));
+                Debug.WriteLine("old e " + oldElement);
+
+
+                Category oldCategory = GetCategories(db).Select(c=>c).Where(c=> c.Elements.Contains(oldElement)).FirstOrDefault();
+
+                // Supprime l'ancien élément 
+                oldCategory.Elements.Remove(oldElement);
+                db.SaveChanges();
+
+                Category selectedCategory = GetCategoryByName(categoryName, db);
+                selectedCategory.Elements.Add(elementToUpdate);
+                //Update l'element ( faut passer l'id) 
+                db.SaveChanges();
+            }
+        }
+        
+
 
 
         public async Task<List<Element>> GetElementsAsync()
@@ -62,7 +91,12 @@ namespace humanlab.DAL
             {
                 try
                 {
-                    return await db.Elements.Select(e => new Element { ElementName = e.ElementName, Image=e.Image, Category = e.Category }).ToListAsync();
+                    return await db.Elements.Select(e => new Element {ElementId= e.ElementId,
+                                                                      ElementName = e.ElementName, 
+                                                                      Image=e.Image,
+                                                                      Audio= e.Audio, 
+                                                                      SpeachText= e.SpeachText,  
+                                                                      Category = e.Category }).ToListAsync();
                 }
                 catch (Exception e)
                 {
@@ -127,7 +161,12 @@ namespace humanlab.DAL
                                     .First();
     
         }
+        public List<Category> GetCategories(ApplicationDbContext db)
+        {
 
+            return db.Categories.Include(c => c.Elements).ToList();
+
+        }
 
     }
 }
