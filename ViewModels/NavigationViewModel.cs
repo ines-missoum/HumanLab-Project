@@ -92,6 +92,7 @@ namespace humanlab.ViewModels
                             this.ContentFrame = typeof(ActivityFormView);
                             break;
                         case "Toutes les grilles":
+                            this.ContentFrame = typeof(AllGridsView);
                             break;
                         case "Nouvelle grille":
                             this.ContentFrame = typeof(GridFormView);
