@@ -48,6 +48,7 @@ namespace humanlab.ViewModels
         private bool openActivityAlreadyCalled;
         private bool isEditModeActivated;
         private string editButton;
+        private string selectionMode;
 
         ScrollViewer scrollViewer;
         public DelegateCommand CloseActivityDelegate { get; set; }
@@ -79,6 +80,7 @@ namespace humanlab.ViewModels
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
             ChangeEditMode = new DelegateCommand(SetEditMode);
+            SelectionMode = "Single";
             ScrollViewer = new ScrollViewer();
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
@@ -196,6 +198,12 @@ namespace humanlab.ViewModels
         {
             get => isActivityLoading;
             set => SetProperty(ref isActivityLoading, value, "IsActivityLoading");
+        }
+
+        public string SelectionMode
+        {
+            get => selectionMode;
+            set => SetProperty(ref selectionMode, value, "SelectionMode");
         }
 
         public bool OpenActivityAlreadyCalled
@@ -540,11 +548,13 @@ namespace humanlab.ViewModels
             if (EditButton.Equals("Modifier"))
             {
                 EditButton = "Fin Modification";
+                SelectionMode = "None";
                 AllActivities.ForEach(a => a.EditMode = true);
             }
             else
             {
                 EditButton = "Modifier";
+                SelectionMode = "Single";
                 AllActivities.ForEach(a => a.EditMode = false);
             }
         }

@@ -23,7 +23,7 @@
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,100">
             <Button Width="170" Height="35" Margin="8" 
-                    Background="DeepSkyBlue" Foreground="White" FontWeight="Bold"
+                    Background="SkyBlue"  FontWeight="Bold"
                     Command="{x:Bind vm.ChangeEditMode}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Bind vm.EditButton, Mode=TwoWay}"   />

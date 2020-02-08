@@ -28,10 +28,11 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,100">
             <Button Width="170" Height="35" Margin="8" 
                     FontWeight="Bold"
+                    Background="SkyBlue"
                     Command="{x:Bind tobii.ChangeEditMode}">
                 <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Bind tobii.EditButton, Mode=TwoWay}"  />
-                    <SymbolIcon Symbol="Edit" Margin="8,0,0,0"/>
+                    <SymbolIcon Symbol="Edit" Margin="8,0,0,0" />
                 </StackPanel>
             </Button>
         </StackPanel>
@@ -46,7 +47,7 @@
                 <GridView ItemsSource="{x:Bind tobii.AllActivitiesObserver}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" 
                           SelectionChanged="{x:Bind tobii.GridView_SelectionChanged}"
-                          SelectionMode="Single"
+                          SelectionMode="{x:Bind tobii.SelectionMode, Mode=TwoWay}"
                           Loading="{x:Bind tobii.GridView_Loading}">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="helpersModels:ActivityUpdated">
