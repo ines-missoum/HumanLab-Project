@@ -96,6 +96,20 @@ namespace humanlab.DAL
                 db.SaveChanges();
             }
         }
+        internal void DeleteActivity(Activity oldActivity)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+
+                // Delete Related entities
+                List<ActivityGrids> dbActivityGrids = db.ActivityGrids.Select(ag => ag).Where(ag => ag.ActivityId.Equals(oldActivity.ActivityId)).ToList();
+                dbActivityGrids.ForEach(dbAg => { db.ActivityGrids.Remove(dbAg); });
+                db.SaveChanges();
+                // Delete Activity
+                db.Activities.Remove(oldActivity);
+                db.SaveChanges();
+            }
+        }
         public async Task<List<Activity>> GetActivitiesAsync()
         {
             using (var db = new ApplicationDbContext())

@@ -127,6 +127,7 @@
     <Compile Include="Helpers\Converters\DoubleToStringConverter.cs" />
     <Compile Include="Helpers\Converters\ImageNameToImagePathConverter.cs" />
     <Compile Include="Helpers\Converters\ImageNameToImageUriConverter.cs" />
+    <Compile Include="Helpers\Models\ActivityUpdated.cs" />
     <Compile Include="Helpers\Models\ElementOfActivity.cs" />
     <Compile Include="Helpers\Models\ElementPlaced.cs" />
     <Compile Include="Helpers\Models\CategoryOrdered.cs" />

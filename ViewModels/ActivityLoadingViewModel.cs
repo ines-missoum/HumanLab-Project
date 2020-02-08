@@ -20,6 +20,7 @@ using humanlab.DAL;
 using humanlab.Models;
 using System.Threading.Tasks;
 using humanlab.Views;
+using System.Collections.ObjectModel;
 
 namespace humanlab.ViewModels
 {
@@ -40,15 +41,19 @@ namespace humanlab.ViewModels
         private GridRepository gridRepository;
         private ActivityRepository activityRepository;
 
-        public List<Activity> AllActivities { get; set; }
-
+        public List<ActivityUpdated> allActivities;
+        public ObservableCollection<ActivityUpdated> allActivitiesObserver;
         private bool isActivityLoading;
 
         private bool openActivityAlreadyCalled;
         private bool isEditModeActivated;
         private string editButton;
+        private string selectionMode;
 
+        ScrollViewer scrollViewer;
         public DelegateCommand CloseActivityDelegate { get; set; }
+        private DelegateCommand<object> DeleteActivityDelegate { get; set; }
+        private DelegateCommand<object> UpdateActivityDelegate { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
         private (int GridOrder, int GridId) currentGrid;
@@ -64,6 +69,8 @@ namespace humanlab.ViewModels
         {
             gridRepository = new GridRepository();
             activityRepository = new ActivityRepository();
+            DeleteActivityDelegate = new DelegateCommand<object>(DeleteActivity);
+            UpdateActivityDelegate = new DelegateCommand<object>(UpdateActivity);
             GetAllActivitiesAsync();
 
             Elements = new List<ElementOfActivity>();
@@ -73,7 +80,8 @@ namespace humanlab.ViewModels
             NextGrid = new DelegateCommand(ClickOnNext, CanClickOnNext);
             PreviousGrid = new DelegateCommand(ClickOnPrevious, CanClickOnPrevious);
             ChangeEditMode = new DelegateCommand(SetEditMode);
-
+            SelectionMode = "Single";
+            ScrollViewer = new ScrollViewer();
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
 
@@ -93,10 +101,41 @@ namespace humanlab.ViewModels
 
         }
 
+        public void DeleteActivity(object activityObject)
+        {
+            try
+            {
+                Activity activity = activityObject as Activity;
+                activityRepository.DeleteActivity(activity);
+                ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
+                AllActivitiesObserver.Remove(actUpdated);
+            }
+            catch { Debug.WriteLine("Error while deleting activity"); }
+        }
+
+        public void UpdateActivity(object activityObject)
+        {
+            // Redirect toward the modification form
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            Object parameter = activityObject as Object;
+            // Passing parameter through the navigation viewmodel
+            navigationViewModel.ParameterToPass = parameter;
+            // Indicates which form we should open
+            child.SourcePageType = typeof(ActivityFormView);
+        }
+
         private async void GetAllActivitiesAsync()
         {
             var activities = await activityRepository.GetActivitiesAsync();
-            AllActivities = activities.OrderByDescending(e => e.ActivityName.Length).ToList();
+            List<ActivityUpdated> activitiesUpdated = new List<ActivityUpdated>();
+            activities.ForEach(activity =>
+            {
+                var a = new ActivityUpdated(activity, DeleteActivityDelegate, UpdateActivityDelegate) ;
+                activitiesUpdated.Add(a);
+            });
+            AllActivities = activitiesUpdated.OrderByDescending(e => e.Activity.ActivityName.Length).ToList();
         }
 
         private async void GetElementsOfGrid(int gridId)
@@ -114,6 +153,29 @@ namespace humanlab.ViewModels
 
         /***GETTERS & SETTERS***/
 
+        public ScrollViewer ScrollViewer
+        {
+            get => scrollViewer;
+            set => SetProperty(ref scrollViewer, value, "ScrollViewer");
+        }
+        public List<ActivityUpdated> AllActivities
+        {
+            get => allActivities;
+            set
+            {
+                if (value != allActivities)
+                {
+                    allActivities = value;
+                    AllActivitiesObserver = new ObservableCollection<ActivityUpdated>(value);
+                }
+            }
+        }
+        public ObservableCollection<ActivityUpdated> AllActivitiesObserver
+        {
+            get => allActivitiesObserver;
+            set => SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
+
+        }
         public List<ElementOfActivity> Elements
         {
             get => elements;
@@ -136,6 +198,12 @@ namespace humanlab.ViewModels
         {
             get => isActivityLoading;
             set => SetProperty(ref isActivityLoading, value, "IsActivityLoading");
+        }
+
+        public string SelectionMode
+        {
+            get => selectionMode;
+            set => SetProperty(ref selectionMode, value, "SelectionMode");
         }
 
         public bool OpenActivityAlreadyCalled
@@ -292,14 +360,6 @@ namespace humanlab.ViewModels
 
         }
 
-
-
-
-
-
-
-
-
         private void Stop(BitmapImage source, ElementOfActivity current)
         {
             source.Stop();
@@ -403,7 +463,6 @@ namespace humanlab.ViewModels
             return gridOrder;
         }
 
-
         public void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Check if the method is not calling itself
@@ -412,7 +471,8 @@ namespace humanlab.ViewModels
                 GridView gv = sender as GridView;
 
                 //Retrieve the activity we want to Play
-                Activity selected = gv.SelectedItem as Activity;
+                ActivityUpdated selectedItem = gv.SelectedItem as ActivityUpdated;
+                Activity selected = selectedItem.Activity;
                 // Signal that we enter into the method once
                 OpenActivityAlreadyCalled = true;
                 // Reset the activity selection
@@ -488,9 +548,20 @@ namespace humanlab.ViewModels
             if (EditButton.Equals("Modifier"))
             {
                 EditButton = "Fin Modification";
+                SelectionMode = "None";
+                AllActivities.ForEach(a => a.EditMode = true);
             }
-            else EditButton = "Modifier";
-            Debug.WriteLine(" is edit " + IsEditModeActivated);
+            else
+            {
+                EditButton = "Modifier";
+                SelectionMode = "Single";
+                AllActivities.ForEach(a => a.EditMode = false);
+            }
+        }
+        public void GridView_Loading(FrameworkElement sender, object args)
+        {
+            ScrollViewer sc = sender as ScrollViewer;
+            ScrollViewer = sc;
         }
 
         public void Grid_SizeChanged(object sender, SizeChangedEventArgs e)

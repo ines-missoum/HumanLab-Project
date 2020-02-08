@@ -63,7 +63,6 @@ namespace humanlab.ViewModels
             else { EditButton = "Modifier";
                 SelectionMode = "None";
             }
-            Debug.WriteLine(" is edit " + IsEditModeActivated);
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using humanlab.DAL;
 using humanlab.Helpers.Models;
 using humanlab.Models;
+using humanlab.Views;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace humanlab.ViewModels
 
         private bool isShowGridPreviewAlreadyCalled;
         private bool isEditModeActivated;
+        private string editButton;
+
 
         /// <summary>
         /// Handle the visibility grid preview
@@ -38,6 +41,8 @@ namespace humanlab.ViewModels
 
         public DelegateCommand CloseGridDelegate { get; set; }
 
+        public DelegateCommand ChangeEditMode { get; set; }
+
         //***CONSTRUCTOR***//
         public AllGridsViewModel()
         {
@@ -45,6 +50,8 @@ namespace humanlab.ViewModels
             GetAllGridsAsync();
             isShowGridPreviewAlreadyCalled = false;
             IsEditModeActivated = false;
+            EditButton = "Modifier";
+            ChangeEditMode = new DelegateCommand(SetEditMode);
             IsGridPreviewShowing = false;
             CloseGridDelegate = new DelegateCommand(CloseGridPreview);
         }
@@ -60,6 +67,11 @@ namespace humanlab.ViewModels
             get => isEditModeActivated;
             set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
         }
+        public string EditButton
+        {
+            get => editButton;
+            set => SetProperty(ref editButton, value, "EditButton");
+        }
 
         public bool IsGridPreviewShowing
         {
@@ -72,6 +84,14 @@ namespace humanlab.ViewModels
         {
             var grids = await gridRepository.GetGridsAsync();
             AllGrids = grids.OrderByDescending(g => g.GridName.Length).ToList();
+        }
+
+        public void SetEditMode()
+        {
+            IsEditModeActivated = !IsEditModeActivated;
+            if (EditButton.Equals("Modifier")) EditButton = "Fin Modification";
+            else EditButton = "Modifier";
+            
         }
 
         /// <summary>
@@ -99,7 +119,15 @@ namespace humanlab.ViewModels
                 }
                 else
                 {
-
+                    // Redirect toward the modification form
+                    NavigationView navigation = GetNavigationView();
+                    Frame child = navigation.Content as Frame;
+                    NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+                    Object parameter = selected as Object;
+                    // Passing parameter through the navigation viewmodel
+                    navigationViewModel.ParameterToPass = parameter;
+                    // Indicates which form we should open
+                    child.SourcePageType = typeof(GridFormView);
                 }
             }
         }

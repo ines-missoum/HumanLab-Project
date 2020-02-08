@@ -75,6 +75,7 @@ namespace humanlab.ViewModels
         private string searchText { get; set; }
         private string searchCategory { get; set; }
         private string gridName;
+        private Models.Grid gridToModify { get; set; }
 
 
         /// <summary>
@@ -112,6 +113,7 @@ namespace humanlab.ViewModels
             isEmptyElementMessageShowing = true;
             ButtonText = "Choisir";
 
+
             //form default values
             searchCategory = "Tout";
             searchText = "";
@@ -121,7 +123,7 @@ namespace humanlab.ViewModels
             this.elementsPlaced = new List<ElementPlaced>();
             this.scrollView = new ScrollViewer();
             this.itemsControl = new ItemsControl();
-            SaveGridPlacementCommand = new DelegateCommand(SaveGridPlacementAsync, CanSaveGridPlacement);
+            SaveGridPlacementCommand = new DelegateCommand(UpdateOrAddGridIfAllowed, CanSavOrUpdateGridPlacement);
             ReturnToSelectionCommand = new DelegateCommand(ReturnToSelection);
             isPositionsSet = false;
         }
@@ -133,31 +135,82 @@ namespace humanlab.ViewModels
 
         }
 
-        private bool CanSaveGridPlacement()
+        private bool CanSavOrUpdateGridPlacement()
         {
             return IsPositionsSet;
         }
-
-        private async void SaveGridPlacementAsync()
+        private async void UpdateOrAddGridIfAllowed()
         {
+            string errorMessage = null;
 
-            Models.Grid newGrid = new Models.Grid
-            {
-                GridName = this.gridName,
-                ElementsHeight = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor,
-                ElementsWidth = (ScrollView.ViewportWidth / 2) * ScrollView.ZoomFactor,
-            };
-            try
-            {
-                gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
-                DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadGridFormView);
 
-            }
-            catch
+            if (GridName.Equals(""))
+                errorMessage = "Veuillez entrer un nom d'activité pour poursuivre.";
+            else
             {
-                DisplayMessagesService.showErrorMessage();
+                List<Models.Grid> grids = await gridRepository.GetGridsAsync();
+                List<string> gridsNames = grids.Select(g => g.GridName).ToList();
+                double size = (ScrollView.ViewportHeight / 8) * ScrollView.ZoomFactor;
+
+                string successMessage = "";
+                    //we check if the name is not already taken
+                  if (gridsNames.Contains(GridName) && !GridName.Equals(gridToModify.GridName))
+                  {
+                     errorMessage = "Une autre activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                  }
+
+                //we show error if there is one
+                if (errorMessage != null)
+                {
+                    DisplayMessagesService.showPersonalizedMessage(errorMessage);
+                }
+                else
+                {
+                    if (gridToModify != null)
+                    {
+                        successMessage = "Votre grille " + GridName + " a été modifiée avec succès.";
+
+                        Models.Grid modifiedGrid = new Models.Grid
+                        {
+                            GridId = gridToModify.GridId,
+                            GridName = GridName,
+                            ElementsHeight = size,
+                            ElementsWidth = size,
+                        };
+
+                        try
+                        {
+                            gridRepository.UpdateGridAsync(modifiedGrid, ElementsPlaced);
+                            DisplayMessagesService.showPersonalizedMessage(successMessage);
+                            RedirectToAllGridsPage();
+
+                        }
+                        catch { Debug.WriteLine("Error upgrating element"); }
+                        // Update Activity in db
+                    }
+                    else {
+                        Models.Grid newGrid = new Models.Grid
+                        {
+                            GridName = GridName,
+                            ElementsHeight = size,
+                            ElementsWidth = size,
+                        };
+
+                        try
+                        {
+                            gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
+                            DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadGridFormView);
+
+                        }
+                        catch { Debug.WriteLine("Error saving element"); }
+                    }
+
+                }
+                        //Create new activity from activity form data 
+
             }
         }
+       
 
 
         /// <summary>
@@ -175,12 +228,52 @@ namespace humanlab.ViewModels
             Categories = elements.Select(e => e.Category.CategoryName).Distinct().ToList();
             Categories.Add("Tout");
         }
+        public async void PrepareEditModeAsync(FrameworkElement sender, object args)
+        {
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+
+            if (navigationViewModel.parameterToPass != null)
+            {
+
+                Models.Grid grid = navigationViewModel.parameterToPass as Models.Grid;
+                gridToModify = grid; 
+                GridName = grid.GridName;
+                navigationViewModel.Title = "Modification de l'élément " + GridName;
+                ButtonText = "Modifier";
+                //     IsEmptyGridsMessageShowing = false;
+                //     IsSaveButtonShowing = true;
+                List<ElementOfActivity> dbElements = await gridRepository.GetAllGridElements(grid.GridId);
+                IsEmptyElementMessageShowing = false;
+                List<int> ElementsId = dbElements.Select(dbobj => dbobj.Element.ElementId).ToList();
+                InitialiseAllElementsAndCategories();
+                SearchedElements.ForEach(el =>
+                {
+                    if (ElementsId.Contains(el.Element.ElementId))
+                    {
+
+                        el.IsSelected = true;
+                        SelectedElements.Add(el);
+                    }
+                });
+
+            }
+        }
+
+
 
         /*** GETTERS AND SETTERS FOR PUBLIC ATTRIBUTES ***/
         public string ButtonText
         {
             get => buttonText;
             set => SetProperty(ref buttonText, value, "ButtonText");
+        }
+
+        public string GridName
+        {
+            get => gridName;
+            set => SetProperty(ref gridName, value, "GridName");
         }
 
         public ScrollViewer ScrollView
@@ -301,13 +394,13 @@ namespace humanlab.ViewModels
         {
             string errorMessage = null;
 
-            if (gridName.Equals(""))
+            if (GridName.Equals(""))
                 errorMessage = "Veuillez entrer un nom de grille pour poursuivre.";
             else
             {
                 //we check if the name is not already taken
                 List<string> gridsNames = await repository.GetGridsNamesAsync();
-                if (gridsNames.Contains(gridName))
+                if (gridsNames.Contains(GridName) && !GridName.Equals(gridToModify.GridName))
                     errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
             }
 
@@ -464,7 +557,7 @@ namespace humanlab.ViewModels
         {
             TextBox control = sender as TextBox;
             string name = control.Text;
-            gridName = name;
+            GridName = name;
         }
 
         /**Search hanling methods**/
@@ -781,6 +874,14 @@ namespace humanlab.ViewModels
             SetInitialWidthToElements();
             NavigationView navigationView = GetNavigationView();
             navigationView.IsPaneOpen = false;
+        }
+        public void RedirectToAllGridsPage()
+        {
+            NavigationView nv = GetNavigationView();
+            Frame child = nv.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.ParameterToPass = null;
+            child.SourcePageType = typeof(AllGridsView);
         }
 
         public void ReloadGridFormView()
