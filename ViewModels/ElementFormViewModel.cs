@@ -603,6 +603,7 @@ namespace humanlab.ViewModels
             Frame child = nv.Content as Frame;
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
             navigationViewModel.ParameterToPass = null;
+            navigationViewModel.Title = "Tous les éléments";
             child.SourcePageType = typeof(AllElementsView);
         }
         public void ReloadElementFormView()

@@ -372,6 +372,7 @@ namespace humanlab.ViewModels
                 Frame child = nv.Content as Frame;
                 NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
                 navigationViewModel.ParameterToPass = null;
+                navigationViewModel.Title = "Toutes les activités";
                 child.SourcePageType = typeof(ActivityLoadingView);
             }
 
