@@ -52,7 +52,7 @@ namespace humanlab.ViewModels
         ScrollViewer scrollViewer;
         public DelegateCommand CloseActivityDelegate { get; set; }
         private DelegateCommand<object> DeleteActivityDelegate { get; set; }
-        private DelegateCommand UpdateActivityDelegate { get; set; }
+        private DelegateCommand<object> UpdateActivityDelegate { get; set; }
 
         private List<(int GridOrder, int GridId)> listGridIds;
         private (int GridOrder, int GridId) currentGrid;
@@ -69,6 +69,7 @@ namespace humanlab.ViewModels
             gridRepository = new GridRepository();
             activityRepository = new ActivityRepository();
             DeleteActivityDelegate = new DelegateCommand<object>(DeleteActivity);
+            UpdateActivityDelegate = new DelegateCommand<object>(UpdateActivity);
             GetAllActivitiesAsync();
 
             Elements = new List<ElementOfActivity>();
@@ -90,7 +91,7 @@ namespace humanlab.ViewModels
             EditButton = "Modifier";
 
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
-            UpdateActivityDelegate = new DelegateCommand(UpdateActivity);
+
             playingSound = null;
             playingSpeech = null;
             activatedElement = (null, null);
@@ -110,9 +111,17 @@ namespace humanlab.ViewModels
             catch { Debug.WriteLine("Error while deleting activity"); }
         }
 
-        public void UpdateActivity()
+        public void UpdateActivity(object activityObject)
         {
-            Debug.WriteLine("Update action");
+            // Redirect toward the modification form
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            Object parameter = activityObject as Object;
+            // Passing parameter through the navigation viewmodel
+            navigationViewModel.ParameterToPass = parameter;
+            // Indicates which form we should open
+            child.SourcePageType = typeof(ActivityFormView);
         }
 
         private async void GetAllActivitiesAsync()

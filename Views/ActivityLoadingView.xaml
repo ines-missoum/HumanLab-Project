@@ -61,7 +61,7 @@
                                             </Button>
 
                                             <Button Width="60" Height="35" Margin="8" 
-                                                    FontWeight="Bold" Background="LightBlue" Command="{x:Bind updateActivityDelegate}">
+                                                    FontWeight="Bold" Background="LightBlue" Command="{x:Bind updateActivityDelegate}" CommandParameter="{Binding Activity}">
                                                 <SymbolIcon Symbol="Edit" Margin="8,0,0,0" Foreground="White" />
                                             </Button>
                                         </StackPanel>

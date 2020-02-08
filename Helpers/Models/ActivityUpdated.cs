@@ -20,10 +20,10 @@ namespace humanlab.Helpers.Models
 
         public DelegateCommand<object> DeleteActivityDelegate { get; set; }
         public DelegateCommand test { get; set; }
-        public DelegateCommand updateActivityDelegate { get; set; }
+        public DelegateCommand<object> updateActivityDelegate { get; set; }
 
 
-        public ActivityUpdated(Activity newActivity, DelegateCommand<object> removeActivityFromList, DelegateCommand updateActivityDelegate)
+        public ActivityUpdated(Activity newActivity, DelegateCommand<object> removeActivityFromList, DelegateCommand<object> updateActivityDelegate)
         {
             Activity = newActivity;
             EditMode = false;
@@ -36,13 +36,6 @@ namespace humanlab.Helpers.Models
         {
             get => editMode;
             set => SetProperty(ref editMode, value, "EditMode");
-        }
-
-        public void DeleteActivity()
-        {
-            try { activityRepository.DeleteActivity(Activity);
-            }
-            catch { Debug.WriteLine("Error while deleting activity"); }
         }
     }
 
