@@ -43,7 +43,7 @@
         <Grid >
             <Grid Margin="10,50,0,10" >
                 
-                <GridView ItemsSource="{x:Bind tobii.AllActivities}"
+                <GridView ItemsSource="{x:Bind tobii.AllActivitiesObserver}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" 
                           SelectionChanged="{x:Bind tobii.GridView_SelectionChanged}"
                           SelectionMode="Single"

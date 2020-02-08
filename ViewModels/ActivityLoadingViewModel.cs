@@ -20,6 +20,7 @@ using humanlab.DAL;
 using humanlab.Models;
 using System.Threading.Tasks;
 using humanlab.Views;
+using System.Collections.ObjectModel;
 
 namespace humanlab.ViewModels
 {
@@ -40,8 +41,8 @@ namespace humanlab.ViewModels
         private GridRepository gridRepository;
         private ActivityRepository activityRepository;
 
-        public List<ActivityUpdated> AllActivities { get; set; }
-
+        public List<ActivityUpdated> allActivities;
+        public ObservableCollection<ActivityUpdated> allActivitiesObserver;
         private bool isActivityLoading;
 
         private bool openActivityAlreadyCalled;
@@ -67,6 +68,7 @@ namespace humanlab.ViewModels
         {
             gridRepository = new GridRepository();
             activityRepository = new ActivityRepository();
+            DeleteActivityDelegate = new DelegateCommand<object>(DeleteActivity);
             GetAllActivitiesAsync();
 
             Elements = new List<ElementOfActivity>();
@@ -88,7 +90,6 @@ namespace humanlab.ViewModels
             EditButton = "Modifier";
 
             CloseActivityDelegate = new DelegateCommand(CloseActivity);
-            DeleteActivityDelegate = new DelegateCommand<object>(DeleteActivity);
             UpdateActivityDelegate = new DelegateCommand(UpdateActivity);
             playingSound = null;
             playingSpeech = null;
@@ -97,9 +98,16 @@ namespace humanlab.ViewModels
 
         }
 
-        public void DeleteActivity(object activity)
+        public void DeleteActivity(object activityObject)
         {
-            Debug.WriteLine("Delete action "+ activity);
+            try
+            {
+                Activity activity = activityObject as Activity;
+                activityRepository.DeleteActivity(activity);
+                ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
+                AllActivitiesObserver.Remove(actUpdated);
+            }
+            catch { Debug.WriteLine("Error while deleting activity"); }
         }
 
         public void UpdateActivity()
@@ -116,7 +124,7 @@ namespace humanlab.ViewModels
                 var a = new ActivityUpdated(activity, DeleteActivityDelegate, UpdateActivityDelegate) ;
                 activitiesUpdated.Add(a);
             });
-            AllActivities= activitiesUpdated.OrderByDescending(e => e.Activity.ActivityName.Length).ToList();
+            AllActivities = activitiesUpdated.OrderByDescending(e => e.Activity.ActivityName.Length).ToList();
         }
 
         private async void GetElementsOfGrid(int gridId)
@@ -138,6 +146,24 @@ namespace humanlab.ViewModels
         {
             get => scrollViewer;
             set => SetProperty(ref scrollViewer, value, "ScrollViewer");
+        }
+        public List<ActivityUpdated> AllActivities
+        {
+            get => allActivities;
+            set
+            {
+                if (value != allActivities)
+                {
+                    allActivities = value;
+                    AllActivitiesObserver = new ObservableCollection<ActivityUpdated>(value);
+                }
+            }
+        }
+        public ObservableCollection<ActivityUpdated> AllActivitiesObserver
+        {
+            get => allActivitiesObserver;
+            set => SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
+
         }
         public List<ElementOfActivity> Elements
         {
