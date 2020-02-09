@@ -81,14 +81,14 @@ namespace humanlab.ViewModels
         /// <summary>
         /// Responsible for looking in database
         /// </summary>
-        private Repository repository;
+        private ElementRepository repository;
         private GridRepository gridRepository;
 
         /***CONSTRUCTOR***/
 
         public GridFormViewModel()
         {
-            repository = new Repository();
+            repository = new ElementRepository();
             gridRepository = new GridRepository();
 
             //initialisation of al the lists

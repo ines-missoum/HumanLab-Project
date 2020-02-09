@@ -40,7 +40,7 @@ namespace humanlab.ViewModels
         //*** Data ***//
         List<string> categories;
         List<string> elements;
-        Repository repository;
+        ElementRepository repository;
         private Element elementToModify;
 
 
@@ -71,7 +71,7 @@ namespace humanlab.ViewModels
             SaveOrUpdateElementCommand = new DelegateCommand(SaveOrUpdateElementAsync);
             PlayCommand = new DelegateCommand(Play, CanPlay);
             DefaultColor = ColorTheme;
-            this.repository = new Repository();
+            this.repository = new ElementRepository();
 
             // Retrieve data from db
             repository.CreateCategories();

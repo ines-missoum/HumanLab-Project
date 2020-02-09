@@ -23,11 +23,11 @@ namespace humanlab.ViewModels
 
         public DelegateCommand ChangeEditMode { get; set; }
 
-        Repository repository;
+        ElementRepository repository;
 
         public AllElementsViewModel()
         {
-            this.repository = new Repository();
+            this.repository = new ElementRepository();
             GetElementsAsync();
             IsEditModeActivated = false;
             EditButton = "Modifier";
