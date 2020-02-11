@@ -10,31 +10,9 @@ using System.Diagnostics;
 
 namespace humanlab.DAL
 {
-    class Repository
+    class ElementRepository
     {
-        //Add Initial Categories 
-        public async Task CreateCategories()
-        {
-            var categorie1 = new Category();
-            categorie1.CategoryName = "Alimentation";
-
-            var categorie2 = new Category();
-            categorie2.CategoryName = "Loisir";
-            var categorie3 = new Category();
-            categorie3.CategoryName = "Couleur";
-
-            var categorie4 = new Category();
-            categorie4.CategoryName = "Dessin animé";
-
-            using (var db = new ApplicationDbContext())
-            {
-
-                // db.Add(categorie1);
-     
-                db.SaveChanges();
-            }
-
-            }
+        
         public async void SaveElementAsync(Element model, string categoryName)
         {
             using (var db = new ApplicationDbContext())
@@ -48,42 +26,29 @@ namespace humanlab.DAL
                 {
                     Category selectedCategory = GetCategoryByName(categoryName, db);
                     selectedCategory.Elements.Add(model);
-                    
                 }
-
                 db.SaveChanges();
             }
         }
+
 
         public async void UpdateElementAsync(Element elementToUpdate, string categoryName)
         {
             using (var db = new ApplicationDbContext())
             {
                 // Recupere l'element déja en db pour pouvoir le supprimer de la liste d'element de la categorie 
-                Debug.WriteLine(" elem id " + elementToUpdate.ElementId);
-                Debug.WriteLine(" elem id " + elementToUpdate.ElementName);
-
                 Element oldElement = db.Elements.Select(e => e).Where(e => e.ElementId == elementToUpdate.ElementId).FirstOrDefault();
-
-                Debug.WriteLine("old c " + GetCategories(db));
-                Debug.WriteLine("old e " + oldElement);
-
-
-                Category oldCategory = GetCategories(db).Select(c=>c).Where(c=> c.Elements.Contains(oldElement)).FirstOrDefault();
+                Category oldCategory = GetCategories(db).Select(c => c).Where(c => c.Elements.Contains(oldElement)).FirstOrDefault();
 
                 // Supprime l'ancien élément 
                 oldCategory.Elements.Remove(oldElement);
                 db.SaveChanges();
-
                 Category selectedCategory = GetCategoryByName(categoryName, db);
                 selectedCategory.Elements.Add(elementToUpdate);
                 //Update l'element ( faut passer l'id) 
                 db.SaveChanges();
             }
         }
-        
-
-
 
         public async Task<List<Element>> GetElementsAsync()
         {
@@ -91,82 +56,159 @@ namespace humanlab.DAL
             {
                 try
                 {
-                    return await db.Elements.Select(e => new Element {ElementId= e.ElementId,
-                                                                      ElementName = e.ElementName, 
-                                                                      Image=e.Image,
-                                                                      Audio= e.Audio, 
-                                                                      SpeachText= e.SpeachText,  
-                                                                      Category = e.Category }).ToListAsync();
+                    return await db.Elements.Select(e => new Element
+                    {
+                        ElementId = e.ElementId,
+
+                        ElementName = e.ElementName,
+
+                        Image = e.Image,
+
+                        Audio = e.Audio,
+
+                        SpeachText = e.SpeachText,
+
+                        Category = e.Category
+                    }).ToListAsync();
+
                 }
+
                 catch (Exception e)
+
                 {
+
                     return null;
+
                 }
+
             }
+
         }
-        
+
+
+
         public async Task<List<string>> GetCategoriesNamesAsync()
+
         {
+
             using (var db = new ApplicationDbContext())
+
             {
+
                 try
+
                 {
+
                     return await db.Categories.Select(c => c.CategoryName.ToString()).ToListAsync();
+
                 }
+
                 catch (Exception e)
+
                 {
+
                     return null;
+
                 }
+
             }
+
         }
+
+
 
         public async Task<List<string>> GetElementsNamesAsync()
+
         {
+
             using (var db = new ApplicationDbContext())
+
             {
+
                 try
+
                 {
+
                     return await db.Elements.Select(e => e.ElementName.ToString()).ToListAsync();
+
                 }
+
                 catch (Exception e)
+
                 {
+
                     return null;
+
                 }
+
             }
+
         }
 
+
+
         public async Task<List<string>> GetGridsNamesAsync()
+
         {
+
             using (var db = new ApplicationDbContext())
+
             {
+
                 try
+
                 {
+
                     return await db.Grids.Select(g => g.GridName.ToString()).ToListAsync();
+
                 }
+
                 catch (Exception e)
+
                 {
+
                     return null;
+
                 }
+
             }
+
         }
+
+
+
+
+
 
 
 
 
         public Category GetCategoryByName(string name, ApplicationDbContext db)
+
         {
 
-                return db.Categories.Include(c => c.Elements)
-                                    .Where(c => c.CategoryName.Equals(name))
-                                    .First();
-    
+
+
+            return db.Categories.Include(c => c.Elements)
+
+                                .Where(c => c.CategoryName.Equals(name))
+
+                                .First();
+
+
+
         }
+
         public List<Category> GetCategories(ApplicationDbContext db)
+
         {
+
+
 
             return db.Categories.Include(c => c.Elements).ToList();
 
-        }
 
+
+        }
     }
 }

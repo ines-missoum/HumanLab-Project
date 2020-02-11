@@ -74,7 +74,6 @@ namespace humanlab.ViewModels
             this.repository = new ElementRepository();
 
             // Retrieve data from db
-            repository.CreateCategories();
             GetCategoriesAsync();
             GetElementsAsync();
 

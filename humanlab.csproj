@@ -121,9 +121,9 @@
     </Compile>
     <Compile Include="DAL\ActivityRepository.cs" />
     <Compile Include="DAL\ApplicationDbContext.cs" />
+    <Compile Include="DAL\ElementRepository.cs" />
     <Compile Include="DAL\GridRepository.cs" />
     <Compile Include="DAL\CategoryRepository.cs" />
-    <Compile Include="DAL\Repository.cs" />
     <Compile Include="Helpers\Converters\DoubleToStringConverter.cs" />
     <Compile Include="Helpers\Converters\ImageNameToImagePathConverter.cs" />
     <Compile Include="Helpers\Converters\ImageNameToImageUriConverter.cs" />
