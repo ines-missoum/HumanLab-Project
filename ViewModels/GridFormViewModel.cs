@@ -157,11 +157,19 @@ namespace humanlab.ViewModels
                 double size = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor;
 
                 string successMessage = "";
-                    //we check if the name is not already taken
-                  if (gridsNames.Contains(GridName) || (gridToModify!=null && !GridName.Equals(gridToModify.GridName)))
-                  {
-                     errorMessage = "Une autre grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
-                  }
+                //we check if the name is not already taken
+                if (gridToModify == null)
+                {
+                    //if creation of new grid and name already exists
+                    if (gridsNames.Contains(GridName))
+                        errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                }
+                else
+                {
+                    //if update grid and name changed for one that already exists
+                    if (!GridName.Equals(gridToModify.GridName) && gridsNames.Contains(GridName))
+                        errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                }
 
                 //we show error if there is one
                 if (errorMessage != null)
@@ -407,8 +415,18 @@ namespace humanlab.ViewModels
             {
                 //we check if the name is not already taken
                 List<string> gridsNames = await repository.GetGridsNamesAsync();
-                if (gridsNames.Contains(GridName) || (gridToModify != null && !GridName.Equals(gridToModify.GridName)))
-                    errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                if(gridToModify == null)
+                {
+                    //if creation of new grid and name already exists
+                    if(gridsNames.Contains(GridName))
+                        errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                }
+                else
+                {
+                    //if update grid and name changed for one that already exists
+                    if (!GridName.Equals(gridToModify.GridName) && gridsNames.Contains(GridName))
+                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                }
             }
 
             //we show error if there is one
@@ -824,7 +842,6 @@ namespace humanlab.ViewModels
 
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
-            Debug.WriteLine("4444444444444");
             
             var child = VisualTreeHelper.GetChild(scrollView,0);
             var nb1 = VisualTreeHelper.GetChild(child,0);
@@ -877,7 +894,6 @@ namespace humanlab.ViewModels
         public void Scrollview_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ScrollViewer scrollViewer = sender as ScrollViewer;
-            Debug.WriteLine("ffff");
             // Set Scrollviewer size
             ScrollView = scrollViewer;
             SetInitialWidthToElements();
