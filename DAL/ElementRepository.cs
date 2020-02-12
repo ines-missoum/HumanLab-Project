@@ -74,11 +74,8 @@ namespace humanlab.DAL
                 }
 
                 catch (Exception e)
-
                 {
-
                     return null;
-
                 }
 
             }
@@ -88,85 +85,49 @@ namespace humanlab.DAL
 
 
         public async Task<List<string>> GetCategoriesNamesAsync()
-
         {
-
             using (var db = new ApplicationDbContext())
-
             {
-
                 try
-
                 {
-
                     return await db.Categories.Select(c => c.CategoryName.ToString()).ToListAsync();
-
                 }
-
                 catch (Exception e)
-
                 {
-
                     return null;
-
                 }
-
             }
-
         }
 
-
-
         public async Task<List<string>> GetElementsNamesAsync()
-
         {
-
             using (var db = new ApplicationDbContext())
-
             {
-
                 try
-
                 {
-
                     return await db.Elements.Select(e => e.ElementName.ToString()).ToListAsync();
-
                 }
 
                 catch (Exception e)
-
                 {
-
                     return null;
-
                 }
-
             }
-
         }
 
 
 
         public async Task<List<string>> GetGridsNamesAsync()
-
         {
 
             using (var db = new ApplicationDbContext())
-
             {
-
                 try
-
                 {
-
                     return await db.Grids.Select(g => g.GridName.ToString()).ToListAsync();
-
                 }
-
                 catch (Exception e)
-
                 {
-
                     return null;
 
                 }
@@ -175,40 +136,16 @@ namespace humanlab.DAL
 
         }
 
-
-
-
-
-
-
-
-
         public Category GetCategoryByName(string name, ApplicationDbContext db)
-
         {
-
-
 
             return db.Categories.Include(c => c.Elements)
-
                                 .Where(c => c.CategoryName.Equals(name))
-
                                 .First();
-
-
-
         }
-
         public List<Category> GetCategories(ApplicationDbContext db)
-
         {
-
-
-
             return db.Categories.Include(c => c.Elements).ToList();
-
-
-
         }
     }
 }

@@ -132,6 +132,10 @@ namespace humanlab.ViewModels
         {
             IsOrganizeElementsOpened = false;
             ElementsPlaced = new List<ElementPlaced>();
+            NavigationView nv = GetNavigationView();
+            nv.IsPaneToggleButtonVisible = true;
+            nv.IsPaneVisible = true;
+
 
         }
 
@@ -145,18 +149,18 @@ namespace humanlab.ViewModels
 
 
             if (GridName.Equals(""))
-                errorMessage = "Veuillez entrer un nom d'activité pour poursuivre.";
+                errorMessage = "Veuillez entrer un nom de grille pour poursuivre.";
             else
             {
                 List<Models.Grid> grids = await gridRepository.GetGridsAsync();
                 List<string> gridsNames = grids.Select(g => g.GridName).ToList();
-                double size = (ScrollView.ViewportHeight / 8) * ScrollView.ZoomFactor;
+                double size = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor;
 
                 string successMessage = "";
                     //we check if the name is not already taken
-                  if (gridsNames.Contains(GridName) && !GridName.Equals(gridToModify.GridName))
+                  if (gridsNames.Contains(GridName) || (gridToModify!=null && !GridName.Equals(gridToModify.GridName)))
                   {
-                     errorMessage = "Une autre activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                     errorMessage = "Une autre grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                   }
 
                 //we show error if there is one
@@ -200,6 +204,9 @@ namespace humanlab.ViewModels
                         {
                             gridRepository.SaveGridAsync(newGrid, ElementsPlaced);
                             DisplayMessagesService.showSuccessMessage("grille", gridName, ReloadGridFormView);
+                            NavigationView nv = GetNavigationView();
+                            nv.IsPaneToggleButtonVisible = true;
+                            nv.IsPaneVisible = true;
 
                         }
                         catch { Debug.WriteLine("Error saving element"); }
@@ -400,7 +407,7 @@ namespace humanlab.ViewModels
             {
                 //we check if the name is not already taken
                 List<string> gridsNames = await repository.GetGridsNamesAsync();
-                if (gridsNames.Contains(GridName) && !GridName.Equals(gridToModify.GridName))
+                if (gridsNames.Contains(GridName) || (gridToModify != null && !GridName.Equals(gridToModify.GridName)))
                     errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
             }
 
@@ -423,6 +430,8 @@ namespace humanlab.ViewModels
                 IsOrganizeElementsOpened = !IsOrganizeElementsOpened;
                 NavigationView nv = GetNavigationView();
                 nv.IsPaneOpen = false;
+                nv.IsPaneToggleButtonVisible = false;
+                nv.IsPaneVisible = false;
                 AddDelegatesToItems(ItemsControl);
                 SetInitialWidthToElements();
             }
@@ -645,8 +654,8 @@ namespace humanlab.ViewModels
 
         public void SetInitialWidthToElements()
         {
-            double initialWidth = ScrollView.ViewportHeight / 7;
-            double initialHeigth = ScrollView.ViewportHeight/7;
+            double initialWidth = ScrollView.ViewportHeight / 2;
+            double initialHeigth = ScrollView.ViewportHeight/2;
             {
                 // Set UIElements object width/heigth
                 foreach (ElementPlaced ep in ElementsPlaced)
