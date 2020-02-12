@@ -255,7 +255,7 @@ namespace humanlab.ViewModels
                 Models.Grid grid = navigationViewModel.parameterToPass as Models.Grid;
                 gridToModify = grid; 
                 GridName = grid.GridName;
-                navigationViewModel.Title = "Modification de l'élément " + GridName;
+                navigationViewModel.Title = "Modification de la grille " + GridName;
                 ButtonText = "Modifier";
                 //     IsEmptyGridsMessageShowing = false;
                 //     IsSaveButtonShowing = true;
