@@ -17,20 +17,12 @@ namespace humanlab.DAL
         {
             using (var db = new ApplicationDbContext())
             {
-                if (model.ElementId > 0)
-                {
-                    db.Attach(model);
-                    db.Update(model);
-                }
-                else
-                {
                     Category selectedCategory = GetCategoryByName(categoryName, db);
                     selectedCategory.Elements.Add(model);
-                }
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
-
+         
 
         public async void UpdateElementAsync(Element elementToUpdate, string categoryName)
         {
@@ -46,7 +38,8 @@ namespace humanlab.DAL
                 Category selectedCategory = GetCategoryByName(categoryName, db);
                 selectedCategory.Elements.Add(elementToUpdate);
                 //Update l'element ( faut passer l'id) 
-                db.SaveChanges();
+                await db.SaveChangesAsync();
+
             }
         }
 

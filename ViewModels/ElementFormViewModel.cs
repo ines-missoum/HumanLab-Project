@@ -541,6 +541,7 @@ namespace humanlab.ViewModels
 
         public Element GenerateModel(int id)
         {
+            Element model;
             string audioFileName = "";
             string speachText = "";
             
@@ -553,18 +554,28 @@ namespace humanlab.ViewModels
                 speachText = ElementSpeach;
                 SaveFileInFolder(SelectedPicture);
             }
-
-            Element model = new Element
-            {
-                ElementId= id,
-                ElementName = ElementName,
-                SpeachText = speachText,
-                Image = SelectedPicture.Name,
-                Audio = audioFileName,
-            };
-
+            if (id == -1) {
+                 model = new Element
+                {
+                    ElementName = ElementName,
+                    SpeachText = speachText,
+                    Image = SelectedPicture.Name,
+                    Audio = audioFileName,
+                }; 
+            }
+            else {
+                model = new Element
+                {
+                    ElementId = id,
+                    ElementName = ElementName,
+                    SpeachText = speachText,
+                    Image = SelectedPicture.Name,
+                    Audio = audioFileName,
+                };
+            }
             return model;
         }
+            
 
         private async void SaveOrUpdateElementAsync()
         {
@@ -576,8 +587,10 @@ namespace humanlab.ViewModels
                     Element model = GenerateModel(id: ElementToModify.ElementId);
                     try { repository.UpdateElementAsync(model, SelectedCategory);
                         DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
+                        Debug.WriteLine("dans le vm après update");
                     }
                     catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+                        Debug.WriteLine("dans le vm après update qui n'a pas marché");
                     }
 
                 }
@@ -585,12 +598,15 @@ namespace humanlab.ViewModels
                 {
                     Element model = GenerateModel(-1);
                     try { repository.SaveElementAsync(model, SelectedCategory);
+                        Debug.WriteLine("dans le vm après add qui a pas marché");
                         DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
                     }
-                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer"); }
+                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+                        Debug.WriteLine("dans le vm après add qui n'a pas marché");
+                    }
                 }
 
-
+                Debug.WriteLine("Je sors de la function");
             }
 
             else DisplayMessagesService.showPersonalizedMessage("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
