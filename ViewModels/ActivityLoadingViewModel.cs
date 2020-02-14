@@ -114,7 +114,7 @@ namespace humanlab.ViewModels
             {
                 Mode = "MODE : Automatique " + " " + ParametersService.GetMode() + " ";
                 timeToWaitBeforeChangingGrid = ParametersService.GetGridTime();
-
+                InitTimer();
             }
             else
                 Mode = "MODE : Manuel " + " " + ParametersService.GetMode();
@@ -128,7 +128,7 @@ namespace humanlab.ViewModels
             timerForAtomaticGrid = new DispatcherTimer();
             timerForAtomaticGrid.Tick += new EventHandler<object>(timerForAtomaticGrid_Tick);
             timerForAtomaticGrid.Interval = new TimeSpan(0, 0, 0, 1); //1sec
-            timerForAtomaticGrid.Start();
+            SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
         }
         private void timerForAtomaticGrid_Tick(object sender, object e)
         {
@@ -559,7 +559,7 @@ namespace humanlab.ViewModels
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             TobiiSetUpService.StartGazeDeviceWatcher();
 
-            InitTimer();
+            timerForAtomaticGrid.Start();
 
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;
@@ -592,6 +592,9 @@ namespace humanlab.ViewModels
             IsActivityLoading = false;
             TobiiSetUpService.RemoveDevice();
             OpenActivityAlreadyCalled = false;
+
+            timerForAtomaticGrid.Stop();
+            SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
 
             //if an element is playing we stop it
             if (this.activatedElement != (null, null))
