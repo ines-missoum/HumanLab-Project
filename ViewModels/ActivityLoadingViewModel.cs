@@ -21,6 +21,7 @@ using humanlab.Models;
 using System.Threading.Tasks;
 using humanlab.Views;
 using System.Collections.ObjectModel;
+using System.Threading;
 
 namespace humanlab.ViewModels
 {
@@ -66,6 +67,11 @@ namespace humanlab.ViewModels
         public string Mode { get; set; }
         public bool IsShowingArrows { get; set; }
 
+        //for automatic mode
+        private DispatcherTimer timerForAtomaticGrid;
+        private double secondsLeftBeforeNextGrid;
+        private double timeToWaitBeforeChangingGrid;
+
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -105,13 +111,36 @@ namespace humanlab.ViewModels
 
             //set values depending of settings
             if (ParametersService.IsAutomatic())
-                Mode = "MODE : Authomatique " + " " + ParametersService.GetMode();
+            {
+                Mode = "MODE : Automatique " + " " + ParametersService.GetMode() + " ";
+                timeToWaitBeforeChangingGrid = ParametersService.GetGridTime();
+
+            }
             else
                 Mode = "MODE : Manuel " + " " + ParametersService.GetMode();
 
             IsShowingArrows = !ParametersService.IsAutomatic();
         }
 
+        public void InitTimer()
+        {
+            //timerForAtomaticGrid_Tick will be called each 1 sec
+            timerForAtomaticGrid = new DispatcherTimer();
+            timerForAtomaticGrid.Tick += new EventHandler<object>(timerForAtomaticGrid_Tick);
+            timerForAtomaticGrid.Interval = new TimeSpan(0, 0, 0, 1); //1sec
+            timerForAtomaticGrid.Start();
+        }
+        private void timerForAtomaticGrid_Tick(object sender, object e)
+        {
+            SecondsLeftBeforeNextGrid = SecondsLeftBeforeNextGrid - 1;
+
+            if (SecondsLeftBeforeNextGrid < 0)
+            {
+                ClickOnNext();
+                SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
+            }
+
+        }
         public void DeleteActivity(object activityObject)
         {
             try
@@ -164,6 +193,11 @@ namespace humanlab.ViewModels
 
         /***GETTERS & SETTERS***/
 
+        public double SecondsLeftBeforeNextGrid
+        {
+            get => secondsLeftBeforeNextGrid;
+            set => SetProperty(ref secondsLeftBeforeNextGrid, value, "SecondsLeftBeforeNextGrid");
+        }
         public ScrollViewer ScrollViewer
         {
             get => scrollViewer;
@@ -524,6 +558,8 @@ namespace humanlab.ViewModels
             MaxFocusTime = activity.FixingTime;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             TobiiSetUpService.StartGazeDeviceWatcher();
+
+            InitTimer();
 
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;

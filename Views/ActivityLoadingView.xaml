@@ -87,7 +87,14 @@
               Background="White">
             <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top">
-                <TextBlock Text="{x:Bind tobii.Mode}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <TextBlock Text="{x:Bind tobii.Mode}" />
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Bind tobii.SecondsLeftBeforeNextGrid,Mode=TwoWay}" VerticalAlignment="Center"/>
+                        <TextBlock Text=" sec" VerticalAlignment="Center"/>
+                </StackPanel>
+                </StackPanel>
+
                 <Button Width="72" Height="32" Margin="8" 
                     Background="Black" Foreground="White" FontWeight="Bold"
                     Content="Fermer"
