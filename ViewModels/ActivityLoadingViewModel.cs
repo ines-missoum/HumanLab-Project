@@ -62,6 +62,7 @@ namespace humanlab.ViewModels
 
         private (BitmapImage source, ElementOfActivity element) activatedElement;
         public DelegateCommand ChangeEditMode { get; set; }
+        private Random random;
 
         /*** CONSTRUCTOR ***/
 
@@ -98,6 +99,7 @@ namespace humanlab.ViewModels
             playingSpeech = null;
             activatedElement = (null, null);
 
+            random = new Random();
 
         }
 
@@ -132,7 +134,7 @@ namespace humanlab.ViewModels
             List<ActivityUpdated> activitiesUpdated = new List<ActivityUpdated>();
             activities.ForEach(activity =>
             {
-                var a = new ActivityUpdated(activity, DeleteActivityDelegate, UpdateActivityDelegate) ;
+                var a = new ActivityUpdated(activity, DeleteActivityDelegate, UpdateActivityDelegate);
                 activitiesUpdated.Add(a);
             });
             AllActivities = activitiesUpdated.OrderByDescending(e => e.Activity.ActivityName.Length).ToList();
@@ -406,7 +408,7 @@ namespace humanlab.ViewModels
         /// <returns>Returns true if the mode is loop or if this is note the last grid, else false</returns>
         private bool CanClickOnNext()
         {
-            return ParametersService.GetMode().ToLower().Equals("boucle")
+            return ParametersService.GetMode().ToLower().Equals("boucle") || ParametersService.GetMode().ToLower().Equals("aléatoire")
                 || ParametersService.GetMode().ToLower().Equals("ordonné") && currentGrid.GridOrder < listGridIds.Count;
         }
         /// <summary>
@@ -442,22 +444,31 @@ namespace humanlab.ViewModels
             string mode = ParametersService.GetMode().ToLower();
 
             int gridOrder;
-            //default case == ordered
-            if (nextGridWanted)
-                gridOrder = currentGrid.GridOrder + 1;
+            if (mode.Equals("aléatoire"))
+            {
+                gridOrder = random.Next(1, listGridIds.Count + 1);
+            }
             else
-                gridOrder = currentGrid.GridOrder - 1;
+            {
+                if (nextGridWanted)
+                    gridOrder = currentGrid.GridOrder + 1;
+                else
+                    gridOrder = currentGrid.GridOrder - 1;
+            }
 
+
+            //we check if the limits are reached
             switch (mode)
             {
                 case "boucle":
-                    //we check if the limits are reached
                     if (gridOrder > listGridIds.Count)
                         gridOrder = 1;
                     else if (gridOrder < 1)
                         gridOrder = listGridIds.Count;
                     break;
                 case "aléatoire":
+                    while (gridOrder == currentGrid.GridOrder)
+                        gridOrder = random.Next(1, listGridIds.Count + 1);
                     break;
             }
             return gridOrder;
