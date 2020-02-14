@@ -63,7 +63,8 @@ namespace humanlab.ViewModels
         private (BitmapImage source, ElementOfActivity element) activatedElement;
         public DelegateCommand ChangeEditMode { get; set; }
         private Random random;
-        private string Mode { get; set; }
+        public string Mode { get; set; }
+        public bool IsShowingArrows { get; set; }
 
         /*** CONSTRUCTOR ***/
 
@@ -102,10 +103,13 @@ namespace humanlab.ViewModels
 
             random = new Random();
 
+            //set values depending of settings
             if (ParametersService.IsAutomatic())
                 Mode = "MODE : Authomatique " + " " + ParametersService.GetMode();
             else
                 Mode = "MODE : Manuel " + " " + ParametersService.GetMode();
+
+            IsShowingArrows = !ParametersService.IsAutomatic();
         }
 
         public void DeleteActivity(object activityObject)
