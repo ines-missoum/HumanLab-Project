@@ -21,6 +21,7 @@ using humanlab.Models;
 using System.Threading.Tasks;
 using humanlab.Views;
 using System.Collections.ObjectModel;
+using System.Threading;
 
 namespace humanlab.ViewModels
 {
@@ -62,6 +63,15 @@ namespace humanlab.ViewModels
 
         private (BitmapImage source, ElementOfActivity element) activatedElement;
         public DelegateCommand ChangeEditMode { get; set; }
+        private Random random;
+        public string Mode { get; set; }
+        public bool IsShowingNextArrow { get; set; }
+        public bool IsShowingPreviousArrow { get; set; }
+        public bool IsShowingTimeLeft { get; set; }
+        //for automatic mode
+        private DispatcherTimer timerForAtomaticGrid;
+        private double secondsLeftBeforeNextGrid;
+        private double timeToWaitBeforeChangingGrid;
 
         /*** CONSTRUCTOR ***/
 
@@ -98,9 +108,48 @@ namespace humanlab.ViewModels
             playingSpeech = null;
             activatedElement = (null, null);
 
+            random = new Random();
+
+            InitValuesDependingOnsettings();
 
         }
+        private void InitValuesDependingOnsettings()
+        {
 
+            //set values depending of settings
+            if (ParametersService.IsAutomatic())
+            {
+                Mode = "MODE : Automatique " + " " + ParametersService.GetMode() + " ";
+                timeToWaitBeforeChangingGrid = ParametersService.GetGridTime();
+                InitTimer();
+            }
+            else
+                Mode = "MODE : Manuel " + " " + ParametersService.GetMode();
+
+            IsShowingNextArrow = !ParametersService.IsAutomatic();
+            IsShowingPreviousArrow = !ParametersService.IsAutomatic() && !ParametersService.GetMode().ToLower().Equals("aléatoire");
+            IsShowingTimeLeft = ParametersService.IsAutomatic() ;
+            Debug.WriteLine(IsShowingNextArrow);
+        }
+        private void InitTimer()
+        {
+            //timerForAtomaticGrid_Tick will be called each 1 sec
+            timerForAtomaticGrid = new DispatcherTimer();
+            timerForAtomaticGrid.Tick += new EventHandler<object>(timerForAtomaticGrid_Tick);
+            timerForAtomaticGrid.Interval = new TimeSpan(0, 0, 0, 1); //1sec
+            SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
+        }
+        private void timerForAtomaticGrid_Tick(object sender, object e)
+        {
+            SecondsLeftBeforeNextGrid = SecondsLeftBeforeNextGrid - 1;
+
+            if (SecondsLeftBeforeNextGrid < 0)
+            {
+                ClickOnNext();
+                SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
+            }
+
+        }
         public void DeleteActivity(object activityObject)
         {
             try
@@ -132,7 +181,7 @@ namespace humanlab.ViewModels
             List<ActivityUpdated> activitiesUpdated = new List<ActivityUpdated>();
             activities.ForEach(activity =>
             {
-                var a = new ActivityUpdated(activity, DeleteActivityDelegate, UpdateActivityDelegate) ;
+                var a = new ActivityUpdated(activity, DeleteActivityDelegate, UpdateActivityDelegate);
                 activitiesUpdated.Add(a);
             });
             AllActivities = activitiesUpdated.OrderByDescending(e => e.Activity.ActivityName.Length).ToList();
@@ -153,6 +202,11 @@ namespace humanlab.ViewModels
 
         /***GETTERS & SETTERS***/
 
+        public double SecondsLeftBeforeNextGrid
+        {
+            get => secondsLeftBeforeNextGrid;
+            set => SetProperty(ref secondsLeftBeforeNextGrid, value, "SecondsLeftBeforeNextGrid");
+        }
         public ScrollViewer ScrollViewer
         {
             get => scrollViewer;
@@ -406,7 +460,7 @@ namespace humanlab.ViewModels
         /// <returns>Returns true if the mode is loop or if this is note the last grid, else false</returns>
         private bool CanClickOnNext()
         {
-            return ParametersService.GetMode().ToLower().Equals("boucle")
+            return ParametersService.GetMode().ToLower().Equals("boucle") || ParametersService.GetMode().ToLower().Equals("aléatoire")
                 || ParametersService.GetMode().ToLower().Equals("ordonné") && currentGrid.GridOrder < listGridIds.Count;
         }
         /// <summary>
@@ -442,22 +496,31 @@ namespace humanlab.ViewModels
             string mode = ParametersService.GetMode().ToLower();
 
             int gridOrder;
-            //default case == ordered
-            if (nextGridWanted)
-                gridOrder = currentGrid.GridOrder + 1;
+            if (mode.Equals("aléatoire"))
+            {
+                gridOrder = random.Next(1, listGridIds.Count + 1);
+            }
             else
-                gridOrder = currentGrid.GridOrder - 1;
+            {
+                if (nextGridWanted)
+                    gridOrder = currentGrid.GridOrder + 1;
+                else
+                    gridOrder = currentGrid.GridOrder - 1;
+            }
 
+
+            //we check if the limits are reached
             switch (mode)
             {
                 case "boucle":
-                    //we check if the limits are reached
                     if (gridOrder > listGridIds.Count)
                         gridOrder = 1;
                     else if (gridOrder < 1)
                         gridOrder = listGridIds.Count;
                     break;
                 case "aléatoire":
+                    while (gridOrder == currentGrid.GridOrder)
+                        gridOrder = random.Next(1, listGridIds.Count + 1);
                     break;
             }
             return gridOrder;
@@ -505,6 +568,9 @@ namespace humanlab.ViewModels
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             TobiiSetUpService.StartGazeDeviceWatcher();
 
+            if (ParametersService.IsAutomatic())
+                timerForAtomaticGrid.Start();
+
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;
             navView.IsPaneOpen = false;
@@ -536,6 +602,11 @@ namespace humanlab.ViewModels
             IsActivityLoading = false;
             TobiiSetUpService.RemoveDevice();
             OpenActivityAlreadyCalled = false;
+
+            if (ParametersService.IsAutomatic())
+                timerForAtomaticGrid.Stop();
+
+            SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
 
             //if an element is playing we stop it
             if (this.activatedElement != (null, null))
