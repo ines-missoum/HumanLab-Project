@@ -2,6 +2,7 @@
 using Prism.Commands;
 using System;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 
@@ -86,6 +87,12 @@ namespace humanlab.ViewModels
         }
 
         /*** METHODS ***/
+
+        public void TimeSlider_Loaded(object sender, RoutedEventArgs e)
+        {
+            Slider slider = sender as Slider;
+            slider.Value = ParametersService.GetGridTime();
+        }
 
         /// <summary>
         /// Retrieve and save the value of the slider

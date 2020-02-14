@@ -37,13 +37,14 @@
                 <!-- 3 sec à 5 min -->
                 <Slider x:Name="timeSlider" 
                         ValueChanged="{x:Bind settings.Slider_ValueChanged}"
-                        Minimum="3"
+                        Loaded="{x:Bind settings.TimeSlider_Loaded}"
                         Maximum="300" 
+                        Minimum="3"
                         Header="Temps d'une grille (sec) : " 
                         Width="300" 
                         TickPlacement="TopLeft"
                         TickFrequency="60"
-                        Value="{Binding GridTime}"
+                        
                         HorizontalAlignment="Left"/>
                 <TextBlock  Text="{x:Bind settings.GridTime, Mode=TwoWay}" FontWeight="Bold" VerticalAlignment="Center" FontSize="20" Margin="12,0,0,0"/>
 
