@@ -65,8 +65,9 @@ namespace humanlab.ViewModels
         public DelegateCommand ChangeEditMode { get; set; }
         private Random random;
         public string Mode { get; set; }
-        public bool IsShowingArrows { get; set; }
-
+        public bool IsShowingNextArrow { get; set; }
+        public bool IsShowingPreviousArrow { get; set; }
+        public bool IsShowingTimeLeft { get; set; }
         //for automatic mode
         private DispatcherTimer timerForAtomaticGrid;
         private double secondsLeftBeforeNextGrid;
@@ -109,6 +110,12 @@ namespace humanlab.ViewModels
 
             random = new Random();
 
+            InitValuesDependingOnsettings();
+
+        }
+        private void InitValuesDependingOnsettings()
+        {
+
             //set values depending of settings
             if (ParametersService.IsAutomatic())
             {
@@ -119,10 +126,12 @@ namespace humanlab.ViewModels
             else
                 Mode = "MODE : Manuel " + " " + ParametersService.GetMode();
 
-            IsShowingArrows = !ParametersService.IsAutomatic();
+            IsShowingNextArrow = !ParametersService.IsAutomatic();
+            IsShowingPreviousArrow = !ParametersService.IsAutomatic() && !ParametersService.GetMode().ToLower().Equals("aléatoire");
+            IsShowingTimeLeft = ParametersService.IsAutomatic() ;
+            Debug.WriteLine(IsShowingNextArrow);
         }
-
-        public void InitTimer()
+        private void InitTimer()
         {
             //timerForAtomaticGrid_Tick will be called each 1 sec
             timerForAtomaticGrid = new DispatcherTimer();
@@ -559,7 +568,8 @@ namespace humanlab.ViewModels
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             TobiiSetUpService.StartGazeDeviceWatcher();
 
-            timerForAtomaticGrid.Start();
+            if (ParametersService.IsAutomatic())
+                timerForAtomaticGrid.Start();
 
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;
@@ -593,7 +603,9 @@ namespace humanlab.ViewModels
             TobiiSetUpService.RemoveDevice();
             OpenActivityAlreadyCalled = false;
 
-            timerForAtomaticGrid.Stop();
+            if (ParametersService.IsAutomatic())
+                timerForAtomaticGrid.Stop();
+
             SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
 
             //if an element is playing we stop it

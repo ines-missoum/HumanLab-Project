@@ -90,8 +90,8 @@
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                 <TextBlock Text="{x:Bind tobii.Mode}" />
                     <StackPanel Orientation="Horizontal" >
-                        <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Bind tobii.SecondsLeftBeforeNextGrid,Mode=TwoWay}" VerticalAlignment="Center"/>
-                        <TextBlock Text=" sec" VerticalAlignment="Center"/>
+                        <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Bind tobii.SecondsLeftBeforeNextGrid,Mode=TwoWay}" VerticalAlignment="Center" Visibility="{x:Bind tobii.IsShowingTimeLeft}"/>
+                        <TextBlock Text=" sec" VerticalAlignment="Center" Visibility="{x:Bind tobii.IsShowingTimeLeft}"/>
                 </StackPanel>
                 </StackPanel>
 
@@ -101,12 +101,12 @@
                     Command="{x:Bind tobii.CloseActivityDelegate}"/>
                 <Button Width="48" Height="32" Margin="8" 
                     Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
-                    Command="{x:Bind tobii.PreviousGrid}" Visibility="{x:Bind tobii.IsShowingArrows}">
+                    Command="{x:Bind tobii.PreviousGrid}" Visibility="{x:Bind tobii.IsShowingPreviousArrow}">
                     <SymbolIcon Symbol="Back" />
                 </Button>
                 <Button Width="48" Height="32" Margin="8" 
                     Background="LightGreen" Foreground="White" FontWeight="ExtraBold"
-                    Command="{x:Bind tobii.NextGrid}" Visibility="{x:Bind tobii.IsShowingArrows}">
+                    Command="{x:Bind tobii.NextGrid}" Visibility="{x:Bind tobii.IsShowingNextArrow}">
                     <SymbolIcon Symbol="Forward" />
                 </Button>
             </StackPanel>
