@@ -87,6 +87,7 @@
               Background="White">
             <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" VerticalAlignment="Top">
+                <TextBlock Text="MODE : Manuel ordonné" VerticalAlignment="Center"/>
                 <Button Width="72" Height="32" Margin="8" 
                     Background="Black" Foreground="White" FontWeight="Bold"
                     Content="Fermer"
