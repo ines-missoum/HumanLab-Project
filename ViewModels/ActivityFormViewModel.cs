@@ -50,7 +50,8 @@ namespace humanlab.ViewModels
         private string buttonText;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyGridsMessageShowing;
-
+        private bool isNoSelectedGrids;
+        private bool isNoGrids;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -102,6 +103,9 @@ namespace humanlab.ViewModels
             SearchedGrids = new List<GridChecked>(AllGrids.OrderByDescending(e => e.Grid.GridName.Length));
             SelectedGrids = new List<GridChecked>();
             SelectedGridsSource = new ObservableCollection<GridChecked>();
+
+            IsNoGrids = AllGrids.Count() == 0;
+            IsNoSelectedGrids = SelectedGrids.Count() == 0;
 
             //the views are not displayed at the the beginning
             isChooseGridsOpened = false;
@@ -233,6 +237,19 @@ namespace humanlab.ViewModels
             set => SetProperty(ref isEmptyGridsMessageShowing, value, "IsEmptyGridsMessageShowing");
 
         }
+
+        public bool IsNoGrids
+        {
+            get => isNoGrids;
+            set => SetProperty(ref isNoGrids, value, "IsNoGrids");
+        }
+
+        public bool IsNoSelectedGrids
+        {
+            get => isNoSelectedGrids;
+            set => SetProperty(ref isNoSelectedGrids, value, "IsNoSelectedGrids");
+
+        }
         public bool IsEmptySearchMessageShowing
         {
             get => isEmptySearchMessageShowing;
@@ -291,6 +308,7 @@ namespace humanlab.ViewModels
                 {
                     selectedGrids = value;
                     SelectedGridsSource = new ObservableCollection<GridChecked>(value);
+                    IsNoSelectedGrids = selectedGrids.Count() == 0;
                     OnPropertyChanged("SelectedGridsSource");
                     OnPropertyChanged("SelectedGrids");
                     OnPropertyChanged("ButtonText");
