@@ -151,6 +151,12 @@
 
                 <TextBlock Text="Eléments disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
 
+                <TextBlock Text="Vous n'avez encore créé aucun élément. Rendez-vous au volet : Nouvel Element, pour y remédier." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind grid.IsNoElements, Mode=OneWay}"/>
                 <TextBlock Text="Aucun élément ne correspond à la recherche." 
                        Style="{StaticResource BodyTextBlockStyle}"
                        HorizontalAlignment="Left" 
@@ -167,6 +173,12 @@
                 </GridView>
 
                 <TextBlock Text="Eléments sélectionnés" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20,0,0"/>
+                <TextBlock Text="Aucun élément sélectionné." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind grid.IsNoSelectedElements, Mode=OneWay}"/>
                 <GridView SelectionMode="Multiple" 
                                     Loading="{x:Bind grid.GridView2_Loading}"
                                     ItemsSource="{x:Bind grid.SelectedElements, Mode=TwoWay}" 

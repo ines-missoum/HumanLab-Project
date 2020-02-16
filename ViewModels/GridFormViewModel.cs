@@ -51,6 +51,8 @@ namespace humanlab.ViewModels
         private bool isEmptySearchMessageShowing;
         private bool isEmptyElementMessageShowing;
         private bool fromSelectionChanged2;
+        private bool isNoSelectedElements;
+        private bool isNoElements;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -95,9 +97,9 @@ namespace humanlab.ViewModels
             InitialiseAllElementsAndCategories();
             SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e => e.Element.ElementName.Length));
             SelectedElements = new List<ElementChecked>();
-            //A supprimer just test
 
-
+            IsNoElements = AllElements.Count() == 0;
+            
             //the views are not displayed at the the beginning
             isChooseElementsOpened = false;
             isOrganizeElementsOpened = false;
@@ -311,6 +313,18 @@ namespace humanlab.ViewModels
 
         }
 
+        public bool IsNoElements
+        {
+            get => isNoElements;
+            set => SetProperty(ref isNoElements, value, "IsNoElements");
+        }
+
+        public bool IsNoSelectedElements
+        {
+            get => isNoSelectedElements;
+            set => SetProperty(ref isNoSelectedElements, value, "IsNoSelectedElements");
+
+        }
         public bool IsPositionsSet
         {
             get => isPositionsSet;
@@ -390,7 +404,11 @@ namespace humanlab.ViewModels
         public List<ElementChecked> SelectedElements
         {
             get => selectedElements;
-            set => SetProperty(ref selectedElements, value, "SelectedElements");
+            set
+            {
+                SetProperty(ref selectedElements, value, "SelectedElements");
+                IsNoSelectedElements = selectedElements.Count() == 0;
+            }
 
         }
 

@@ -105,7 +105,6 @@ namespace humanlab.ViewModels
             SelectedGridsSource = new ObservableCollection<GridChecked>();
 
             IsNoGrids = AllGrids.Count() == 0;
-            IsNoSelectedGrids = SelectedGrids.Count() == 0;
 
             //the views are not displayed at the the beginning
             isChooseGridsOpened = false;
