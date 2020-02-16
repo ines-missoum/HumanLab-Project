@@ -322,7 +322,11 @@ namespace humanlab.ViewModels
         public ObservableCollection<GridChecked> SelectedGridsSource
         {
             get => selectedGridsSource;
-            set => SetProperty(ref selectedGridsSource, value, "SelectedGridsSource");
+            set
+            {
+                SetProperty(ref selectedGridsSource, value, "SelectedGridsSource");
+                IsNoSelectedGrids = selectedGrids.Count() == 0;
+            }
 
         }
         public bool FromSelectionChanged2
@@ -648,7 +652,7 @@ namespace humanlab.ViewModels
             //we change the title
             Frame child = navView.Content as Frame;
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
-            navigationViewModel.Title = "Aperçu de la grille "+ grid.GridName;
+            navigationViewModel.Title = "Aperçu de la grille " + grid.GridName;
         }
 
         /// <summary>
