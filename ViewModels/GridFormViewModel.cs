@@ -865,8 +865,12 @@ namespace humanlab.ViewModels
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
 
+            double maxRightBorder = ScrollView.ViewportWidth;
+            double maxBottomBorder = ScrollView.ViewportHeight;
+
             var child = VisualTreeHelper.GetChild(scrollView, 0);
             var nb1 = VisualTreeHelper.GetChild(child, 0);
+
             var nb2 = VisualTreeHelper.GetChild(nb1, 0);
             var nb = VisualTreeHelper.GetChild(nb2, 0);
             ItemsControl itemsControl = nb as ItemsControl;
@@ -899,16 +903,28 @@ namespace humanlab.ViewModels
                                                       .Where(el => el.Element.ElementName.Equals(tagImage))
                                                       .First();
 
-                if (LeftBorder < 0) { current.DeltaOnX += (-LeftBorder); }
+                if (LeftBorder < 0)
+                {
+                    current.DeltaOnX -= LeftBorder;
+                }
 
 
-                if (RightBorder > ScrollView.ViewportWidth) { current.DeltaOnX -= RightBorder; }
+                if (RightBorder > maxRightBorder)
+                {
+                    current.DeltaOnX -= RightBorder - maxRightBorder;
+                }
 
 
-                if (TopBorder < 0) { current.DeltaOnY += (-TopBorder); }
+                if (TopBorder < 0)
+                {
+                    current.DeltaOnY -= TopBorder;
+                }
 
 
-                if (BottomBorder > ScrollView.ViewportHeight) { current.DeltaOnY -= BottomBorder; }
+                if (BottomBorder > maxBottomBorder)
+                {
+                    current.DeltaOnY -= BottomBorder - maxBottomBorder;
+                }
 
             }
         }
