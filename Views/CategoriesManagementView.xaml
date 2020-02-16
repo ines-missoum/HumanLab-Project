@@ -36,17 +36,19 @@
                                  VerticalAlignment="Center" Margin="8"/>
         <StackPanel Grid.Row="1" Orientation="Vertical">
             <StackPanel  Orientation="Horizontal">
-                <TextBox Width="400" Margin="8" Text="{x:Bind categoriesVM.NewCategoryName}" 
+                <TextBox Width="400" Margin="8" Text="{x:Bind categoriesVM.NewCategoryName, Mode=TwoWay}" 
                      TextChanging="{x:Bind categoriesVM.TextBox_TextChanging}"/>
                 <Button Content="OK" Background="LightGreen" Foreground="White" FontWeight="Bold"
                     Command="{x:Bind categoriesVM.SaveNewCategoryDelegate}"/>
             </StackPanel>
             <TextBlock  Text="{x:Bind categoriesVM.ErrorNameMessageCreation, Mode=TwoWay}" Foreground="Red" Margin="8"/>
         </StackPanel>
-
-        <TextBlock Grid.Row="2" Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
+        <StackPanel Grid.Row="2" Orientation="Vertical">
+        <TextBlock  Text="Catégories existantes"  Style="{StaticResource SubtitleTextBlockStyle}" 
                                  VerticalAlignment="Center" Margin="8"/>
-
+            <TextBlock Text="Vous n'avez encore aucune catégorie." Visibility="{x:Bind categoriesVM.IsNoExistingCategory, Mode=OneWay}"
+                                 VerticalAlignment="Center" Margin="8"/>
+        </StackPanel>
         <ListView Grid.Row="3" ItemsSource="{Binding Source={StaticResource groupCategories}}" 
                   ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   IsSynchronizedWithCurrentItem="False"

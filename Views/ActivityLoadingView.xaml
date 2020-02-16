@@ -29,7 +29,7 @@
             <Button Width="170" Height="35" Margin="8" 
                     FontWeight="Bold"
                     Background="SkyBlue"
-                    Command="{x:Bind tobii.ChangeEditMode}">
+                    Command="{x:Bind tobii.ChangeEditMode}" Visibility="{x:Bind tobii.IsActivities, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Bind tobii.EditButton, Mode=TwoWay}"  />
                     <SymbolIcon Symbol="Edit" Margin="8,0,0,0" />
@@ -42,6 +42,12 @@
         </StackPanel>
         <!--ALL ACTIVITIES-->
         <Grid >
+            <TextBlock HorizontalAlignment="Center" FontSize="21" TextAlignment="Center" Visibility="{x:Bind tobii.IsNoActivities, Mode=OneWay}">
+            <LineBreak/>
+            <Run Text="Vous n'avez aucune activité." />  
+            <LineBreak/>
+            <Run Text="Rendez-vous au volet : Nouvelle Activité, pour y remédier." />
+            </TextBlock>
             <Grid Margin="10,50,0,10" >
                 
                 <GridView ItemsSource="{x:Bind tobii.AllActivitiesObserver}"

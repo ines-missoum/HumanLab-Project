@@ -73,6 +73,9 @@ namespace humanlab.ViewModels
         private double secondsLeftBeforeNextGrid;
         private double timeToWaitBeforeChangingGrid;
 
+        private bool isNoActivities;
+        private bool isActivities;
+
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -111,6 +114,9 @@ namespace humanlab.ViewModels
             random = new Random();
 
             InitValuesDependingOnsettings();
+
+            IsNoActivities = AllActivities.Count() == 0;
+            IsActivities = !IsNoActivities;
 
         }
         private void InitValuesDependingOnsettings()
@@ -168,6 +174,14 @@ namespace humanlab.ViewModels
                 activityRepository.DeleteActivity(activity);
                 ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
                 AllActivitiesObserver.Remove(actUpdated);
+
+                if(AllActivitiesObserver.Count() == 0)
+                {
+                    IsEditModeActivated = false;
+                    IsNoActivities = true;
+                    IsActivities = false;
+                }            
+                
             }
             catch { Debug.WriteLine("Error while deleting activity"); }
         }
@@ -212,6 +226,16 @@ namespace humanlab.ViewModels
 
         /***GETTERS & SETTERS***/
 
+        public bool IsNoActivities
+        {
+            get => isNoActivities;
+            set => SetProperty(ref isNoActivities, value, "IsNoActivities");
+        }
+        public bool IsActivities
+        {
+            get => isActivities;
+            set => SetProperty(ref isActivities, value, "IsActivities");
+        }
         public double SecondsLeftBeforeNextGrid
         {
             get => secondsLeftBeforeNextGrid;
@@ -237,9 +261,11 @@ namespace humanlab.ViewModels
         public ObservableCollection<ActivityUpdated> AllActivitiesObserver
         {
             get => allActivitiesObserver;
-            set => SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
-
-        }
+            set
+            {
+                SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
+            }
+            }
         public List<ElementOfActivity> Elements
         {
             get => elements;

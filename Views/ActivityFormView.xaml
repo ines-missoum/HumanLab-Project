@@ -167,6 +167,12 @@
 
                 <TextBlock Text="Grilles disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
 
+                <TextBlock Text="Vous n'avez encore créé aucune grille. Rendez-vous au volet : Nouvelle Grille, pour y remédier." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind activity.IsNoGrids, Mode=OneWay}"/>
                 <TextBlock Text="Aucune grille ne correspond à la recherche." 
                        Style="{StaticResource BodyTextBlockStyle}"
                        HorizontalAlignment="Left" 
@@ -183,6 +189,12 @@
                 </GridView>
 
                 <TextBlock Text="Grilles sélectionnées" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20,0,0"/>
+                <TextBlock Text="Aucune grille sélectionnée." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind activity.IsNoSelectedGrids, Mode=OneWay}"/>
                 <GridView SelectionMode="Multiple" 
                                     Loading="{x:Bind activity.GridView2_Loading}"
                                     ItemsSource="{x:Bind activity.SelectedGrids, Mode=TwoWay}" 
