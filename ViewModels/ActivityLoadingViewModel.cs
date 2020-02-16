@@ -128,8 +128,7 @@ namespace humanlab.ViewModels
 
             IsShowingNextArrow = !ParametersService.IsAutomatic();
             IsShowingPreviousArrow = !ParametersService.IsAutomatic() && !ParametersService.GetMode().ToLower().Equals("aléatoire");
-            IsShowingTimeLeft = ParametersService.IsAutomatic() ;
-            Debug.WriteLine(IsShowingNextArrow);
+            IsShowingTimeLeft = ParametersService.IsAutomatic();
         }
         private void InitTimer()
         {
@@ -141,12 +140,23 @@ namespace humanlab.ViewModels
         }
         private void timerForAtomaticGrid_Tick(object sender, object e)
         {
-            SecondsLeftBeforeNextGrid = SecondsLeftBeforeNextGrid - 1;
+                           SecondsLeftBeforeNextGrid = SecondsLeftBeforeNextGrid - 1;
 
             if (SecondsLeftBeforeNextGrid < 0)
             {
-                ClickOnNext();
-                SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
+                //if it's an ordered mode and that the last grid is ended, a message is printed to indicates the end of the activity
+                if (ParametersService.GetMode().ToLower().Equals("ordonné") && currentGrid.GridOrder >= listGridIds.Count)
+                {
+                    timerForAtomaticGrid.Stop();
+                    SecondsLeftBeforeNextGrid = 0;
+                    DisplayMessagesService.showPersonalizedMessage("Activité terminée", "Toutes les grilles de l'activité ont été jouées.", CloseActivity);
+                }
+                else
+                {
+                    ClickOnNext();
+                    SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
+                }
+
             }
 
         }
@@ -569,7 +579,11 @@ namespace humanlab.ViewModels
             TobiiSetUpService.StartGazeDeviceWatcher();
 
             if (ParametersService.IsAutomatic())
+            {
+                SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
                 timerForAtomaticGrid.Start();
+            }
+                
 
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;
@@ -578,6 +592,11 @@ namespace humanlab.ViewModels
 
             NextGrid.RaiseCanExecuteChanged();
             PreviousGrid.RaiseCanExecuteChanged();
+
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.Title = "Activité en cours : "+activity.ActivityName;
 
         }
 
@@ -606,11 +625,15 @@ namespace humanlab.ViewModels
             if (ParametersService.IsAutomatic())
                 timerForAtomaticGrid.Stop();
 
-            SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
 
             //if an element is playing we stop it
             if (this.activatedElement != (null, null))
                 Stop(this.activatedElement.source, this.activatedElement.element);
+
+            NavigationView navigation = GetNavigationView();
+            Frame child = navigation.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.Title = "Jouer une activité";
         }
 
         public void SetEditMode()

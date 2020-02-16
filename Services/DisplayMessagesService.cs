@@ -37,5 +37,17 @@ namespace humanlab.Services
             MessageDialog messageDialog = new MessageDialog(message);
             await messageDialog.ShowAsync();
         }
+
+        public async static void showPersonalizedMessage(string title, string message, Action command)
+        {
+            ContentDialog cd = new ContentDialog
+            {
+                Title = title,
+                Content = message,
+                CloseButtonCommand = new DelegateCommand(command),
+                CloseButtonText = "Fermer",
+            };
+            await cd.ShowAsync();
+        }
     }
 }
