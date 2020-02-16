@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using humanlab.Views;
 using System.Collections.ObjectModel;
 using System.Threading;
+using Windows.UI.Popups;
 
 namespace humanlab.ViewModels
 {
@@ -160,14 +161,33 @@ namespace humanlab.ViewModels
             }
 
         }
-        public void DeleteActivity(object activityObject)
+
+        public async void DeleteActivity(object activityObject)
         {
             try
             {
                 Activity activity = activityObject as Activity;
-                activityRepository.DeleteActivity(activity);
-                ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
-                AllActivitiesObserver.Remove(actUpdated);
+                /* ContentDialog cd = new ContentDialog
+                 {
+                     Title = "Suppression activité",
+                     Content = "Êtes-vous sure de vouloir supprimer " + activity.ActivityName + " ?",
+                     PrimaryButtonText = "Oui",
+                     CloseButtonText = "Fermer",
+                 };
+                 cd.PrimaryButtonCommand = activityRepository.DeleteActivity(activity);
+                 await cd.ShowAsync();*/
+                var dialog = new MessageDialog("Êtes-vous sure de vouloir supprimer " + activity.ActivityName + " ? ");
+                dialog.Content = "Êtes-vous sure de vouloir supprimer " + activity.ActivityName + " ? ";
+                dialog.Title = "Suppression activité";
+                dialog.Commands.Add(new UICommand { Label = "Oui", Id = 0 });
+                dialog.Commands.Add(new UICommand { Label = "Annuler", Id = 1 });
+                var res = await dialog.ShowAsync();
+                if ((int)res.Id == 0)
+                {
+                    activityRepository.DeleteActivity(activity);
+                    ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
+                    AllActivitiesObserver.Remove(actUpdated);
+                }
             }
             catch { Debug.WriteLine("Error while deleting activity"); }
         }
