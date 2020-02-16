@@ -267,16 +267,17 @@ namespace humanlab.ViewModels
                 IsEmptyElementMessageShowing = false;
                 List<int> ElementsId = dbElements.Select(dbobj => dbobj.Element.ElementId).ToList();
                 InitialiseAllElementsAndCategories();
+                var selectedEl = new List<ElementChecked>();
                 SearchedElements.ForEach(el =>
                 {
                     if (ElementsId.Contains(el.Element.ElementId))
                     {
 
                         el.IsSelected = true;
-                        SelectedElements.Add(el);
+                        selectedEl.Add(el);
                     }
                 });
-
+                SelectedElements = selectedEl;
             }
         }
 
