@@ -10,6 +10,9 @@ using System.Diagnostics;
 
 namespace humanlab.Services
 {
+    /// <summary>
+    /// Class dedicated to all tobii eye tracker set up
+    /// </summary>
     public class TobiiSetUpService
     {
         public TobiiSetUpService(
@@ -25,12 +28,14 @@ namespace humanlab.Services
             CurrentFocusImage = null;
         }
 
-        //public delegate void TickDelegate(object sender, object args);
         private TypedEventHandler<GazeInputSourcePreview, GazeMovedPreviewEventArgs> GazeMovedHandler { get; set; }
         private TypedEventHandler<GazeInputSourcePreview, GazeExitedPreviewEventArgs> GazeExitedHandler { get; set; }
         private TypedEventHandler<GazeInputSourcePreview, GazeEnteredPreviewEventArgs> GazeEnteredHandler { get; set; }
         private EventHandler<object> TickHandler { get; set; }
 
+        /// <summary>
+        /// Image currently focused by the user
+        /// </summary>
         public UIElement CurrentFocusImage { get; set; }
         /// <summary>
         /// Reference to the user's eyes and head as detected
@@ -80,6 +85,7 @@ namespace humanlab.Services
 
         public void RemoveDevice()
         {
+            gazeDeviceWatcher = null;
             deviceCounter--;
         }
 
@@ -87,6 +93,7 @@ namespace humanlab.Services
         {
             return deviceCounter > 0;
         }
+
         /// <summary>
         /// Eye-tracking device connected (added, or available when watcher is initialized).
         /// </summary>
@@ -206,33 +213,32 @@ namespace humanlab.Services
         /// <returns></returns>
         public bool DoesElementContainPoint(Point gazePoint, UIElement uiElement)
         {
-            // Use entire visual tree of progress bar.
+            // Use entire visual tree.
             IEnumerable<UIElement> elementStack = VisualTreeHelper.FindElementsInHostCoordinates(gazePoint, uiElement, true);
             int i = 0;
             bool found = false;
 
+            //we check if the eyes look at an image 
             while (!found && i < elementStack.Count())
             {
                 if (elementStack.ElementAt(i) is Image feItem)
                 {
                     if (!timerStarted)
                     {
-                        // Start gaze timer if gaze over element.
+                        // Start gaze timer if gaze over image.
                         StartTimer();
                     }
                     CurrentFocusImage = feItem;
                     found = true;
-
                 }
                 i++;
             }
 
             if (!found)
             {
-                // Stop gaze timer and reset progress bar if gaze leaves element.
+                // Stop gaze timer and reset progress bar if gaze leaves image.
                 StopTimer();
                 CurrentFocusImage = null;
-
             }
             return found;
         }

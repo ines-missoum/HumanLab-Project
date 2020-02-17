@@ -5,8 +5,6 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Core;
-using Windows.UI.Xaml.Input;
 using Prism.Commands;
 using humanlab.Services;
 using Windows.UI.Xaml.Media.Imaging;
@@ -15,13 +13,10 @@ using System.Diagnostics;
 using Windows.Media.Playback;
 using Windows.Media.Core;
 using System;
-using Windows.Storage;
 using humanlab.DAL;
 using humanlab.Models;
-using System.Threading.Tasks;
 using humanlab.Views;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace humanlab.ViewModels
 {
@@ -576,7 +571,10 @@ namespace humanlab.ViewModels
             IsActivityLoading = true;
             MaxFocusTime = activity.FixingTime;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
+            //active tobii :
             TobiiSetUpService.StartGazeDeviceWatcher();
+            
+
 
             if (ParametersService.IsAutomatic())
             {
@@ -614,7 +612,7 @@ namespace humanlab.ViewModels
         public void CloseActivity()
         {
 
-            TobiiSetUpService.StartGazeDeviceWatcher();
+            //TobiiSetUpService.StartGazeDeviceWatcher();
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = true;
             navView.IsPaneToggleButtonVisible = true;
