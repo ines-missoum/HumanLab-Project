@@ -52,6 +52,14 @@ namespace humanlab.DAL
                 // 2) Delete Related entities
                 // Retrieve  gridElements efcore object from db
                 List<GridElements> dbGridElements = db.GridElements.Select(ge => ge).Where(ge => ge.GridId.Equals(updatedGrid.GridId)).ToList();
+                List<int> elementPlacedID = elementsPlaced.Select(ep => ep.Element.ElementId).ToList();
+                foreach (GridElements gridElement in dbGridElements)
+                {
+                    if (!elementPlacedID.Contains(gridElement.ElementId))
+                    {
+                        db.GridElements.Remove(gridElement);
+                    }
+                }
 
                // dbGridElements.ForEach(dbGe => db.GridElements.Remove(dbGe));
                 db.SaveChanges();
@@ -61,15 +69,28 @@ namespace humanlab.DAL
                     // Retrieve grid efcore object from db
                     var dbElement = db.Elements.Select(e => e).Where(e => e.ElementName.Equals(ep.Element.ElementName)).FirstOrDefault();
                     var gridElement = dbGridElements.Select(ge => ge).Where(ge => ge.GridId.Equals(updatedGrid.GridId) && ge.ElementId.Equals(dbElement.ElementId)).FirstOrDefault();
-                   
-                    gridElement.Element = dbElement;
-                    gridElement.Grid = updatedGrid;
-                    gridElement.Xposition = Convert.ToInt32(ep.XPosition);
-                    gridElement.Yposition =  Convert.ToInt32(ep.YPosition);
-                   
-                    db.GridElements.Update(gridElement);
+                   if (gridElement == null)
+                    {
+                        GridElements newGridElement = new GridElements {
+                        Element = dbElement,
+                        Grid = updatedGrid,
+                        Xposition = Convert.ToInt32(ep.XPosition),
+                        Yposition = Convert.ToInt32(ep.YPosition)
+
+                        };
+
+                        db.GridElements.Add(newGridElement);
+                    }
+                    else {
+                        gridElement.Element = dbElement;
+                        gridElement.Grid = updatedGrid;
+                        gridElement.Xposition = Convert.ToInt32(ep.XPosition);
+                        gridElement.Yposition = Convert.ToInt32(ep.YPosition);
+                        db.GridElements.Update(gridElement);
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+
             }
         }
 

@@ -69,8 +69,14 @@ namespace humanlab.DAL
                 // 2) Delete Related entities
                 // Retrieve  activitygrid efcore object from db
                 List<ActivityGrids> dbActivityGrids = db.ActivityGrids.Select(ag => ag).Where(ag => ag.ActivityId.Equals(updatedActivity.ActivityId)).ToList();
-                
-                dbActivityGrids.ForEach(dbAg => db.ActivityGrids.Remove(dbAg));
+                List<int> selectedGridsID = selectedGridsSource.Select(ep => ep.Grid.GridId).ToList();
+                foreach (ActivityGrids activityGrid in dbActivityGrids)
+                {
+                    if (!selectedGridsID.Contains(activityGrid.ActivityId))
+                    {
+                        db.ActivityGrids.Remove(activityGrid);
+                    }
+                }
                 db.SaveChanges();
                 //3 Recréer les tables intermediaires
                 // 2) Créer un gridElements: 
@@ -78,6 +84,7 @@ namespace humanlab.DAL
                 {
                     // Retrieve grid efcore object from db
                     var dbGrid = db.Grids.Select(g => g).Where(g => g.GridName.Equals(gc.Grid.GridName)).FirstOrDefault();
+                    var activityGrid = dbActivityGrids.Select(ag => ag).Where(ag => ag.ActivityId.Equals(updatedActivity.ActivityId) && ag.GridId.Equals(dbGrid.GridId)).FirstOrDefault();
 
                     // Get index of the grid among all grids
                     var gridIndex = gc.IndexInListView;
@@ -90,8 +97,11 @@ namespace humanlab.DAL
                         Activity = updatedActivity,
                         Order = gridIndex
                     };
+                    activityGrid.Activity = updatedActivity;
+                    activityGrid.Grid = dbGrid;
+                    activityGrid.Order = gridIndex;
 
-                    db.ActivityGrids.Add(newActivityGrid);
+                    db.ActivityGrids.Add(activityGrid);
                 }
                 db.SaveChanges();
             }
