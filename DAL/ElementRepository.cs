@@ -32,12 +32,14 @@ namespace humanlab.DAL
                 Element oldElement = db.Elements.Select(e => e).Where(e => e.ElementId == elementToUpdate.ElementId).FirstOrDefault();
                 Category oldCategory = GetCategories(db).Select(c => c).Where(c => c.Elements.Contains(oldElement)).FirstOrDefault();
 
-                // Supprime l'ancien élément 
-                oldCategory.Elements.Remove(oldElement);
-                db.SaveChanges();
+                oldElement.ElementName = elementToUpdate.ElementName;
+                oldElement.SpeachText = elementToUpdate.SpeachText;
+                oldElement.Audio = elementToUpdate.Audio;
+                oldElement.Image = elementToUpdate.Image;
                 Category selectedCategory = GetCategoryByName(categoryName, db);
-                selectedCategory.Elements.Add(elementToUpdate);
-                //Update l'element ( faut passer l'id) 
+                oldElement.Category = selectedCategory;
+                oldCategory.Elements.Remove(oldElement);
+                selectedCategory.Elements.Add(oldElement);
                 await db.SaveChangesAsync();
 
             }
