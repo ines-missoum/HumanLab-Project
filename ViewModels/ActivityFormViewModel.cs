@@ -385,9 +385,9 @@ namespace humanlab.ViewModels
                     ActivityName = activityName,
                     FixingTime = Convert.ToInt32(FixingTime)
                 };
+                 try { activityRepository.UpdateActivityAsync(modifiedActivity, SelectedGridsSource); }
+                 catch { Debug.WriteLine("Error while updating activity"); }
 
-                // Update Activity in db
-                activityRepository.UpdateActivityAsync(modifiedActivity, SelectedGridsSource);
                 DisplayMessagesService.showPersonalizedMessage(successMessage);
                 NavigationView nv = GetNavigationView();
                 Frame child = nv.Content as Frame;

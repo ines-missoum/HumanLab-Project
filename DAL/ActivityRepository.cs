@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,7 +73,7 @@ namespace humanlab.DAL
                 List<int> selectedGridsID = selectedGridsSource.Select(ep => ep.Grid.GridId).ToList();
                 foreach (ActivityGrids activityGrid in dbActivityGrids)
                 {
-                    if (!selectedGridsID.Contains(activityGrid.ActivityId))
+                    if (!selectedGridsID.Contains(activityGrid.GridId))
                     {
                         db.ActivityGrids.Remove(activityGrid);
                     }
@@ -88,22 +89,28 @@ namespace humanlab.DAL
 
                     // Get index of the grid among all grids
                     var gridIndex = gc.IndexInListView;
-
-
-                    // Create new related object activityGrids
-                    var newActivityGrid = new ActivityGrids
+                    if (activityGrid == null)
                     {
-                        Grid = dbGrid,
-                        Activity = updatedActivity,
-                        Order = gridIndex
-                    };
-                    activityGrid.Activity = updatedActivity;
-                    activityGrid.Grid = dbGrid;
-                    activityGrid.Order = gridIndex;
+                        Debug.WriteLine("Activity nulll ");
+                        ActivityGrids newActGrids= new ActivityGrids
+                        {
+                            Activity = updatedActivity,
+                            Grid = dbGrid,
+                            Order = gridIndex
 
-                    db.ActivityGrids.Add(activityGrid);
+                        };
+                        db.ActivityGrids.Add(newActGrids);
+                    }
+
+                    else
+                    {
+                        activityGrid.Activity = updatedActivity;
+                        activityGrid.Grid = dbGrid;
+                        activityGrid.Order = gridIndex;
+                        db.ActivityGrids.Update(activityGrid);
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
             }
         }
         internal void DeleteActivity(Activity oldActivity)
