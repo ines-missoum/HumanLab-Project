@@ -68,6 +68,8 @@ namespace humanlab.ViewModels
         private double secondsLeftBeforeNextGrid;
         private double timeToWaitBeforeChangingGrid;
 
+       
+
         /*** CONSTRUCTOR ***/
 
         public ActivityLoadingViewModel()
@@ -314,7 +316,7 @@ namespace humanlab.ViewModels
         /// <param name="sender">Source of the gaze moved event</param>
         /// <param name="e">Event args for the gaze moved event</param>
         private void GazeMoved(GazeInputSourcePreview sender, GazeMovedPreviewEventArgs args)
-        {
+        {         
             if (TobiiSetUpService.IsActiveDevice())
             {
                 // Update the position of the ellipse corresponding to gaze point.
@@ -350,6 +352,7 @@ namespace humanlab.ViewModels
                     {
                         ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
                         current.FocusTime = 0;
+                        TobiiSetUpService.TimeStopWatch = new Stopwatch();
                     }
 
                     // Mark the event handled.
@@ -375,15 +378,21 @@ namespace humanlab.ViewModels
                 BitmapImage source = img.Source as BitmapImage;
 
                 // Increment progress bar.
-                current.FocusTime += 0.025; //because the method is called each 25ms
-
+                //current.FocusTime += 0.025; //because the method is called each 25ms
+                var time = TobiiSetUpService.TimeStopWatch.Elapsed;
+                current.FocusTime = time.Seconds*1000 + time.Milliseconds;
+                
                 // If progress bar reaches maximum value, reset and relocate.
                 if (current.FocusTime >= MaxFocusTime)//nb de sec
                 {
+                    Debug.WriteLine("1 "+TobiiSetUpService.TimeStopWatch.Elapsed.Seconds);
                     // we animate the element and reset all needed values
-                    TobiiSetUpService.StopTimer();
+                    
+                    TobiiSetUpService.TimeStopWatch = new Stopwatch();
+                    Debug.WriteLine("2 " + TobiiSetUpService.TimeStopWatch.Elapsed.Seconds);
                     current.FocusTime = 0;
                     Play(source, current);
+                    TobiiSetUpService.StopTimer();
                 }
             }
             catch { }
@@ -569,7 +578,7 @@ namespace humanlab.ViewModels
         public void OpenActivity(Activity activity)
         {
             IsActivityLoading = true;
-            MaxFocusTime = activity.FixingTime;
+            MaxFocusTime = activity.FixingTime*1000;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             //active tobii :
             TobiiSetUpService.StartGazeDeviceWatcher();

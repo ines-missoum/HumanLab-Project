@@ -26,6 +26,7 @@ namespace humanlab.Services
             GazeEnteredHandler = GazeEntered;
             TickHandler = tick;
             CurrentFocusImage = null;
+            TimeStopWatch = new Stopwatch();
         }
 
         private TypedEventHandler<GazeInputSourcePreview, GazeMovedPreviewEventArgs> GazeMovedHandler { get; set; }
@@ -67,6 +68,7 @@ namespace humanlab.Services
         /// </summary>
         bool timerStarted = false;
 
+        public Stopwatch TimeStopWatch;
         /// <summary>
         /// Start gaze watcher and declare watcher event handlers.
         /// </summary>
@@ -217,7 +219,7 @@ namespace humanlab.Services
             IEnumerable<UIElement> elementStack = VisualTreeHelper.FindElementsInHostCoordinates(gazePoint, uiElement, true);
             int i = 0;
             bool found = false;
-
+            //Debug.WriteLine(elementStack.Count());
             //we check if the eyes look at an image 
             while (!found && i < elementStack.Count())
             {
@@ -228,6 +230,9 @@ namespace humanlab.Services
                         // Start gaze timer if gaze over image.
                         StartTimer();
                     }
+                    if (feItem != CurrentFocusImage)
+                        TimeStopWatch.Start();
+
                     CurrentFocusImage = feItem;
                     found = true;
                 }
@@ -237,6 +242,7 @@ namespace humanlab.Services
             if (!found)
             {
                 // Stop gaze timer and reset progress bar if gaze leaves image.
+                //Debug.WriteLine("NO");
                 StopTimer();
                 CurrentFocusImage = null;
             }
@@ -245,6 +251,7 @@ namespace humanlab.Services
 
         public void StopTimer()
         {
+            //Debug.WriteLine("stop");
             TimerGaze.Stop();
             timerStarted = false;
         }
