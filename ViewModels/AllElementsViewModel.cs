@@ -25,6 +25,8 @@ namespace humanlab.ViewModels
 
         ElementRepository repository;
 
+        public bool IsNoElements  { get; set; }
+        public bool IsElements { get; set; }
         public AllElementsViewModel()
         {
             this.repository = new ElementRepository();
@@ -33,6 +35,8 @@ namespace humanlab.ViewModels
             EditButton = "Modifier";
             ChangeEditMode = new DelegateCommand(SetEditMode);
             selectionMode = "None";
+            IsNoElements = AllElements.Count() == 0;
+            IsElements = !IsNoElements;
         }
 
         public bool IsEditModeActivated

@@ -50,7 +50,8 @@ namespace humanlab.ViewModels
         private string buttonText;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyGridsMessageShowing;
-
+        private bool isNoSelectedGrids;
+        private bool isNoGrids;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -102,6 +103,8 @@ namespace humanlab.ViewModels
             SearchedGrids = new List<GridChecked>(AllGrids.OrderByDescending(e => e.Grid.GridName.Length));
             SelectedGrids = new List<GridChecked>();
             SelectedGridsSource = new ObservableCollection<GridChecked>();
+
+            IsNoGrids = AllGrids.Count() == 0;
 
             //the views are not displayed at the the beginning
             isChooseGridsOpened = false;
@@ -233,6 +236,19 @@ namespace humanlab.ViewModels
             set => SetProperty(ref isEmptyGridsMessageShowing, value, "IsEmptyGridsMessageShowing");
 
         }
+
+        public bool IsNoGrids
+        {
+            get => isNoGrids;
+            set => SetProperty(ref isNoGrids, value, "IsNoGrids");
+        }
+
+        public bool IsNoSelectedGrids
+        {
+            get => isNoSelectedGrids;
+            set => SetProperty(ref isNoSelectedGrids, value, "IsNoSelectedGrids");
+
+        }
         public bool IsEmptySearchMessageShowing
         {
             get => isEmptySearchMessageShowing;
@@ -291,6 +307,7 @@ namespace humanlab.ViewModels
                 {
                     selectedGrids = value;
                     SelectedGridsSource = new ObservableCollection<GridChecked>(value);
+                    IsNoSelectedGrids = selectedGrids.Count() == 0;
                     OnPropertyChanged("SelectedGridsSource");
                     OnPropertyChanged("SelectedGrids");
                     OnPropertyChanged("ButtonText");
@@ -304,7 +321,11 @@ namespace humanlab.ViewModels
         public ObservableCollection<GridChecked> SelectedGridsSource
         {
             get => selectedGridsSource;
-            set => SetProperty(ref selectedGridsSource, value, "SelectedGridsSource");
+            set
+            {
+                SetProperty(ref selectedGridsSource, value, "SelectedGridsSource");
+                IsNoSelectedGrids = selectedGrids.Count() == 0;
+            }
 
         }
         public bool FromSelectionChanged2
@@ -630,7 +651,7 @@ namespace humanlab.ViewModels
             //we change the title
             Frame child = navView.Content as Frame;
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
-            navigationViewModel.Title = "Aperçu de la grille "+ grid.GridName;
+            navigationViewModel.Title = "Aperçu de la grille " + grid.GridName;
         }
 
         /// <summary>
