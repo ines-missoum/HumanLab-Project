@@ -19,7 +19,12 @@ namespace humanlab.DAL
             {
                     Category selectedCategory = GetCategoryByName(categoryName, db);
                     selectedCategory.Elements.Add(model);
-                await db.SaveChangesAsync();
+                    db.SaveChanges();
+
+                Element elementToModify = selectedCategory.Elements.Select(sc => sc).Where(sc => sc.ElementName.Equals(model.ElementName)).FirstOrDefault();
+                elementToModify.Image += elementToModify.ElementId;
+                if(!elementToModify.Audio.Equals("")) elementToModify.Audio += elementToModify.ElementId;
+                db.SaveChanges();
             }
         }
          
@@ -77,7 +82,20 @@ namespace humanlab.DAL
 
         }
 
-
+        public  async Task<Element> GetElementByName(string name)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return db.Elements.Select(e => e).Where(e => e.ElementName.Equals(name)).FirstOrDefault();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
 
         public async Task<List<string>> GetCategoriesNamesAsync()
         {

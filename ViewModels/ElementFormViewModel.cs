@@ -528,53 +528,56 @@ namespace humanlab.ViewModels
 
         }
 
-        public async void SaveFileInFolder(StorageFile file)
+        public async void SaveFileInFolder(StorageFile file, string copyName)
         {
             StorageFolder assets = await Package.Current.InstalledLocation.GetFolderAsync("Assets");
             try
-            {
-                await file.CopyAsync(assets);
+            { 
+                await file.CopyAsync(assets, copyName);
             }
             catch { Debug.WriteLine("File already saved in Assets folder"); }
             
         }
-
         public Element GenerateModel(int id)
         {
-            Element model;
+            Element model = new Element();
             string audioFileName = "";
             string speachText = "";
-            
-            if (IsToggleChecked) {
-                audioFileName = SelectedAudio.Name;
-               SaveFileInFolder(SelectedAudio);
-               SaveFileInFolder(SelectedPicture);
+
+            if (IsToggleChecked)
+            {
+                audioFileName = SelectedAudio.Name + "_";
+                if (id != -1) audioFileName += id;
+
             }
-            else {
-                speachText = ElementSpeach;
-                SaveFileInFolder(SelectedPicture);
-            }
-            if (id == -1) {
-                 model = new Element
-                {
-                    ElementName = ElementName,
-                    SpeachText = speachText,
-                    Image = SelectedPicture.Name,
-                    Audio = audioFileName,
-                }; 
-            }
-            else {
+            else speachText = ElementSpeach;
+
+            if (id != -1)
+            {
+
                 model = new Element
                 {
                     ElementId = id,
                     ElementName = ElementName,
                     SpeachText = speachText,
-                    Image = SelectedPicture.Name,
+                    Image = SelectedPicture.Name + "_" + id,
+                    Audio = audioFileName,
+                };
+            }
+
+            else
+            {
+                model = new Element
+                {
+                    ElementName = ElementName,
+                    SpeachText = speachText,
+                    Image = SelectedPicture.Name + "_",
                     Audio = audioFileName,
                 };
             }
             return model;
         }
+
             
 
         private async void SaveOrUpdateElementAsync()
@@ -586,6 +589,12 @@ namespace humanlab.ViewModels
                     //Saving element in db
                     Element model = GenerateModel(id: ElementToModify.ElementId);
                     try { repository.UpdateElementAsync(model, SelectedCategory);
+                        if (IsToggleChecked)
+                        {
+                            SaveFileInFolder(SelectedAudio, model.Audio);
+                            SaveFileInFolder(SelectedPicture, model.Image);
+                        }
+                        else SaveFileInFolder(SelectedPicture, model.Image);
                         DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
                         Debug.WriteLine("dans le vm après update");
                     }
@@ -598,6 +607,13 @@ namespace humanlab.ViewModels
                 {
                     Element model = GenerateModel(-1);
                     try { repository.SaveElementAsync(model, SelectedCategory);
+                        Element createdElement = await repository.GetElementByName(model.ElementName);
+                        if (IsToggleChecked)
+                        {
+                            SaveFileInFolder(SelectedAudio, model.Audio);
+                            SaveFileInFolder(SelectedPicture, model.Image);
+                        }
+                        else SaveFileInFolder(SelectedPicture, model.Image);
                         Debug.WriteLine("dans le vm après add qui a pas marché");
                         DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
                     }
