@@ -957,6 +957,7 @@ namespace humanlab.ViewModels
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
             navigationViewModel.ParameterToPass = null;
             navigationViewModel.Title = "Toutes les grilles";
+            nv.IsPaneVisible = true;
             child.SourcePageType = typeof(AllGridsView);
         }
 

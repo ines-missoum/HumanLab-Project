@@ -163,7 +163,10 @@
                               SelectionChanged="{x:Bind grid.ComboBox_SelectionChanged}"
                               Header="Recherche par catégorie"
                               />
-                </StackPanel>
+                        <Button  Background="LimeGreen" Foreground="White" Margin="300,20,0,0" Content="Valider" 
+                                 Width="80" FontSize="18" FontWeight="SemiBold" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
+
+                    </StackPanel>
 
                 <TextBlock Text="Eléments disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
 
@@ -204,8 +207,6 @@
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
-
-                <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" FontSize="18" FontWeight="SemiBold" Command="{x:Bind grid.ChoosePopUpVisibility}"/>
 
             </StackPanel>
         </Grid>
