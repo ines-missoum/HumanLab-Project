@@ -594,6 +594,7 @@ namespace humanlab.ViewModels
             navView.IsPaneVisible = false;
             navView.IsPaneOpen = false;
             navView.IsPaneToggleButtonVisible = false;
+            navView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
 
             NextGrid.RaiseCanExecuteChanged();
             PreviousGrid.RaiseCanExecuteChanged();
@@ -623,6 +624,7 @@ namespace humanlab.ViewModels
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = true;
             navView.IsPaneToggleButtonVisible = true;
+            navView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
             IsActivityLoading = false;
             TobiiSetUpService.RemoveDevice();
             OpenActivityAlreadyCalled = false;
