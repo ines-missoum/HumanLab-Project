@@ -177,7 +177,11 @@
                                      Header="Recherche par nom"
                                      TextChanged="{x:Bind activity.AutoSuggestBox_TextChanged}"
                                      />
-                </StackPanel>
+
+
+                        <Button  Background="LimeGreen" Foreground="White" Margin="300,20,0,0" Content="Valider" Width="60" 
+                         FontSize="18" FontWeight="SemiBold" Command="{x:Bind activity.ChoosePopUpVisibility}"/>
+                    </StackPanel>
 
                 <TextBlock Text="Grilles disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
 
@@ -218,9 +222,6 @@
                                     ItemTemplate="{StaticResource ImageGalleryDataTemplate}" 
                                     ItemsPanel="{StaticResource ImageGalleryPanelTemplate}">
                 </GridView>
-
-                <Button  Background="LimeGreen" Foreground="White" Margin="0,24,0,20" Content="OK" Width="60" 
-                         FontSize="18" FontWeight="SemiBold" Command="{x:Bind activity.ChoosePopUpVisibility}"/>
 
             </StackPanel>
 
