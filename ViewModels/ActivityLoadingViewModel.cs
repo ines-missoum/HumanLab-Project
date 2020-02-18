@@ -26,26 +26,57 @@ namespace humanlab.ViewModels
     {
 
         /*** ATTRIBUTS ***/
+
+        /// <summary>
+        /// List of elements of the activity played
+        /// </summary>
         private List<ElementOfActivity> elements;
+
+        /// <summary>
+        /// Time to keep the focus after wich the animation is activated
+        /// </summary>
         private double maxFocusTime;
+
+        /// <summary>
+        /// Position of the eye ball
+        /// </summary>
         private Transform transform;
         public DelegateCommand<object> ClickImage { get; set; }
         public TobiiSetUpService TobiiSetUpService { get; set; }
 
+        /// <summary>
+        /// Keep the current sound playing, null if none
+        /// </summary>
         private MediaPlayer playingSound;
+
+        /// <summary>
+        /// Keep the current speech playing, null if none
+        /// </summary>
         private MediaElement playingSpeech;
 
         //repositoryies => responsible for retrieving data in db
         private GridRepository gridRepository;
         private ActivityRepository activityRepository;
 
+        /// <summary>
+        /// List of all the activities in database => home page
+        /// </summary>
         public List<ActivityUpdated> allActivities;
         public ObservableCollection<ActivityUpdated> allActivitiesObserver;
+
+        /// <summary>
+        /// Indicates if an activity is currently playing
+        /// </summary>
         private bool isActivityLoading;
 
         private bool openActivityAlreadyCalled;
         private bool isEditModeActivated;
+
+        /// <summary>
+        /// Edit button text
+        /// </summary>
         private string editButton;
+
         private string selectionMode;
 
         ScrollViewer scrollViewer;
@@ -53,13 +84,39 @@ namespace humanlab.ViewModels
         private DelegateCommand<object> DeleteActivityDelegate { get; set; }
         private DelegateCommand<object> UpdateActivityDelegate { get; set; }
 
+        /// <summary>
+        /// grids list of the activity playing with their orders
+        /// </summary>
         private List<(int GridOrder, int GridId)> listGridIds;
+
+        /// <summary>
+        /// current grid played and its order
+        /// </summary>
         private (int GridOrder, int GridId) currentGrid;
+
+        /// <summary>
+        /// Delegate when we want to go to the next grid by clicking on the next arrow
+        /// </summary>
         public DelegateCommand NextGrid { get; set; }
+
+        /// <summary>
+        /// Delegate when we want to go to the previous grid by clicking on the next arrow
+        /// </summary>
         public DelegateCommand PreviousGrid { get; set; }
 
+        /// <summary>
+        /// Element currently activated, null if none
+        /// </summary>
         private (BitmapImage source, ElementOfActivity element) activatedElement;
+
+        /// <summary>
+        /// Delegate when we click on the edit button
+        /// </summary>
         public DelegateCommand ChangeEditMode { get; set; }
+
+        /// <summary>
+        /// random used to go to the next grid with random mode
+        /// </summary>
         private Random random;
         public string Mode { get; set; }
         public bool IsShowingNextArrow { get; set; }
@@ -144,7 +201,7 @@ namespace humanlab.ViewModels
         }
         private void timerForAtomaticGrid_Tick(object sender, object e)
         {
-                           SecondsLeftBeforeNextGrid = SecondsLeftBeforeNextGrid - 1;
+            SecondsLeftBeforeNextGrid = SecondsLeftBeforeNextGrid - 1;
 
             if (SecondsLeftBeforeNextGrid < 0)
             {
@@ -184,13 +241,13 @@ namespace humanlab.ViewModels
                     AllActivitiesObserver.Remove(actUpdated);
                 }
 
-                if(AllActivitiesObserver.Count() == 0)
+                if (AllActivitiesObserver.Count() == 0)
                 {
                     IsEditModeActivated = false;
                     IsNoActivities = true;
                     IsActivities = false;
-                }            
-                
+                }
+
             }
             catch { Debug.WriteLine("Error while deleting activity"); }
         }
@@ -274,7 +331,7 @@ namespace humanlab.ViewModels
             {
                 SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
             }
-            }
+        }
         public List<ElementOfActivity> Elements
         {
             get => elements;
@@ -354,7 +411,7 @@ namespace humanlab.ViewModels
         /// <param name="sender">Source of the gaze moved event</param>
         /// <param name="e">Event args for the gaze moved event</param>
         private void GazeMoved(GazeInputSourcePreview sender, GazeMovedPreviewEventArgs args)
-        {         
+        {
             if (TobiiSetUpService.IsActiveDevice())
             {
                 // Update the position of the ellipse corresponding to gaze point.
@@ -418,13 +475,13 @@ namespace humanlab.ViewModels
                 // Increment progress bar.
                 //current.FocusTime += 0.025; //because the method is called each 25ms
                 var time = TobiiSetUpService.TimeStopWatch.Elapsed;
-                current.FocusTime = time.Seconds*1000 + time.Milliseconds;
-                
+                current.FocusTime = time.Seconds * 1000 + time.Milliseconds;
+
                 // If progress bar reaches maximum value, reset and relocate.
                 if (current.FocusTime >= MaxFocusTime)//nb de sec
                 {
                     // we animate the element and reset all needed values
-                    
+
                     TobiiSetUpService.TimeStopWatch = new Stopwatch();
                     current.FocusTime = 0;
                     Play(source, current);
@@ -569,7 +626,7 @@ namespace humanlab.ViewModels
                         gridOrder = listGridIds.Count;
                     break;
                 case "aléatoire":
-                    while (gridOrder == currentGrid.GridOrder)
+                    while (listGridIds.Count > 1 && gridOrder == currentGrid.GridOrder)
                         gridOrder = random.Next(1, listGridIds.Count + 1);
                     break;
             }
@@ -614,11 +671,11 @@ namespace humanlab.ViewModels
         public void OpenActivity(Activity activity)
         {
             IsActivityLoading = true;
-            MaxFocusTime = activity.FixingTime*1000;
+            MaxFocusTime = activity.FixingTime * 1000;
             GetAllGridsOfLoadingActivity(activity.ActivityId);
             //active tobii :
             TobiiSetUpService.StartGazeDeviceWatcher();
-            
+
 
 
             if (ParametersService.IsAutomatic())
@@ -626,7 +683,7 @@ namespace humanlab.ViewModels
                 SecondsLeftBeforeNextGrid = timeToWaitBeforeChangingGrid;
                 timerForAtomaticGrid.Start();
             }
-                
+
 
             NavigationView navView = GetNavigationView();
             navView.IsPaneVisible = false;
@@ -640,7 +697,7 @@ namespace humanlab.ViewModels
             NavigationView navigation = GetNavigationView();
             Frame child = navigation.Content as Frame;
             NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
-            navigationViewModel.Title = "Activité en cours : "+activity.ActivityName;
+            navigationViewModel.Title = "Activité en cours : " + activity.ActivityName;
 
         }
 
