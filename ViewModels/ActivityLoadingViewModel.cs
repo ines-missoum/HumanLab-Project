@@ -496,8 +496,13 @@ namespace humanlab.ViewModels
                     //if the gaze has leaved an image, we reset the element corresponding to the image
                     if (img != null & !hitImage)
                     {
-                        ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
-                        current.FocusTime = 0;
+                        var matchElements = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).ToList();
+                        if (matchElements.Count() == 1)
+                        {
+                            ElementOfActivity current = matchElements.First();
+                            current.FocusTime = 0;
+                        }
+                        
                         TobiiSetUpService.TimeStopWatch = new Stopwatch();
                     }
 
