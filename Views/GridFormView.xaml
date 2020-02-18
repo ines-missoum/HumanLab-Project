@@ -64,7 +64,23 @@
     </Page.Resources>
 
     <!--PRINCIPAL VIEW-->
+
     <Grid Loading="{x:Bind grid.PrepareEditModeAsync}">
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
+            <Button Width="120" Height="35" Margin="8" 
+                    Background="White"  FontWeight="Bold"
+                    Command="{Binding BackToWindow}"
+                    Visibility="{x:Bind grid.IsEditModeActivated, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Back" Margin="8,0,0,0"/>
+                    <TextBlock Text="RETOUR" Margin="8,0,0,0" />
+
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+            <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -193,7 +209,7 @@
 
             </StackPanel>
         </Grid>
-
+        </Grid>
         <!-- OTHER VIEW :CHOOOSE THE ORGANIZATION OF THE ELEMENTS-->
 
         <Grid Margin="5" Grid.Row="0" Name="organizationGrid" Background="White"
@@ -241,5 +257,5 @@
                    Visibility="{x:Bind grid.IsOrganizeElementsOpened, Mode=OneWay}" />
         </StackPanel>
     </Grid>
-    
+
 </Page>

@@ -45,6 +45,7 @@ namespace humanlab.ViewModels
         private List<ElementPlaced> elementsPlaced;
         public DelegateCommand SaveGridPlacementCommand { get; set; }
         public DelegateCommand ReturnToSelectionCommand { get; set; }
+        public DelegateCommand BackToWindow { get; set; }
         //attributes linked to dynamic messages in front
         private bool isNextButtonShowing;
         private string buttonText;
@@ -53,6 +54,7 @@ namespace humanlab.ViewModels
         private bool fromSelectionChanged2;
         private bool isNoSelectedElements;
         private bool isNoElements;
+        public bool isEditModeActivated;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -105,12 +107,14 @@ namespace humanlab.ViewModels
             isOrganizeElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
             OrganizePopUpVisibility = new DelegateCommand(OpenOrganizationPopUpIfAllowed);
+            BackToWindow = new DelegateCommand(RedirectToAllGridsPage);
 
             //no search has began
             searching = false;
 
             fromSelectionChanged2 = false;
             IsNextButtonShowing = false;
+            isEditModeActivated = false;
             isEmptySearchMessageShowing = false;
             isEmptyElementMessageShowing = true;
             ButtonText = "Choisir";
@@ -140,6 +144,12 @@ namespace humanlab.ViewModels
             nv.IsPaneVisible = true;
 
 
+        }
+
+        public bool IsEditModeActivated
+        {
+            get => isEditModeActivated;
+            set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
         }
 
         private bool CanSavOrUpdateGridPlacement()
@@ -258,6 +268,7 @@ namespace humanlab.ViewModels
 
                 Models.Grid grid = navigationViewModel.parameterToPass as Models.Grid;
                 gridToModify = grid;
+                IsEditModeActivated = true;
                 GridName = grid.GridName;
                 navigationViewModel.Title = "Modification de la grille " + GridName;
                 ButtonText = "Modifier";

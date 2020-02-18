@@ -27,11 +27,13 @@ namespace humanlab.ViewModels
         private ObservableCollection<GridChecked> selectedGridsSource;
         private List<GridChecked> selectedGrids;
         private Activity activityToModify;
+        public bool isEditModeActivated;
 
         //attributes of choosing elements view
         private bool isChooseGridsOpened;
         public DelegateCommand ChoosePopUpVisibility { get; set; }
         public DelegateCommand SaveOrUpdateActivityDelegate { get; set; }
+        public DelegateCommand BackToWindow { get; set; }
 
         //attributs that handles the grid preview
         public DelegateCommand<object> ShowPreviewDelegate { get; set; }
@@ -96,6 +98,7 @@ namespace humanlab.ViewModels
             ClosePreviewDelegate = new DelegateCommand(CloseGridPreview);
             IsGridPreviewShowing = false;
             Elements = new List<ElementOfActivity>();
+            isEditModeActivated = false;
 
 
             //initialisation of al the lists
@@ -110,6 +113,7 @@ namespace humanlab.ViewModels
             isChooseGridsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
             SaveOrUpdateActivityDelegate = new DelegateCommand(SaveOrUpdateActivityIfAllowed);
+            BackToWindow = new DelegateCommand(RedirectToAllActivitiesPage);
 
             //no search has began
             searching = false;
@@ -123,6 +127,7 @@ namespace humanlab.ViewModels
             searchText = "";
             activityName = "";
             fixingTime = 0;
+
 
         }
 
@@ -150,6 +155,7 @@ namespace humanlab.ViewModels
                 ButtonText = "Modifier";
                 IsEmptyGridsMessageShowing = false;
                 IsSaveButtonShowing = true;
+                IsEditModeActivated = true;
                 activityName = ActivityToModify.ActivityName;
                 List<ActivityGrids> activityGridsId = await activityRepository.GetGridsOfActivity(ActivityToModify.ActivityId);
                 List<int> gridsId = activityGridsId.Select(ag => ag.GridId).ToList();
@@ -204,6 +210,11 @@ namespace humanlab.ViewModels
         {
             get => isGridPreviewShowing;
             set => SetProperty(ref isGridPreviewShowing, value, "IsGridPreviewShowing");
+        }
+        public bool IsEditModeActivated
+        {
+            get => isEditModeActivated;
+            set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
         }
         public Activity ActivityToModify
         {
@@ -389,13 +400,7 @@ namespace humanlab.ViewModels
                  catch { Debug.WriteLine("Error while updating activity"); }
 
                 DisplayMessagesService.showPersonalizedMessage(successMessage);
-                NavigationView nv = GetNavigationView();
-                Frame child = nv.Content as Frame;
-                NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
-                navigationViewModel.ParameterToPass = null;
-                navigationViewModel.Title = "Toutes les activités";
-                child.SourcePageType = typeof(ActivityLoadingView);
-            }
+                RedirectToAllActivitiesPage();            }
 
         }
         /// <summary>
@@ -438,6 +443,16 @@ namespace humanlab.ViewModels
             }
 
         }
+        public void RedirectToAllActivitiesPage()
+        {
+            NavigationView nv = GetNavigationView();
+            Frame child = nv.Content as Frame;
+            NavigationViewModel navigationViewModel = child.DataContext as NavigationViewModel;
+            navigationViewModel.ParameterToPass = null;
+            navigationViewModel.Title = "Toutes les activités";
+            child.SourcePageType = typeof(ActivityLoadingView);
+        }
+
         public void ReloadActivityFormView()
         {
             // Here's the navigationView 

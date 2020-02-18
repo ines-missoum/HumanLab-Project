@@ -35,6 +35,7 @@ namespace humanlab.ViewModels
         private StorageFile selectedPicture;
         private StorageFile selectedAudio;
         private bool isToggleChecked;
+        public bool isEditModeActivated;
 
 
         //*** Data ***//
@@ -58,6 +59,7 @@ namespace humanlab.ViewModels
         private bool isNotAvailableName;
         public DelegateCommand SaveOrUpdateElementCommand { get; set; }
         public DelegateCommand PlayCommand { get; set; }
+        public DelegateCommand BackToWindow { get; set; }
         public string DefaultColor { get; set; }
         ToggleSwitch toggleSwitch;
         public ElementFormViewModel()
@@ -67,9 +69,11 @@ namespace humanlab.ViewModels
             this.selectedCategory = null;
             this.isToggleChecked = false;
             this.isNotAvailableName = false;
+            this.isEditModeActivated = false;
             ElementsBorderBrush = InitializeColorDictionnary();
             SaveOrUpdateElementCommand = new DelegateCommand(SaveOrUpdateElementAsync);
             PlayCommand = new DelegateCommand(Play, CanPlay);
+            BackToWindow = new DelegateCommand(RedirectToAllElementsPage);
             DefaultColor = ColorTheme;
             this.repository = new ElementRepository();
 
@@ -155,6 +159,7 @@ namespace humanlab.ViewModels
 
                 Element element = navigationViewModel.parameterToPass as Element;
                 ElementToModify = element;
+                IsEditModeActivated = true;
                 navigationViewModel.Title = "Modification de l'élément " + ElementToModify.ElementName;
                 SelectedCategory = element.Category.CategoryName;
 
@@ -188,6 +193,11 @@ namespace humanlab.ViewModels
         {
             get => buttonIcon;
             set => SetProperty(ref buttonIcon, value, "ButtonIcon");
+        }
+        public bool IsEditModeActivated
+        {
+            get => isEditModeActivated;
+            set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
         }
 
         private async void GetCategoriesAsync(){
