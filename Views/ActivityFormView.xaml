@@ -57,6 +57,20 @@
 
     <!--PRINCIPAL VIEW-->
     <Grid Loading="{x:Bind activity.PrepareEditModeAsync}">
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
+            <Button Width="120" Height="35" Margin="8" 
+                    Background="White"  FontWeight="Bold"
+                    Command="{Binding BackToWindow}"
+                    Visibility="{x:Bind activity.IsEditModeActivated, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Back" Margin="8,0,0,0"/>
+                    <TextBlock Text="RETOUR" Margin="8,0,0,0" />
+
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -76,7 +90,7 @@
                  Margin="20,24,0,20" 
                  MaxLength="32" 
                  Width="400" 
-                 Text="{x:Bind activity.ActivityToModify.ActivityName, Mode=TwoWay}"
+                 Text="{x:Bind activity.ActivityName, Mode=TwoWay}"
                  TextChanged="{x:Bind activity.TextBox_TextChanged}"
                  HorizontalAlignment="Left" />
 
@@ -211,7 +225,7 @@
             </StackPanel>
 
         </Grid>
-
+        </Grid>
         <!-- PREVIEW -->
         <Grid Margin="5" Background="White" Grid.Row="0"
               Grid.Column="0"

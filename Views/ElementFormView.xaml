@@ -12,8 +12,21 @@
     <Page.DataContext>
         <vm:ElementFormViewModel x:Name="elementform"/>
     </Page.DataContext>
+    <Grid>
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
+            <Button Width="120" Height="35" Margin="8" 
+                    Background="White"  FontWeight="Bold"
+                    Command="{Binding BackToWindow}"
+                    Visibility="{x:Bind elementform.IsEditModeActivated, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Back" Margin="8,0,0,0"/>
+                    <TextBlock Text="RETOUR" Margin="8,0,0,0" />
 
-    <Grid Margin="24" Loading="{x:Bind elementform.PrepareEditModeAsync}">
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <Grid Margin="24" Loading="{x:Bind elementform.PrepareEditModeAsync}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -149,5 +162,6 @@
                     Command="{Binding SaveOrUpdateElementCommand}"/>
         </StackPanel>
         </StackPanel>
+    </Grid>
     </Grid>
 </Page>

@@ -35,6 +35,7 @@ namespace humanlab.ViewModels
         private StorageFile selectedPicture;
         private StorageFile selectedAudio;
         private bool isToggleChecked;
+        public bool isEditModeActivated;
 
 
         //*** Data ***//
@@ -58,6 +59,7 @@ namespace humanlab.ViewModels
         private bool isNotAvailableName;
         public DelegateCommand SaveOrUpdateElementCommand { get; set; }
         public DelegateCommand PlayCommand { get; set; }
+        public DelegateCommand BackToWindow { get; set; }
         public string DefaultColor { get; set; }
         ToggleSwitch toggleSwitch;
         public ElementFormViewModel()
@@ -67,9 +69,11 @@ namespace humanlab.ViewModels
             this.selectedCategory = null;
             this.isToggleChecked = false;
             this.isNotAvailableName = false;
+            this.isEditModeActivated = false;
             ElementsBorderBrush = InitializeColorDictionnary();
             SaveOrUpdateElementCommand = new DelegateCommand(SaveOrUpdateElementAsync);
             PlayCommand = new DelegateCommand(Play, CanPlay);
+            BackToWindow = new DelegateCommand(RedirectToAllElementsPage);
             DefaultColor = ColorTheme;
             this.repository = new ElementRepository();
 
@@ -155,6 +159,7 @@ namespace humanlab.ViewModels
 
                 Element element = navigationViewModel.parameterToPass as Element;
                 ElementToModify = element;
+                IsEditModeActivated = true;
                 navigationViewModel.Title = "Modification de l'élément " + ElementToModify.ElementName;
                 SelectedCategory = element.Category.CategoryName;
 
@@ -188,6 +193,11 @@ namespace humanlab.ViewModels
         {
             get => buttonIcon;
             set => SetProperty(ref buttonIcon, value, "ButtonIcon");
+        }
+        public bool IsEditModeActivated
+        {
+            get => isEditModeActivated;
+            set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
         }
 
         private async void GetCategoriesAsync(){
@@ -528,86 +538,130 @@ namespace humanlab.ViewModels
 
         }
 
-        public async void SaveFileInFolder(StorageFile file)
+        public async void SaveFileInFolder(StorageFile file, string copyName)
         {
             StorageFolder assets = await Package.Current.InstalledLocation.GetFolderAsync("Assets");
             try
-            {
-                await file.CopyAsync(assets);
+            { 
+                await file.CopyAsync(assets, copyName);
             }
             catch { Debug.WriteLine("File already saved in Assets folder"); }
             
         }
-
         public Element GenerateModel(int id)
         {
-            Element model;
+            Element model = new Element();
             string audioFileName = "";
             string speachText = "";
-            
-            if (IsToggleChecked) {
-                audioFileName = SelectedAudio.Name;
-               SaveFileInFolder(SelectedAudio);
-               SaveFileInFolder(SelectedPicture);
+
+            if (IsToggleChecked)
+            {
+                audioFileName = SelectedAudio.Name + "_";
+                if (id != -1) audioFileName += id;
+
             }
-            else {
-                speachText = ElementSpeach;
-                SaveFileInFolder(SelectedPicture);
-            }
-            if (id == -1) {
-                 model = new Element
-                {
-                    ElementName = ElementName,
-                    SpeachText = speachText,
-                    Image = SelectedPicture.Name,
-                    Audio = audioFileName,
-                }; 
-            }
-            else {
+            else speachText = ElementSpeach;
+
+            if (id != -1)
+            {
+
                 model = new Element
                 {
                     ElementId = id,
                     ElementName = ElementName,
                     SpeachText = speachText,
-                    Image = SelectedPicture.Name,
+                    Image = SelectedPicture.Name + "_" + id,
+                    Audio = audioFileName,
+                };
+            }
+
+            else
+            {
+                model = new Element
+                {
+                    ElementName = ElementName,
+                    SpeachText = speachText,
+                    Image = SelectedPicture.Name + "_",
                     Audio = audioFileName,
                 };
             }
             return model;
         }
+
             
 
         private async void SaveOrUpdateElementAsync()
         {
+            string errorMessage = "";
             if (Check_FormValidation())
             {
+                List<string> elementsNames = await repository.GetElementsNamesAsync();
+                elementsNames = elementsNames.Select(e => e.ToLower()).ToList();
+                
                 if (ElementToModify != null)
                 {
-                    //Saving element in db
-                    Element model = GenerateModel(id: ElementToModify.ElementId);
-                    try { repository.UpdateElementAsync(model, SelectedCategory);
-                        DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
-                        Debug.WriteLine("dans le vm après update");
+                    //if update grid and name changed for one that already exists
+                    if (!ElementName.ToLower().Equals(ElementToModify.ElementName.ToLower()) && elementsNames.Contains(ElementName.ToLower()))
+                    {
+                        errorMessage = "Une élément porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                        DisplayMessagesService.showPersonalizedMessage(errorMessage);
                     }
-                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
-                        Debug.WriteLine("dans le vm après update qui n'a pas marché");
+                    else
+                    {                     //Saving element in db
+                        Element model1 = GenerateModel(id: ElementToModify.ElementId);
+                        try
+                        {
+                            repository.UpdateElementAsync(model1, SelectedCategory);
+                            if (IsToggleChecked)
+                            {
+                                SaveFileInFolder(SelectedAudio, model1.Audio);
+                                SaveFileInFolder(SelectedPicture, model1.Image);
+                            }
+                            else SaveFileInFolder(SelectedPicture, model1.Image);
+                            DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
+                        }
+                        catch
+                        {
+                            DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+                        }
                     }
 
                 }
                 else
                 {
-                    Element model = GenerateModel(-1);
-                    try { repository.SaveElementAsync(model, SelectedCategory);
-                        Debug.WriteLine("dans le vm après add qui a pas marché");
-                        DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
+                    //if creation of new grid and name already exists
+                    if (elementsNames.Contains(ElementName.ToLower())) {
+                        errorMessage = "Un élément porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                        DisplayMessagesService.showPersonalizedMessage(errorMessage);
                     }
-                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
-                        Debug.WriteLine("dans le vm après add qui n'a pas marché");
+
+                    else
+                    {
+                        Element model = GenerateModel(-1);
+                        try
+                        {
+                            repository.SaveElementAsync(model, SelectedCategory);
+                            Element createdElement = await repository.GetElementByName(model.ElementName);
+                            if (IsToggleChecked)
+                            {
+                                SaveFileInFolder(SelectedAudio, model.Audio);
+                                SaveFileInFolder(SelectedPicture, model.Image);
+                            }
+                            else SaveFileInFolder(SelectedPicture, model.Image);
+
+                            DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
+                        }
+                        catch
+                        {
+                            DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+
+                        }
                     }
                 }
+                }
 
-                Debug.WriteLine("Je sors de la function");
-            }
+
+            
 
             else DisplayMessagesService.showPersonalizedMessage("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
         }
