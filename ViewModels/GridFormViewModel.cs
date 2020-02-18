@@ -166,7 +166,8 @@ namespace humanlab.ViewModels
             else
             {
                 List<Models.Grid> grids = await gridRepository.GetGridsAsync();
-                List<string> gridsNames = grids.Select(g => g.GridName).ToList();
+                List<string> gridsNames = grids.Select(g => g.GridName.ToLower()).ToList();
+
                 double size = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor;
 
                 string successMessage = "";
@@ -174,13 +175,13 @@ namespace humanlab.ViewModels
                 if (gridToModify == null)
                 {
                     //if creation of new grid and name already exists
-                    if (gridsNames.Contains(GridName))
+                    if (gridsNames.Contains(GridName.ToLower()))
                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
                 else
                 {
                     //if update grid and name changed for one that already exists
-                    if (!GridName.Equals(gridToModify.GridName) && gridsNames.Contains(GridName))
+                    if (!GridName.ToLower().Equals(gridToModify.GridName.ToLower()) && gridsNames.Contains(GridName.ToLower()))
                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
 

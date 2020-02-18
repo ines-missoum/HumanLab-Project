@@ -592,48 +592,76 @@ namespace humanlab.ViewModels
 
         private async void SaveOrUpdateElementAsync()
         {
+            string errorMessage = "";
             if (Check_FormValidation())
             {
+                List<string> elementsNames = await repository.GetElementsNamesAsync();
+                elementsNames = elementsNames.Select(e => e.ToLower()).ToList();
+                
                 if (ElementToModify != null)
                 {
-                    //Saving element in db
-                    Element model = GenerateModel(id: ElementToModify.ElementId);
-                    try { repository.UpdateElementAsync(model, SelectedCategory);
-                        if (IsToggleChecked)
-                        {
-                            SaveFileInFolder(SelectedAudio, model.Audio);
-                            SaveFileInFolder(SelectedPicture, model.Image);
-                        }
-                        else SaveFileInFolder(SelectedPicture, model.Image);
-                        DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
-                        Debug.WriteLine("dans le vm après update");
+                    //if update grid and name changed for one that already exists
+                    if (!ElementName.ToLower().Equals(ElementToModify.ElementName.ToLower()) && elementsNames.Contains(ElementName.ToLower()))
+                    {
+                        errorMessage = "Une élément porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                        DisplayMessagesService.showPersonalizedMessage(errorMessage);
                     }
-                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
-                        Debug.WriteLine("dans le vm après update qui n'a pas marché");
+                    else
+                    {                     //Saving element in db
+                        Element model1 = GenerateModel(id: ElementToModify.ElementId);
+                        try
+                        {
+                            repository.UpdateElementAsync(model1, SelectedCategory);
+                            if (IsToggleChecked)
+                            {
+                                SaveFileInFolder(SelectedAudio, model1.Audio);
+                                SaveFileInFolder(SelectedPicture, model1.Image);
+                            }
+                            else SaveFileInFolder(SelectedPicture, model1.Image);
+                            DisplayMessagesService.showSuccessMessage("élément", ElementName, RedirectToAllElementsPage);
+                        }
+                        catch
+                        {
+                            DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+                        }
                     }
 
                 }
                 else
                 {
-                    Element model = GenerateModel(-1);
-                    try { repository.SaveElementAsync(model, SelectedCategory);
-                        Element createdElement = await repository.GetElementByName(model.ElementName);
-                        if (IsToggleChecked)
-                        {
-                            SaveFileInFolder(SelectedAudio, model.Audio);
-                            SaveFileInFolder(SelectedPicture, model.Image);
-                        }
-                        else SaveFileInFolder(SelectedPicture, model.Image);
-                        Debug.WriteLine("dans le vm après add qui a pas marché");
-                        DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
+                    //if creation of new grid and name already exists
+                    if (elementsNames.Contains(ElementName.ToLower())) {
+                        errorMessage = "Un élément porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                        DisplayMessagesService.showPersonalizedMessage(errorMessage);
                     }
-                    catch { DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
-                        Debug.WriteLine("dans le vm après add qui n'a pas marché");
+
+                    else
+                    {
+                        Element model = GenerateModel(-1);
+                        try
+                        {
+                            repository.SaveElementAsync(model, SelectedCategory);
+                            Element createdElement = await repository.GetElementByName(model.ElementName);
+                            if (IsToggleChecked)
+                            {
+                                SaveFileInFolder(SelectedAudio, model.Audio);
+                                SaveFileInFolder(SelectedPicture, model.Image);
+                            }
+                            else SaveFileInFolder(SelectedPicture, model.Image);
+
+                            DisplayMessagesService.showSuccessMessage("élément", ElementName, ReloadElementFormView);
+                        }
+                        catch
+                        {
+                            DisplayMessagesService.showPersonalizedMessage(" Une erreur s'est produite, veuillez réessayer");
+
+                        }
                     }
                 }
+                }
 
-                Debug.WriteLine("Je sors de la function");
-            }
+
+            
 
             else DisplayMessagesService.showPersonalizedMessage("Des champs obligatoires à l'enregistrement d'un élément sont invalides ou manquants. Veuillez compléter les champs surlignés en rouge.");
         }

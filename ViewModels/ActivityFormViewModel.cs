@@ -156,7 +156,7 @@ namespace humanlab.ViewModels
                 IsEmptyGridsMessageShowing = false;
                 IsSaveButtonShowing = true;
                 IsEditModeActivated = true;
-                activityName = ActivityToModify.ActivityName;
+                ActivityName = ActivityToModify.ActivityName;
                 List<ActivityGrids> activityGridsId = await activityRepository.GetGridsOfActivity(ActivityToModify.ActivityId);
                 List<int> gridsId = activityGridsId.Select(ag => ag.GridId).ToList();
                 InitialiseAllGrids();
@@ -225,7 +225,6 @@ namespace humanlab.ViewModels
                 {
                     activityToModify = value;
                     OnPropertyChanged("ActivityToModify");
-                    activityName = activityToModify.ActivityName;
 
                 }
             }
@@ -234,6 +233,11 @@ namespace humanlab.ViewModels
         {
             get => buttonText;
             set => SetProperty(ref buttonText, value, "ButtonText");
+        }
+        public string ActivityName
+        {
+            get => activityName;
+            set => SetProperty(ref activityName, value, "ActivityName");
         }
         public double FixingTime
         {
@@ -364,24 +368,37 @@ namespace humanlab.ViewModels
             string errorMessage = null;
             string successMessage = "Votre activité " + ActivityToModify.ActivityName + " a été modifiée avec succès.";
 
-            if (activityName.Equals(""))
+            if (ActivityName.Equals(""))
                 errorMessage = "Veuillez entrer un nom d'activité pour poursuivre.";
             else
             {
                 //we check if the name is not already taken
                 List<string> activitiesNames = await activityRepository.GetActivityNamesAsync();
-                Debug.WriteLine("activityname " + activityName);
-                Debug.WriteLine("Act" + ActivityToModify.ActivityName);
-                Debug.WriteLine("Act==name" + activityName.Equals(ActivityToModify.ActivityName));
-                Debug.WriteLine("contains" + activitiesNames.Contains(activityName));
-
-                if (activitiesNames.Contains(activityName) && !activityName.Equals(ActivityToModify.ActivityName))
+                activitiesNames = activitiesNames.Select(a => a.ToLower()).ToList();
+                //we check if the name is not already taken> a.ToLower()).ToList();
+                if (activityToModify == null)
                 {
-                    errorMessage = "Une autre activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                    Debug.WriteLine("1");
+                    //if creation of new grid and name already exists
+                    if (activitiesNames.Contains(ActivityName.ToLower()))
+                        errorMessage = "Une activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                }
+                else
+                {
+                    Debug.WriteLine("2");
+                    //if update grid and name changed for one that already exists
+                    Debug.WriteLine(activitiesNames.Contains(activityName.ToLower()));
+                    Debug.WriteLine(activityName.ToLower().Equals(activityToModify.ActivityName.ToLower()));
+                    Debug.WriteLine(activityName.ToLower());
+                    Debug.WriteLine(activityToModify.ActivityName.ToLower());
+                    if (!ActivityName.ToLower().Equals(activityToModify.ActivityName.ToLower()) && activitiesNames.Contains(ActivityName.ToLower()))
+                    { errorMessage = "Une activité porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                        Debug.WriteLine("6");
+                    }
                 }
 
             }
-
+            Debug.WriteLine("err" + errorMessage);
             //we show error if there is one
             if (errorMessage != null)
             {
@@ -393,7 +410,7 @@ namespace humanlab.ViewModels
                 Activity modifiedActivity = new Activity
                 {
                     ActivityId = ActivityToModify.ActivityId,
-                    ActivityName = activityName,
+                    ActivityName = ActivityName,
                     FixingTime = Convert.ToInt32(FixingTime)
                 };
                  try { activityRepository.UpdateActivityAsync(modifiedActivity, SelectedGridsSource); }
@@ -409,9 +426,9 @@ namespace humanlab.ViewModels
         private async void SaveActivityIfAllowed()
         {
             string errorMessage = null;
-            string successMessage = "Votre activité " + activityName + " a été sauvegardée avec succès.";
+            string successMessage = "Votre activité " + ActivityName + " a été sauvegardée avec succès.";
 
-            if (activityName.Equals(""))
+            if (ActivityName.Equals(""))
                 errorMessage = "Veuillez entrer un nom d'activité pour poursuivre.";
             else
             {
@@ -431,14 +448,14 @@ namespace humanlab.ViewModels
                 //Create new activity from activity form data 
                 Activity newActivity = new Activity
                 {
-                    ActivityName = activityName,
+                    ActivityName = ActivityName,
                     FixingTime = Convert.ToInt32(FixingTime)
                 };
 
                 // Save Activity in db
                 activityRepository.SaveActivityAsync(newActivity, SelectedGridsSource);
 
-                DisplayMessagesService.showSuccessMessage("activité", activityName, ReloadActivityFormView);
+                DisplayMessagesService.showSuccessMessage("activité", ActivityName, ReloadActivityFormView);
 
             }
 
@@ -591,7 +608,7 @@ namespace humanlab.ViewModels
         {
             TextBox control = sender as TextBox;
             string name = control.Text;
-            activityName = name;
+            ActivityName = name;
         }
 
         /**Search hanling methods**/

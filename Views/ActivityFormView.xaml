@@ -90,7 +90,7 @@
                  Margin="20,24,0,20" 
                  MaxLength="32" 
                  Width="400" 
-                 Text="{x:Bind activity.ActivityToModify.ActivityName, Mode=TwoWay}"
+                 Text="{x:Bind activity.ActivityName, Mode=TwoWay}"
                  TextChanged="{x:Bind activity.TextBox_TextChanged}"
                  HorizontalAlignment="Left" />
 
