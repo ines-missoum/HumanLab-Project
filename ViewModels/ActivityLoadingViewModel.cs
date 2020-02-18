@@ -354,6 +354,9 @@ namespace humanlab.ViewModels
                 {
                     timerForAtomaticGrid.Stop();
                     SecondsLeftBeforeNextGrid = 0;
+                    //if an element is playing we stop it
+                    if (this.activatedElement != (null, null))
+                        Stop(this.activatedElement.source, this.activatedElement.element);
                     DisplayMessagesService.showPersonalizedMessage("Activité terminée", "Toutes les grilles de l'activité ont été jouées.", CloseActivity);
                 }
                 else
@@ -493,8 +496,13 @@ namespace humanlab.ViewModels
                     //if the gaze has leaved an image, we reset the element corresponding to the image
                     if (img != null & !hitImage)
                     {
-                        ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
-                        current.FocusTime = 0;
+                        var matchElements = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).ToList();
+                        if (matchElements.Count() == 1)
+                        {
+                            ElementOfActivity current = matchElements.First();
+                            current.FocusTime = 0;
+                        }
+                        
                         TobiiSetUpService.TimeStopWatch = new Stopwatch();
                     }
 
@@ -667,6 +675,10 @@ namespace humanlab.ViewModels
         /// <param name="newGridOrder">order of the new grid to display</param>
         private void ChangeCurrentGrid(int newGridOrder)
         {
+            //if an element is playing we stop it
+            if (this.activatedElement != (null, null))
+                Stop(this.activatedElement.source, this.activatedElement.element);
+
             currentGrid = listGridIds.Find(tuple => tuple.GridOrder == newGridOrder);
             GetElementsOfGrid(currentGrid.GridId);
 

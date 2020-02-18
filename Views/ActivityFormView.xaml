@@ -179,7 +179,7 @@
                                      />
 
 
-                        <Button  Background="LimeGreen" Foreground="White" Margin="300,20,0,0" Content="Valider" Width="60" 
+                        <Button  Background="LimeGreen" Foreground="White" Margin="300,20,0,0" Content="Valider" Width="80" 
                          FontSize="18" FontWeight="SemiBold" Command="{x:Bind activity.ChoosePopUpVisibility}"/>
                     </StackPanel>
 
