@@ -290,6 +290,7 @@ namespace humanlab.ViewModels
                     }
                 });
                 SelectedElements = selectedEl;
+                IsNextButtonShowing = true;
             }
         }
 
