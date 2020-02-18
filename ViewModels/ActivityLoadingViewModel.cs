@@ -354,6 +354,9 @@ namespace humanlab.ViewModels
                 {
                     timerForAtomaticGrid.Stop();
                     SecondsLeftBeforeNextGrid = 0;
+                    //if an element is playing we stop it
+                    if (this.activatedElement != (null, null))
+                        Stop(this.activatedElement.source, this.activatedElement.element);
                     DisplayMessagesService.showPersonalizedMessage("Activité terminée", "Toutes les grilles de l'activité ont été jouées.", CloseActivity);
                 }
                 else
@@ -667,6 +670,10 @@ namespace humanlab.ViewModels
         /// <param name="newGridOrder">order of the new grid to display</param>
         private void ChangeCurrentGrid(int newGridOrder)
         {
+            //if an element is playing we stop it
+            if (this.activatedElement != (null, null))
+                Stop(this.activatedElement.source, this.activatedElement.element);
+
             currentGrid = listGridIds.Find(tuple => tuple.GridOrder == newGridOrder);
             GetElementsOfGrid(currentGrid.GridId);
 
