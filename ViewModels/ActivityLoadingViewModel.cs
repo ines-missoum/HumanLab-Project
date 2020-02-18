@@ -92,7 +92,7 @@ namespace humanlab.ViewModels
 
             TobiiSetUpService = new TobiiSetUpService(this.GazeEntered, this.GazeMoved, this.GazeExited, this.TimerGaze_Tick);
 
-            MaxFocusTime = 5; //en sec
+            //MaxFocusTime = 5; //en sec
             IsActivityLoading = false;
 
             openActivityAlreadyCalled = false;
@@ -328,10 +328,10 @@ namespace humanlab.ViewModels
 
                     // xaml data => to change if the xaml changes
                     int eyesEllipseSize = 20;
-                    int progressBarSize = 24; //(margin included)
+                    int UiElementsSize = 20 + 32; //(progress bar and button included without margin)
 
                     double ellipseLeft = gazePointX - (eyesEllipseSize / 2.0f);
-                    double ellipseTop = gazePointY - (eyesEllipseSize / 2.0f) - progressBarSize;
+                    double ellipseTop = gazePointY - (eyesEllipseSize / 2.0f) - UiElementsSize;
 
                     // Translate transform for moving gaze ellipse.
                     TranslateTransform translateEllipse = new TranslateTransform
@@ -385,11 +385,9 @@ namespace humanlab.ViewModels
                 // If progress bar reaches maximum value, reset and relocate.
                 if (current.FocusTime >= MaxFocusTime)//nb de sec
                 {
-                    Debug.WriteLine("1 "+TobiiSetUpService.TimeStopWatch.Elapsed.Seconds);
                     // we animate the element and reset all needed values
                     
                     TobiiSetUpService.TimeStopWatch = new Stopwatch();
-                    Debug.WriteLine("2 " + TobiiSetUpService.TimeStopWatch.Elapsed.Seconds);
                     current.FocusTime = 0;
                     Play(source, current);
                     TobiiSetUpService.StopTimer();
