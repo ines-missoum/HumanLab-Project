@@ -43,14 +43,18 @@ namespace humanlab.ViewModels
         private ItemsControl itemsControl;
         private Boolean isPositionsSet;
         private List<ElementPlaced> elementsPlaced;
-        public DelegateCommand SaveGridPlacementCommand{ get; set; }
+        public DelegateCommand SaveGridPlacementCommand { get; set; }
         public DelegateCommand ReturnToSelectionCommand { get; set; }
+        public DelegateCommand BackToWindow { get; set; }
         //attributes linked to dynamic messages in front
         private bool isNextButtonShowing;
         private string buttonText;
         private bool isEmptySearchMessageShowing;
         private bool isEmptyElementMessageShowing;
         private bool fromSelectionChanged2;
+        private bool isNoSelectedElements;
+        private bool isNoElements;
+        public bool isEditModeActivated;
 
         /*** PRIVATE ATTRIBUTES ***/
 
@@ -95,20 +99,22 @@ namespace humanlab.ViewModels
             InitialiseAllElementsAndCategories();
             SearchedElements = new List<ElementChecked>(AllElements.OrderByDescending(e => e.Element.ElementName.Length));
             SelectedElements = new List<ElementChecked>();
-            //A supprimer just test
 
+            IsNoElements = AllElements.Count() == 0;
 
             //the views are not displayed at the the beginning
             isChooseElementsOpened = false;
             isOrganizeElementsOpened = false;
             ChoosePopUpVisibility = new DelegateCommand(ChangeChoosePopUpVisibility);
             OrganizePopUpVisibility = new DelegateCommand(OpenOrganizationPopUpIfAllowed);
+            BackToWindow = new DelegateCommand(RedirectToAllGridsPage);
 
             //no search has began
             searching = false;
 
             fromSelectionChanged2 = false;
             IsNextButtonShowing = false;
+            isEditModeActivated = false;
             isEmptySearchMessageShowing = false;
             isEmptyElementMessageShowing = true;
             ButtonText = "Choisir";
@@ -126,6 +132,7 @@ namespace humanlab.ViewModels
             SaveGridPlacementCommand = new DelegateCommand(UpdateOrAddGridIfAllowed, CanSavOrUpdateGridPlacement);
             ReturnToSelectionCommand = new DelegateCommand(ReturnToSelection);
             isPositionsSet = false;
+
         }
 
         private void ReturnToSelection()
@@ -137,6 +144,12 @@ namespace humanlab.ViewModels
             nv.IsPaneVisible = true;
 
 
+        }
+
+        public bool IsEditModeActivated
+        {
+            get => isEditModeActivated;
+            set => SetProperty(ref isEditModeActivated, value, "IsEditModeActivated");
         }
 
         private bool CanSavOrUpdateGridPlacement()
@@ -153,7 +166,8 @@ namespace humanlab.ViewModels
             else
             {
                 List<Models.Grid> grids = await gridRepository.GetGridsAsync();
-                List<string> gridsNames = grids.Select(g => g.GridName).ToList();
+                List<string> gridsNames = grids.Select(g => g.GridName.ToLower()).ToList();
+
                 double size = (ScrollView.ViewportHeight / 2) * ScrollView.ZoomFactor;
 
                 string successMessage = "";
@@ -161,13 +175,13 @@ namespace humanlab.ViewModels
                 if (gridToModify == null)
                 {
                     //if creation of new grid and name already exists
-                    if (gridsNames.Contains(GridName))
+                    if (gridsNames.Contains(GridName.ToLower()))
                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
                 else
                 {
                     //if update grid and name changed for one that already exists
-                    if (!GridName.Equals(gridToModify.GridName) && gridsNames.Contains(GridName))
+                    if (!GridName.ToLower().Equals(gridToModify.GridName.ToLower()) && gridsNames.Contains(GridName.ToLower()))
                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
 
@@ -200,7 +214,8 @@ namespace humanlab.ViewModels
                         catch { Debug.WriteLine("Error upgrating element"); }
                         // Update Activity in db
                     }
-                    else {
+                    else
+                    {
                         Models.Grid newGrid = new Models.Grid
                         {
                             GridName = GridName,
@@ -221,11 +236,11 @@ namespace humanlab.ViewModels
                     }
 
                 }
-                        //Create new activity from activity form data 
+                //Create new activity from activity form data 
 
             }
         }
-       
+
 
 
         /// <summary>
@@ -253,7 +268,8 @@ namespace humanlab.ViewModels
             {
 
                 Models.Grid grid = navigationViewModel.parameterToPass as Models.Grid;
-                gridToModify = grid; 
+                gridToModify = grid;
+                IsEditModeActivated = true;
                 GridName = grid.GridName;
                 navigationViewModel.Title = "Modification de la grille " + GridName;
                 ButtonText = "Modifier";
@@ -263,16 +279,17 @@ namespace humanlab.ViewModels
                 IsEmptyElementMessageShowing = false;
                 List<int> ElementsId = dbElements.Select(dbobj => dbobj.Element.ElementId).ToList();
                 InitialiseAllElementsAndCategories();
+                var selectedEl = new List<ElementChecked>();
                 SearchedElements.ForEach(el =>
                 {
                     if (ElementsId.Contains(el.Element.ElementId))
                     {
 
                         el.IsSelected = true;
-                        SelectedElements.Add(el);
+                        selectedEl.Add(el);
                     }
                 });
-
+                SelectedElements = selectedEl;
             }
         }
 
@@ -311,6 +328,18 @@ namespace humanlab.ViewModels
 
         }
 
+        public bool IsNoElements
+        {
+            get => isNoElements;
+            set => SetProperty(ref isNoElements, value, "IsNoElements");
+        }
+
+        public bool IsNoSelectedElements
+        {
+            get => isNoSelectedElements;
+            set => SetProperty(ref isNoSelectedElements, value, "IsNoSelectedElements");
+
+        }
         public bool IsPositionsSet
         {
             get => isPositionsSet;
@@ -390,7 +419,11 @@ namespace humanlab.ViewModels
         public List<ElementChecked> SelectedElements
         {
             get => selectedElements;
-            set => SetProperty(ref selectedElements, value, "SelectedElements");
+            set
+            {
+                SetProperty(ref selectedElements, value, "SelectedElements");
+                IsNoSelectedElements = selectedElements.Count() == 0;
+            }
 
         }
 
@@ -415,17 +448,17 @@ namespace humanlab.ViewModels
             {
                 //we check if the name is not already taken
                 List<string> gridsNames = await repository.GetGridsNamesAsync();
-                if(gridToModify == null)
+                if (gridToModify == null)
                 {
                     //if creation of new grid and name already exists
-                    if(gridsNames.Contains(GridName))
+                    if (gridsNames.Contains(GridName))
                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
                 else
                 {
                     //if update grid and name changed for one that already exists
                     if (!GridName.Equals(gridToModify.GridName) && gridsNames.Contains(GridName))
-                         errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
+                        errorMessage = "Une grille porte déjà le nom que vous avez choisi. Veuillez le modifier pour poursuivre.";
                 }
             }
 
@@ -434,7 +467,8 @@ namespace humanlab.ViewModels
             {
                 DisplayMessagesService.showPersonalizedMessage(errorMessage);
             }
-            else {
+            else
+            {
                 List<ElementPlaced> listBis = new List<ElementPlaced>(ElementsPlaced);
                 //else we display the organization view
                 // Retrieve checked elements and create new ElementPlaced item
@@ -482,7 +516,7 @@ namespace humanlab.ViewModels
             selectionChangedFirstGridView = true;
             if (!searching)
             {
-                List <ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
+                List<ElementChecked> updatedList = new List<ElementChecked>(SelectedElements);
 
                 if (e.AddedItems.Count() > 0)
                 {
@@ -501,7 +535,7 @@ namespace humanlab.ViewModels
                     {
                         ElementChecked removedItem = e.RemovedItems.First() as ElementChecked;
                         updatedList.Remove(removedItem);
-                        
+
                         SelectedElements = updatedList.OrderByDescending(el => el.Element.ElementName.Length).ToList();
                         removedItem.IsSelected = false;
                     }
@@ -634,7 +668,7 @@ namespace humanlab.ViewModels
                                                    .OrderByDescending(e => e.Element.ElementName.Length)
                                                    .ToList();
 
-            IsEmptySearchMessageShowing = SearchedElements.Count() == 0;
+            IsEmptySearchMessageShowing = AllElements.Count() > 0 && SearchedElements.Count() == 0;
             RefreshSelectionSearchedGrid();
         }
 
@@ -673,7 +707,7 @@ namespace humanlab.ViewModels
         public void SetInitialWidthToElements()
         {
             double initialWidth = ScrollView.ViewportHeight / 2;
-            double initialHeigth = ScrollView.ViewportHeight/2;
+            double initialHeigth = ScrollView.ViewportHeight / 2;
             {
                 // Set UIElements object width/heigth
                 foreach (ElementPlaced ep in ElementsPlaced)
@@ -681,7 +715,7 @@ namespace humanlab.ViewModels
 
                     ep.WidthString = initialWidth.ToString();
                     ep.HeigthString = initialHeigth.ToString();
-          
+
                     OnPropertyChanged("WidthString");
                     OnPropertyChanged("HeigthString");
 
@@ -787,7 +821,7 @@ namespace humanlab.ViewModels
 
         }
 
-        public Image GetImageFromUIElement (object item)
+        public Image GetImageFromUIElement(object item)
         {
             // Retrieve all UIElements (images) from the DataTemplate 
             // Here 'element' refers to a ContentPresenter object which wraps the image we need for translation calculs
@@ -807,22 +841,22 @@ namespace humanlab.ViewModels
         public Dictionary<string, double> GetItemPositionInScrollViewer(Image image)
         {
 
-            Dictionary<string, double > results = new Dictionary<string, double>();
+            Dictionary<string, double> results = new Dictionary<string, double>();
 
 
-                //Get Position of the current inside the scrollViewer
-                var position = image.TransformToVisual(ScrollView);
-                Point p = position.TransformPoint(new Point(0, 0));
+            //Get Position of the current inside the scrollViewer
+            var position = image.TransformToVisual(ScrollView);
+            Point p = position.TransformPoint(new Point(0, 0));
 
-                /***CALCULS FOR LIMITATIONS***/
+            /***CALCULS FOR LIMITATIONS***/
 
-                //Distance between ScrollViewer's left border and the Image's left Border
-                var LeftBorder = p.X;
-                results.Add("LeftBorder", LeftBorder);
+            //Distance between ScrollViewer's left border and the Image's left Border
+            var LeftBorder = p.X;
+            results.Add("LeftBorder", LeftBorder);
 
-                //Distance between ScrollViewer's left border and the Image's rigth Border
-                var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
-                results.Add("RightBorder", RightBorder);
+            //Distance between ScrollViewer's left border and the Image's rigth Border
+            var RightBorder = p.X + (image.Width * ScrollView.ZoomFactor);
+            results.Add("RightBorder", RightBorder);
 
             //Distance between ScrollViewer's top border and the Image's top
             var TopBorder = p.Y;
@@ -833,20 +867,22 @@ namespace humanlab.ViewModels
             results.Add("BottomBorder", BottomBorder);
 
             return results;
-            }
+        }
 
-            
 
-            public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+
+        public void Scrollview_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
 
             ScrollViewer scrollViewer = sender as ScrollViewer;
             ScrollView = scrollViewer;
+
             double maxRightBorder = ScrollView.ViewportWidth;
             double maxBottomBorder = ScrollView.ViewportHeight;
-            
-            var child = VisualTreeHelper.GetChild(scrollView,0);
-            var nb1 = VisualTreeHelper.GetChild(child,0);
+
+            var child = VisualTreeHelper.GetChild(scrollView, 0);
+            var nb1 = VisualTreeHelper.GetChild(child, 0);
+
             var nb2 = VisualTreeHelper.GetChild(nb1, 0);
             var nb = VisualTreeHelper.GetChild(nb2, 0);
             ItemsControl itemsControl = nb as ItemsControl;
@@ -856,7 +892,7 @@ namespace humanlab.ViewModels
             {
                 var image = GetImageFromUIElement(item);
 
-                var results= GetItemPositionInScrollViewer(image);
+                var results = GetItemPositionInScrollViewer(image);
                 /***CALCULS FOR LIMITATIONS***/
 
                 //Distance between ScrollViewer's left border and the Image's left Border
@@ -879,22 +915,26 @@ namespace humanlab.ViewModels
                                                       .Where(el => el.Element.ElementName.Equals(tagImage))
                                                       .First();
 
-                if (LeftBorder < 0) {
+                if (LeftBorder < 0)
+                {
                     current.DeltaOnX -= LeftBorder;
                 }
 
 
-                if (RightBorder > maxRightBorder) {
-                    current.DeltaOnX -= RightBorder-maxRightBorder;
+                if (RightBorder > maxRightBorder)
+                {
+                    current.DeltaOnX -= RightBorder - maxRightBorder;
                 }
 
 
-                if (TopBorder < 0) {
+                if (TopBorder < 0)
+                {
                     current.DeltaOnY -= TopBorder;
                 }
 
 
-                if (BottomBorder > maxBottomBorder) {
+                if (BottomBorder > maxBottomBorder)
+                {
                     current.DeltaOnY -= BottomBorder - maxBottomBorder;
                 }
 
@@ -925,8 +965,8 @@ namespace humanlab.ViewModels
             var navigationView = GetNavigationView();
             var child = navigationView.Content as Frame;
             child.SourcePageType = typeof(BlankPage1);
-            child.SourcePageType = typeof(GridFormView);            
-           
+            child.SourcePageType = typeof(GridFormView);
+
         }
     }
 }

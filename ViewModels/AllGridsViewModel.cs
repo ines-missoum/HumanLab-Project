@@ -43,6 +43,9 @@ namespace humanlab.ViewModels
 
         public DelegateCommand ChangeEditMode { get; set; }
 
+        public bool IsNoGrids { get; set; }
+        public bool IsGrids { get; set; }
+
         //***CONSTRUCTOR***//
         public AllGridsViewModel()
         {
@@ -54,6 +57,8 @@ namespace humanlab.ViewModels
             ChangeEditMode = new DelegateCommand(SetEditMode);
             IsGridPreviewShowing = false;
             CloseGridDelegate = new DelegateCommand(CloseGridPreview);
+            IsNoGrids = AllGrids.Count() == 0;
+            IsGrids = !IsNoGrids;
         }
 
         /***GETTERS & SETTERS***/

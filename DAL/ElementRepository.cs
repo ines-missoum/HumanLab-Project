@@ -19,7 +19,12 @@ namespace humanlab.DAL
             {
                     Category selectedCategory = GetCategoryByName(categoryName, db);
                     selectedCategory.Elements.Add(model);
-                await db.SaveChangesAsync();
+                    db.SaveChanges();
+
+                Element elementToModify = selectedCategory.Elements.Select(sc => sc).Where(sc => sc.ElementName.Equals(model.ElementName)).FirstOrDefault();
+                elementToModify.Image += elementToModify.ElementId;
+                if(!elementToModify.Audio.Equals("")) elementToModify.Audio += elementToModify.ElementId;
+                db.SaveChanges();
             }
         }
          
@@ -32,12 +37,14 @@ namespace humanlab.DAL
                 Element oldElement = db.Elements.Select(e => e).Where(e => e.ElementId == elementToUpdate.ElementId).FirstOrDefault();
                 Category oldCategory = GetCategories(db).Select(c => c).Where(c => c.Elements.Contains(oldElement)).FirstOrDefault();
 
-                // Supprime l'ancien élément 
-                oldCategory.Elements.Remove(oldElement);
-                db.SaveChanges();
+                oldElement.ElementName = elementToUpdate.ElementName;
+                oldElement.SpeachText = elementToUpdate.SpeachText;
+                oldElement.Audio = elementToUpdate.Audio;
+                oldElement.Image = elementToUpdate.Image;
                 Category selectedCategory = GetCategoryByName(categoryName, db);
-                selectedCategory.Elements.Add(elementToUpdate);
-                //Update l'element ( faut passer l'id) 
+                oldElement.Category = selectedCategory;
+                oldCategory.Elements.Remove(oldElement);
+                selectedCategory.Elements.Add(oldElement);
                 await db.SaveChangesAsync();
 
             }
@@ -75,7 +82,20 @@ namespace humanlab.DAL
 
         }
 
-
+        public  async Task<Element> GetElementByName(string name)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    return db.Elements.Select(e => e).Where(e => e.ElementName.Equals(name)).FirstOrDefault();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
 
         public async Task<List<string>> GetCategoriesNamesAsync()
         {

@@ -57,6 +57,20 @@
 
     <!--PRINCIPAL VIEW-->
     <Grid Loading="{x:Bind activity.PrepareEditModeAsync}">
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
+            <Button Width="120" Height="35" Margin="8" 
+                    Background="White"  FontWeight="Bold"
+                    Command="{Binding BackToWindow}"
+                    Visibility="{x:Bind activity.IsEditModeActivated, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Back" Margin="8,0,0,0"/>
+                    <TextBlock Text="RETOUR" Margin="8,0,0,0" />
+
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -76,7 +90,7 @@
                  Margin="20,24,0,20" 
                  MaxLength="32" 
                  Width="400" 
-                 Text="{x:Bind activity.ActivityToModify.ActivityName, Mode=TwoWay}"
+                 Text="{x:Bind activity.ActivityName, Mode=TwoWay}"
                  TextChanged="{x:Bind activity.TextBox_TextChanged}"
                  HorizontalAlignment="Left" />
 
@@ -167,6 +181,12 @@
 
                 <TextBlock Text="Grilles disponibles" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>
 
+                <TextBlock Text="Vous n'avez encore créé aucune grille. Rendez-vous au volet : Nouvelle Grille, pour y remédier." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind activity.IsNoGrids, Mode=OneWay}"/>
                 <TextBlock Text="Aucune grille ne correspond à la recherche." 
                        Style="{StaticResource BodyTextBlockStyle}"
                        HorizontalAlignment="Left" 
@@ -183,6 +203,12 @@
                 </GridView>
 
                 <TextBlock Text="Grilles sélectionnées" Style="{StaticResource TitleTextBlockStyle}" Margin="0,20,0,0"/>
+                <TextBlock Text="Aucune grille sélectionnée." 
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Left" 
+                       Foreground="Black"
+                       Margin="50,0,0,0"
+                       Visibility="{x:Bind activity.IsNoSelectedGrids, Mode=OneWay}"/>
                 <GridView SelectionMode="Multiple" 
                                     Loading="{x:Bind activity.GridView2_Loading}"
                                     ItemsSource="{x:Bind activity.SelectedGrids, Mode=TwoWay}" 
@@ -199,7 +225,7 @@
             </StackPanel>
 
         </Grid>
-
+        </Grid>
         <!-- PREVIEW -->
         <Grid Margin="5" Background="White" Grid.Row="0"
               Grid.Column="0"

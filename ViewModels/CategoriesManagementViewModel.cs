@@ -68,6 +68,10 @@ namespace humanlab.ViewModels
         /// </summary>
         private ContentDialog updateCategoryDialog;
 
+        /// <summary>
+        /// indicates whether the list of categories is empty
+        /// </summary>
+        private bool isNoExistingCategory;
         /*** CONSTRUCTOR ***/
 
         public CategoriesManagementViewModel()
@@ -77,6 +81,7 @@ namespace humanlab.ViewModels
             newCategoryName = "";
             updatedCategoryName = "";
             SaveNewCategoryDelegate = new DelegateCommand(SaveNewCategoryAsync, CanSaveNewCategory);
+            IsNoExistingCategory = dbCategories.Count() == 0;
         }
 
         /*** GETTERS AND SETTERS FOR PUBLIC ATTRIBUTES ***/
@@ -85,6 +90,12 @@ namespace humanlab.ViewModels
         {
             get => categoriesForView;
             set => SetProperty(ref categoriesForView, value, "Categories");
+        }
+
+        public bool IsNoExistingCategory
+        {
+            get => isNoExistingCategory;
+            set => SetProperty(ref isNoExistingCategory, value, "IsNoExistingCategory");
         }
 
         public string NewCategoryName
@@ -201,6 +212,7 @@ namespace humanlab.ViewModels
                 DisplayMessagesService.showPersonalizedMessage("La catégorie " + NewCategoryName + " a été créée avec succès.");
 
                 NewCategoryName = "";
+                IsNoExistingCategory = dbCategories.Count() == 0;
             }
             else
                 DisplayMessagesService.showPersonalizedMessage("Echec de la création de la catégorie " + NewCategoryName + ".");

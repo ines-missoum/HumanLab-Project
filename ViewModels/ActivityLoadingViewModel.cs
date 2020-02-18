@@ -17,6 +17,8 @@ using humanlab.DAL;
 using humanlab.Models;
 using humanlab.Views;
 using System.Collections.ObjectModel;
+using Windows.UI.Popups;
+
 
 namespace humanlab.ViewModels
 {
@@ -68,7 +70,9 @@ namespace humanlab.ViewModels
         private double secondsLeftBeforeNextGrid;
         private double timeToWaitBeforeChangingGrid;
 
-       
+        private bool isNoActivities;
+        private bool isActivities;
+
 
         /*** CONSTRUCTOR ***/
 
@@ -108,6 +112,9 @@ namespace humanlab.ViewModels
             random = new Random();
 
             InitValuesDependingOnsettings();
+
+            IsNoActivities = AllActivities.Count() == 0;
+            IsActivities = !IsNoActivities;
 
         }
         private void InitValuesDependingOnsettings()
@@ -157,14 +164,33 @@ namespace humanlab.ViewModels
             }
 
         }
-        public void DeleteActivity(object activityObject)
+
+        public async void DeleteActivity(object activityObject)
         {
             try
             {
                 Activity activity = activityObject as Activity;
-                activityRepository.DeleteActivity(activity);
-                ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
-                AllActivitiesObserver.Remove(actUpdated);
+
+                var dialog = new MessageDialog("Êtes-vous sure de vouloir supprimer " + activity.ActivityName + " ? ");
+                dialog.Content = "Êtes-vous sure de vouloir supprimer " + activity.ActivityName + " ? ";
+                dialog.Title = "Suppression activité";
+                dialog.Commands.Add(new UICommand { Label = "Oui", Id = 0 });
+                dialog.Commands.Add(new UICommand { Label = "Annuler", Id = 1 });
+                var res = await dialog.ShowAsync();
+                if ((int)res.Id == 0)
+                {
+                    activityRepository.DeleteActivity(activity);
+                    ActivityUpdated actUpdated = AllActivities.Find(a => a.Activity == activity);
+                    AllActivitiesObserver.Remove(actUpdated);
+                }
+
+                if(AllActivitiesObserver.Count() == 0)
+                {
+                    IsEditModeActivated = false;
+                    IsNoActivities = true;
+                    IsActivities = false;
+                }            
+                
             }
             catch { Debug.WriteLine("Error while deleting activity"); }
         }
@@ -209,6 +235,16 @@ namespace humanlab.ViewModels
 
         /***GETTERS & SETTERS***/
 
+        public bool IsNoActivities
+        {
+            get => isNoActivities;
+            set => SetProperty(ref isNoActivities, value, "IsNoActivities");
+        }
+        public bool IsActivities
+        {
+            get => isActivities;
+            set => SetProperty(ref isActivities, value, "IsActivities");
+        }
         public double SecondsLeftBeforeNextGrid
         {
             get => secondsLeftBeforeNextGrid;
@@ -234,9 +270,11 @@ namespace humanlab.ViewModels
         public ObservableCollection<ActivityUpdated> AllActivitiesObserver
         {
             get => allActivitiesObserver;
-            set => SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
-
-        }
+            set
+            {
+                SetProperty(ref allActivitiesObserver, value, "AllActivitiesObserver");
+            }
+            }
         public List<ElementOfActivity> Elements
         {
             get => elements;

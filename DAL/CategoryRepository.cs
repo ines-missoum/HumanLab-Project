@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,6 +38,27 @@ namespace humanlab.DAL
                     return true;
                 }
                 return false;
+            }
+        }
+
+        internal async void  CheckDefaultCategory()
+        {
+            var categories = await GetAllCategoriesAsync();
+            if (categories.Count() < 1)
+            {
+                Category defaultCategory = new Category { CategoryName = "Autres"};
+                using (var db = new ApplicationDbContext())
+                {
+                    try
+                    {
+                        db.Categories.Add(defaultCategory);
+                        db.SaveChanges();
+                    }
+                    catch (Exception)
+                    {
+                        Debug.WriteLine("Error With initialisation of default category");
+                    };
+                }
             }
         }
 

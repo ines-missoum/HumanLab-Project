@@ -25,7 +25,7 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,100">
             <Button Width="170" Height="35" Margin="8" 
                     Background="SkyBlue" FontWeight="Bold"
-                    Command="{x:Bind grids.ChangeEditMode}">
+                    Command="{x:Bind grids.ChangeEditMode}" Visibility="{x:Bind grids.IsGrids}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Bind grids.EditButton, Mode=TwoWay}"   />
                     <SymbolIcon Symbol="Edit" Margin="8,0,0,0"/>
@@ -36,6 +36,12 @@
                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,10,100">
             <TextBlock Text="Cliquer sur un élément pour pouvoir le modifier/supprimer" Margin="12" Visibility="{x:Bind grids.IsEditModeActivated, Mode=OneWay}" />
         </StackPanel>
+        <TextBlock HorizontalAlignment="Center" FontSize="21" TextAlignment="Center" Visibility="{x:Bind grids.IsNoGrids}">
+            <LineBreak/>
+            <Run Text="Vous n'avez encore créé aucune grille." />  
+            <LineBreak/>
+            <Run Text="Rendez-vous au volet : Nouvelle Grille, pour y remédier." />
+        </TextBlock>
         <Grid Margin="10,50,0,10" >
 
             <GridView ItemsSource="{x:Bind grids.AllGrids}"
