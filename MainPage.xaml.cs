@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using humanlab.DAL;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -27,7 +28,15 @@ namespace humanlab
         {
             this.InitializeComponent();
             StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            System.Diagnostics.Debug.WriteLine(""+appFolder.Path);
+            CheckDatabaseDefaultValues();
+            
+        }
+
+        public void CheckDatabaseDefaultValues()
+        {
+            var categoryRepository = new CategoryRepository();
+            try { categoryRepository.CheckDefaultCategory(); }
+            catch { };
         }
     }
 }
