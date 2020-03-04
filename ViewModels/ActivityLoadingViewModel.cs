@@ -502,7 +502,7 @@ namespace humanlab.ViewModels
                             ElementOfActivity current = matchElements.First();
                             current.FocusTime = 0;
                         }
-                        
+
                         TobiiSetUpService.TimeStopWatch = new Stopwatch();
                     }
 
@@ -512,7 +512,7 @@ namespace humanlab.ViewModels
             }
 
         }
-        
+
 
         /// <summary>
         /// Tick handler for gaze focus timer.
@@ -521,27 +521,30 @@ namespace humanlab.ViewModels
         /// <param name="e">Event args for the gaze entered event</param>
         private void TimerGaze_Tick(object sender, object e)
         {
-            try
+            if (TobiiSetUpService.IsActiveDevice())
             {
-                Image img = TobiiSetUpService.CurrentFocusImage as Image;
-                ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
-                BitmapImage source = img.Source as BitmapImage;
-
-                // Increment progress bar.
-                var time = TobiiSetUpService.TimeStopWatch.Elapsed;
-                current.FocusTime = time.Seconds * 1000 + time.Milliseconds;
-
-                // If progress bar reaches maximum value, reset and relocate.
-                if (current.FocusTime >= MaxFocusTime)//nb de sec
+                try
                 {
-                    // we animate the element and reset all needed values
-                    TobiiSetUpService.TimeStopWatch = new Stopwatch();
-                    current.FocusTime = 0;
-                    Play(source, current);
-                    TobiiSetUpService.StopTimer();
+                    Image img = TobiiSetUpService.CurrentFocusImage as Image;
+                    ElementOfActivity current = Elements.Where(el => el.Element.ElementId.Equals(img.Tag)).First();
+                    BitmapImage source = img.Source as BitmapImage;
+
+                    // Increment progress bar.
+                    var time = TobiiSetUpService.TimeStopWatch.Elapsed;
+                    current.FocusTime = time.Seconds * 1000 + time.Milliseconds;
+
+                    // If progress bar reaches maximum value, reset and relocate.
+                    if (current.FocusTime >= MaxFocusTime)//nb de sec
+                    {
+                        // we animate the element and reset all needed values
+                        TobiiSetUpService.TimeStopWatch = new Stopwatch();
+                        current.FocusTime = 0;
+                        Play(source, current);
+                        TobiiSetUpService.StopTimer();
+                    }
                 }
+                catch { Debug.WriteLine("Error tick handler"); }
             }
-            catch { Debug.WriteLine("Error tick handler");  }
         }
 
         /// <summary>
@@ -821,6 +824,7 @@ namespace humanlab.ViewModels
             navView.IsPaneToggleButtonVisible = true;
             navView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
             IsActivityLoading = false;
+            Elements = new List<ElementOfActivity>();
             //stoping tobii
             TobiiSetUpService.RemoveDevice();
 
